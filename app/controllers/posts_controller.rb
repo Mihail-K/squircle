@@ -3,7 +3,9 @@ class PostsController < ApiController
 
   before_action :set_posts, except: :create
   before_action :set_post, except: %i(index create)
+
   before_action :check_permission, only: %i(update destroy)
+  before_action :check_character_ownership, only: %i(create update)
 
   def index
     render json: @posts,
@@ -66,5 +68,12 @@ private
 
   def check_permission
     forbid unless @post.poster_id == current_user.id || current_user.admin?
+  end
+
+  def check_character_ownership
+    unless current_user.admin? || current_user.characters.exists?(id: @post.character_id)
+      @post.errors.add :base, 'you cannot make posts as this character'
+      errors @post
+    end
   end
 end

@@ -7,6 +7,7 @@ class Post < ActiveRecord::Base
   validates :body, presence: true, length: { in: 10 .. 10_000 }
 
   validate :check_flood_limit, on: :create, unless: 'poster.admin?'
+  validate :check_character_ownership, if: :character_id_changed?
 
   def check_flood_limit
     if Post.where(posted_id: posted_id).exists? 'created_at > ?', 20.seconds.ago
