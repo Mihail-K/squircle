@@ -1,6 +1,10 @@
 class PostsController < ApiController
   before_action :doorkeeper_authorize!, except: %i(index show)
 
+  before_action :set_conversation, only: %i(index show), if: -> {
+    params.key? :conversation_id
+  }
+
   before_action :set_posts, except: :create
   before_action :set_post, except: %i(index create)
 
@@ -61,11 +65,17 @@ private
     @posts = Post.all.includes :author, :editor, :character, :postable
     @posts = @posts.where author_id: params[:user_id] if params.key? :user_id
     @posts = @posts.where character_id: params[:character_id] if params.key? :character_id
-    @posts = @posts.visible unless current_user.try(:admin?)
+    @posts = @posts.where postable: @conversation if params.key? :conversation_id
+    @posts = @posts.visible unless admin?
   end
 
   def set_post
     @post = @posts.find params[:id]
+  end
+
+  def set_conversation
+    @conversation = Conversation.all
+    @conversation = @conversation.visible unless admin?
   end
 
   def check_permission
