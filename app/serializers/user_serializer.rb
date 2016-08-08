@@ -14,6 +14,7 @@ class UserSerializer < ActiveModel::Serializer
 
   attribute :characters_count
   attribute :created_characters_count
+  attribute :posts_count
 
   has_many :characters do
     object.characters.first(10)

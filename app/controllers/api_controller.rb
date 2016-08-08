@@ -9,6 +9,11 @@ class ApiController < ActionController::API
     current_user if current_user.try :admin?
   end
 
+  def errors(object)
+    render json: { errors: (object.respond_to?(:errors) ? object.errors : object) },
+           status: :unprocessable_entity
+  end
+
   def forbid(body = { nothing: true })
     render({ status: :forbidden }.merge(body))
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160808163301) do
+ActiveRecord::Schema.define(version: 20160808182900) do
 
   create_table "characters", force: :cascade do |t|
     t.string   "name",                        null: false
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 20160808163301) do
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
     t.boolean  "deleted",     default: false, null: false
+    t.integer  "posts_count", default: 0,     null: false
     t.index ["creator_id"], name: "index_characters_on_creator_id"
     t.index ["user_id"], name: "index_characters_on_user_id"
   end
@@ -63,6 +64,19 @@ ActiveRecord::Schema.define(version: 20160808163301) do
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
+  create_table "posts", force: :cascade do |t|
+    t.string   "title"
+    t.text     "body",         null: false
+    t.integer  "poster_id",    null: false
+    t.integer  "editor_id"
+    t.integer  "character_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.index ["character_id"], name: "index_posts_on_character_id"
+    t.index ["editor_id"], name: "index_posts_on_editor_id"
+    t.index ["poster_id"], name: "index_posts_on_poster_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string   "email",                                   null: false
     t.string   "email_token"
@@ -77,6 +91,7 @@ ActiveRecord::Schema.define(version: 20160808163301) do
     t.boolean  "admin",                    default: true, null: false
     t.integer  "characters_count",         default: 0,    null: false
     t.integer  "created_characters_count", default: 0,    null: false
+    t.integer  "posts_count",              default: 0,    null: false
     t.index ["display_name"], name: "index_users_on_display_name", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["email_token"], name: "index_users_on_email_token", unique: true

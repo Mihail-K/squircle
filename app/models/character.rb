@@ -2,6 +2,8 @@ class Character < ActiveRecord::Base
   belongs_to :user, counter_cache: :characters_count, inverse_of: :characters
   belongs_to :creator, counter_cache: :created_characters_count, class_name: 'User'
 
+  has_many :posts, inverse_of: :character
+
   validates :name, presence: true
   validates :user, presence: true, on: :create
   validates :creator, presence: true
