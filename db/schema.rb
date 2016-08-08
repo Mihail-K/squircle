@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160808182900) do
+ActiveRecord::Schema.define(version: 20160808192009) do
 
   create_table "characters", force: :cascade do |t|
     t.string   "name",                        null: false
@@ -66,12 +66,13 @@ ActiveRecord::Schema.define(version: 20160808182900) do
 
   create_table "posts", force: :cascade do |t|
     t.string   "title"
-    t.text     "body",         null: false
-    t.integer  "poster_id",    null: false
+    t.text     "body",                         null: false
+    t.integer  "poster_id",                    null: false
     t.integer  "editor_id"
     t.integer  "character_id"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.boolean  "deleted",      default: false, null: false
     t.index ["character_id"], name: "index_posts_on_character_id"
     t.index ["editor_id"], name: "index_posts_on_editor_id"
     t.index ["poster_id"], name: "index_posts_on_poster_id"

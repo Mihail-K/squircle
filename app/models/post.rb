@@ -8,6 +8,10 @@ class Post < ActiveRecord::Base
 
   validate :check_flood_limit, on: :create, unless: 'poster.admin?'
 
+  scope :visible, -> {
+    where deleted: false
+  }
+
   def check_flood_limit
     if Post.where(posted_id: posted_id).exists? 'created_at > ?', 20.seconds.ago
       errors.add :base, 'you can only post once every 20 seconds'
