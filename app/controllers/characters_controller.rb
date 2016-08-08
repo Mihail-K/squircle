@@ -6,7 +6,7 @@ class CharactersController < ApiController
   before_action :check_permission, only: %i(update destroy)
 
   def index
-    render json: @characters, each_serializer: CharacterSerializer
+    render json: @characters.page(params[:page]).per(params[:count].to_i || 10), each_serializer: CharacterSerializer
   end
 
   def show
