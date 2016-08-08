@@ -3,6 +3,8 @@ class Post < ActiveRecord::Base
   belongs_to :editor, class_name: 'User'
   belongs_to :character, counter_cache: :posts_count, inverse_of: :posts
 
+  belongs_to :postable, polymorphic: true, counter_cache: :posts_count
+
   validates :author, presence: true
   validates :body, presence: true, length: { in: 10 .. 10_000 }
 

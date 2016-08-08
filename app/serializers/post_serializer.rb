@@ -14,4 +14,6 @@ class PostSerializer < ActiveModel::Serializer
   belongs_to :author, serializer: UserSerializer
   belongs_to :editor, serializer: UserSerializer
   belongs_to :character
+
+  belongs_to :postable
 end

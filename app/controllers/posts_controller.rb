@@ -59,7 +59,7 @@ private
   end
 
   def set_posts
-    @posts = Post.all.includes :author, :editor, :character
+    @posts = Post.all.includes :author, :editor, :character, :postable
     @posts = @posts.where author_id: params[:user_id] if params.key? :user_id
     @posts = @posts.where character_id: params[:character_id] if params.key? :character_id
     @posts = @posts.visible unless current_user.try(:admin?)
