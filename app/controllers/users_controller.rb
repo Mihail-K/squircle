@@ -67,7 +67,7 @@ private
   end
 
   def check_permission
-    forbid unless @user.id == current_user.try(:id) || current_user.try(:admin?)
+    forbid unless @user.id == current_user.id || current_user.admin?
   end
 
   def confirm_email

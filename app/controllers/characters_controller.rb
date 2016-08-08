@@ -53,6 +53,7 @@ private
     @characters = Character.all
     @characters = @characters.visible if current_admin.nil?
     @characters = @characters.where user_id: params[:user_id] if params.key? :user_id
+    @characters = @characters.includes :user, :creator
   end
 
   def set_character

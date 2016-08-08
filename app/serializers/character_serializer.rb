@@ -1,4 +1,6 @@
 class CharacterSerializer < ActiveModel::Serializer
+  cache expires_in: 1.hour
+
   attribute :id
   attribute :user_id
   attribute :creator_id

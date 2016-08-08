@@ -1,4 +1,6 @@
 class UserSerializer < ActiveModel::Serializer
+  cache expires_in: 3.hours
+
   attribute :id
   attribute :display_name
   attribute :created_at
@@ -11,7 +13,7 @@ class UserSerializer < ActiveModel::Serializer
   attribute :date_of_birth, if: :can_view_personal_data?
 
   has_many :characters
-  has_many :created_characters
+  has_many :created_characters, serializer: CharacterSerializer
 
   def can_view_email?
     object.id == current_user.try(:id) ||
@@ -21,5 +23,13 @@ class UserSerializer < ActiveModel::Serializer
   def can_view_personal_data?
     object.id == current_user.try(:id) ||
     current_user.try(:admin?)
+  end
+
+  def characters
+    object.characters.page(1).per(10)
+  end
+
+  def created_characters
+    object.created_characters.page(1).per(10)
   end
 end
