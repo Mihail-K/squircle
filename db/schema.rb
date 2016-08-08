@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160808211325) do
+ActiveRecord::Schema.define(version: 20160808220729) do
 
   create_table "characters", force: :cascade do |t|
     t.string   "name",                        null: false
@@ -27,7 +27,6 @@ ActiveRecord::Schema.define(version: 20160808211325) do
   end
 
   create_table "conversations", force: :cascade do |t|
-    t.string   "title",                       null: false
     t.integer  "posts_count", default: 0,     null: false
     t.boolean  "deleted",     default: false, null: false
     t.integer  "author_id",                   null: false

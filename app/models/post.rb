@@ -14,7 +14,15 @@ class Post < ActiveRecord::Base
   validates :postable, presence: true
   validates :body, presence: true, length: { in: 10 .. 10_000 }
 
+  validate :character_ownership, on: :create, if: :author, unless: 'author.admin?'
+
   scope :visible, -> {
     where deleted: false
   }
+
+  def character_ownership
+    unless author.characters.exists? id: character_id
+      errors.add :base, 'you cannot make posts as this character'
+    end
+  end
 end
