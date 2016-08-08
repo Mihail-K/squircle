@@ -3,7 +3,8 @@ class CharactersController < ApiController
 
   before_action :set_characters, except: :create
   before_action :set_character, only: %i(show update destroy)
-  before_action :check_permission, only: %i(update destroy)
+
+  before_action :check_permission, only: %i(update destroy), unless: :admin?
 
   def index
     render json: @characters.page(params[:page]).per(params[:count].to_i || 10),
@@ -27,7 +28,7 @@ class CharactersController < ApiController
     if @character.save
       render json: @character, status: :created
     else
-      render json: { errors: @character.errors }, status: :unprocessable_entity
+      errors @character
     end
   end
 
@@ -35,7 +36,7 @@ class CharactersController < ApiController
     if @character.update character_params
       render json: @character
     else
-      render json: { errors: @character.errors }, status: :unprocessable_entity
+      errors @character
     end
   end
 
@@ -43,7 +44,7 @@ class CharactersController < ApiController
     if @character.update deleted: true
       head :no_content
     else
-      render json: { errors: @character.errors }
+      errors @character
     end
   end
 
@@ -67,6 +68,6 @@ private
   end
 
   def check_permission
-    forbid unless @character.user_id == current_user.id || current_user.admin?
+    forbid unless @character.user_id == current_user.id
   end
 end

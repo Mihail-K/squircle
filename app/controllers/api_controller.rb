@@ -6,7 +6,11 @@ class ApiController < ActionController::API
   alias_method :current_user, :current_resource_owner
 
   def current_admin
-    current_user if current_user.try :admin?
+    current_user if admin?
+  end
+
+  def admin?
+    current_user.try :admin?
   end
 
   def errors(object)

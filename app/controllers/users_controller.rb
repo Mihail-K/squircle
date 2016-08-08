@@ -3,8 +3,10 @@ class UsersController < ApiController
 
   before_action :set_users, except: %i(me create)
   before_action :set_user, only: %i(show update destroy)
-  before_action :check_current_user, only: :create
-  before_action :check_permission, only: %i(update destroy)
+
+  before_action :check_current_user, only: :create, unless: :admin?
+  before_action :check_permission, only: %i(update destroy), unless: :admin?
+
   before_action :confirm_email, only: :update
 
   def me
@@ -31,7 +33,7 @@ class UsersController < ApiController
     if @user.save
       render json: @user, status: :created
     else
-      render json: { errors: @user.errors }
+      errors @user
     end
   end
 
@@ -39,7 +41,7 @@ class UsersController < ApiController
     if @user.update user_params
       render json: @user
     else
-      render json: { errors: @user.errors }
+      errors @user
     end
   end
 
@@ -47,7 +49,7 @@ class UsersController < ApiController
     if @user.destroy
       head :no_content
     else
-      render json: { errors: @user.errors }
+      errors @user
     end
   end
 
@@ -69,11 +71,11 @@ private
   end
 
   def check_current_user
-    forbid unless current_user.blank? || current_user.try(:admin?)
+    forbid unless current_user.blank?
   end
 
   def check_permission
-    forbid unless @user.id == current_user.id || current_user.admin?
+    forbid unless @user.id == current_user.id
   end
 
   def confirm_email
