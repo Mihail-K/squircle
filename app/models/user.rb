@@ -7,6 +7,8 @@ class User < ActiveRecord::Base
   has_secure_token :email_token
   has_secure_password
 
+  mount_uploader :avatar, AvatarUploader
+
   validates :email, presence: true, uniqueness: true
   validates :display_name, presence: true, uniqueness: true
   validates :date_of_birth, presence: true

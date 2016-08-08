@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160808223715) do
+ActiveRecord::Schema.define(version: 20160808225107) do
 
   create_table "characters", force: :cascade do |t|
     t.string   "name",                        null: false
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 20160808223715) do
     t.datetime "updated_at",                  null: false
     t.boolean  "deleted",     default: false, null: false
     t.integer  "posts_count", default: 0,     null: false
+    t.string   "avatar"
     t.index ["creator_id"], name: "index_characters_on_creator_id"
     t.index ["user_id"], name: "index_characters_on_user_id"
   end
@@ -107,6 +108,7 @@ ActiveRecord::Schema.define(version: 20160808223715) do
     t.integer  "characters_count",         default: 0,    null: false
     t.integer  "created_characters_count", default: 0,    null: false
     t.integer  "posts_count",              default: 0,    null: false
+    t.string   "avatar"
     t.index ["display_name"], name: "index_users_on_display_name", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["email_token"], name: "index_users_on_email_token", unique: true

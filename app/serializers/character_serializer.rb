@@ -11,6 +11,10 @@ class CharacterSerializer < ActiveModel::Serializer
   attribute :posts_count
   attribute :created_at
 
+  attribute :avatar_url do
+    object.avatar.url
+  end
+
   belongs_to :user
   belongs_to :creator, serializer: UserSerializer
 

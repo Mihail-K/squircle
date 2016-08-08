@@ -4,6 +4,8 @@ class Character < ActiveRecord::Base
 
   has_many :posts, -> { visible }, inverse_of: :character
 
+  mount_uploader :avatar, AvatarUploader
+
   validates :name, presence: true
   validates :user, presence: true, on: :create
   validates :creator, presence: true
