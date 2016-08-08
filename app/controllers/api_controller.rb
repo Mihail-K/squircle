@@ -4,4 +4,8 @@ class ApiController < ActionController::API
   end
 
   alias_method :current_user, :current_resource_owner
+
+  def current_admin
+    current_user if current_user.try :admin?
+  end
 end

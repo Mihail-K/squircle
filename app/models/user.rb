@@ -1,4 +1,7 @@
 class User < ActiveRecord::Base
+  has_many :characters, -> { visible }, inverse_of: :user
+  has_many :created_characters, -> { visible }, foreign_key: :creator_id, class_name: 'Character'
+
   has_secure_token :email_token
   has_secure_password
 
@@ -11,14 +14,6 @@ class User < ActiveRecord::Base
   after_commit :send_email_confirmation, if: -> {
     previous_changes.key?(:email)
   }
-
-  def serializable_hash(options = nil)
-    options ||= { }
-    options[:only] ||= [
-      :id, :display_name, :created_at
-    ]
-    super
-  end
 
   def send_email_confirmation
     # TODO

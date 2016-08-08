@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160808144009) do
+ActiveRecord::Schema.define(version: 20160808154114) do
+
+  create_table "characters", force: :cascade do |t|
+    t.string   "name",                        null: false
+    t.string   "title"
+    t.string   "description"
+    t.integer  "user_id"
+    t.integer  "creator_id",                  null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.boolean  "deleted",     default: false, null: false
+    t.index ["creator_id"], name: "index_characters_on_creator_id"
+    t.index ["user_id"], name: "index_characters_on_user_id"
+  end
 
   create_table "oauth_access_grants", force: :cascade do |t|
     t.integer  "resource_owner_id", null: false
@@ -51,7 +64,7 @@ ActiveRecord::Schema.define(version: 20160808144009) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",              null: false
+    t.string   "email",                             null: false
     t.string   "email_token"
     t.datetime "email_confirmed_at"
     t.string   "password_digest"
@@ -59,8 +72,9 @@ ActiveRecord::Schema.define(version: 20160808144009) do
     t.string   "first_name"
     t.string   "last_name"
     t.datetime "date_of_birth"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+    t.boolean  "admin",              default: true, null: false
     t.index ["display_name"], name: "index_users_on_display_name", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["email_token"], name: "index_users_on_email_token", unique: true

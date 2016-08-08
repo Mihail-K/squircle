@@ -1,14 +1,17 @@
 class UserSerializer < ActiveModel::Serializer
-  attributes :id
-  attributes :display_name
-  attributes :created_at
+  attribute :id
+  attribute :display_name
+  attribute :created_at
 
-  attributes :email, if: :can_view_email?
-  attributes :email_confirmed_at, if: :can_view_email?
+  attribute :email, if: :can_view_email?
+  attribute :email_confirmed_at, if: :can_view_email?
 
-  attributes :first_name, if: :can_view_personal_data?
-  attributes :last_name, if: :can_view_personal_data?
-  attributes :date_of_birth, if: :can_view_personal_data?
+  attribute :first_name, if: :can_view_personal_data?
+  attribute :last_name, if: :can_view_personal_data?
+  attribute :date_of_birth, if: :can_view_personal_data?
+
+  has_many :characters
+  has_many :created_characters
 
   def can_view_email?
     object.id == current_user.try(:id)

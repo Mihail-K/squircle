@@ -1,27 +1,27 @@
 class UsersController < ApiController
   before_action :doorkeeper_authorize!, except: %i(index show create)
 
-  before_action :set_users, except: :me
+  before_action :set_users, except: %i(me create)
   before_action :set_user, only: %i(show update destroy)
   before_action :confirm_email, only: :update
 
   def me
-    render json: { user: current_user }
+    render json: current_user
   end
 
   def index
-    render json: { users: @users }, each_serializer: UserSerializer
+    render json: @users, each_serializer: UserSerializer
   end
 
   def show
-    render json: { user: @user }
+    render json: @user
   end
 
   def create
     @user = User.new user_params
 
     if @user.save
-      render json: { user: @user }, status: :created
+      render json: @user, status: :created
     else
       render json: { errors: @user.errors }
     end
@@ -29,7 +29,7 @@ class UsersController < ApiController
 
   def update
     if @user.update user_params
-      render json: { user: @user }
+      render json: @user
     else
       render json: { errors: @user.errors }
     end
