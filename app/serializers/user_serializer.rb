@@ -12,8 +12,15 @@ class UserSerializer < ActiveModel::Serializer
   attribute :last_name, if: :can_view_personal_data?
   attribute :date_of_birth, if: :can_view_personal_data?
 
-  has_many :characters
-  has_many :created_characters, serializer: CharacterSerializer
+  attribute :characters_count
+  attribute :created_characters_count
+
+  has_many :characters do
+    object.characters.first(10)
+  end
+  has_many :created_characters, serializer: CharacterSerializer do
+    object.created_characters.first(10)
+  end
 
   def can_view_email?
     object.id == current_user.try(:id) ||
@@ -23,13 +30,5 @@ class UserSerializer < ActiveModel::Serializer
   def can_view_personal_data?
     object.id == current_user.try(:id) ||
     current_user.try(:admin?)
-  end
-
-  def characters
-    object.characters.page(1).per(10)
-  end
-
-  def created_characters
-    object.created_characters.page(1).per(10)
   end
 end

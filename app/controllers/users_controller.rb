@@ -12,7 +12,13 @@ class UsersController < ApiController
   end
 
   def index
-    render json: @users.page(params[:page]).per(params[:count].to_i || 10), each_serializer: UserSerializer
+    render json: @users.page(params[:page]).per(params[:count].to_i || 10),
+           each_serializer: UserSerializer,
+           meta: {
+             page:  params[:page] || 1,
+             count: params[:count] || 10,
+             total: @users.count
+           }
   end
 
   def show
@@ -55,7 +61,7 @@ private
   end
 
   def set_users
-    @users = User.all
+    @users = User.all.includes :characters, :created_characters
   end
 
   def set_user
