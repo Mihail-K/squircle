@@ -31,17 +31,26 @@ class Conversation < ActiveRecord::Base
   validates :author, presence: true
   validates :first_post, presence: true, on: :create
 
-  before_validation on: :create, if: -> { self.first_post.present? } do
-    self.first_post.postable = self
-  end
-  before_validation on: :create, unless: :author do
-    self.author = first_post.author
-  end
-  before_validation on: :create, unless: :title? do
-    self.title = first_post.title
-  end
+  before_validation :set_postable_in_first_post, on: :create, if: -> {
+    first_post.present?
+  }
+
+  before_validation :set_author_in_first_post, on: :create, unless: :author
+  before_validation :set_title_from_first_post, on: :create, unless: :title?
 
   scope :visible, -> {
     where deleted: false
   }
+
+  def set_postable_in_first_post
+    first_post.postable = self
+  end
+
+  def set_author_in_first_post
+    first_post.author = author
+  end
+
+  def set_title_from_first_post
+    self.title = first_post.title
+  end
 end
