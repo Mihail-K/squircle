@@ -6,6 +6,7 @@ class PostsController < ApiController
 
   before_action :check_permission, only: %i(update destroy)
   before_action :check_character_ownership, only: %i(create update)
+  before_action :check_flood_limit, only: :create
 
   def index
     render json: @posts,
@@ -76,6 +77,15 @@ private
     unless current_user.admin? || current_user.characters.exists?(id: @post.character_id)
       @post.errors.add :base, 'you cannot make posts as this character'
       errors @post
+    end
+  end
+
+  def check_flood_limit
+    unless current_user.admin?
+      if Post.where(poster_id: current_user).exists? 'created_at > ?', 20.seconds.ago
+        @post.errors.add :base, 'you can only post once every 20 seconds'
+        errors @post
+      end
     end
   end
 end
