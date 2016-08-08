@@ -60,6 +60,7 @@ private
   def set_posts
     @posts = Post.all.includes :poster, :editor, :character
     @posts = @posts.where poster_id: params[:user_id] if params.key? :user_id
+    @posts = @posts.where character_id: params[:character_id] if params.key? :character_id
   end
 
   def set_post
