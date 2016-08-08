@@ -3,6 +3,8 @@ class UsersController < ApiController
 
   before_action :set_users, except: %i(me create)
   before_action :set_user, only: %i(show update destroy)
+  before_action :check_current_user, only: :create
+  before_action :check_permission, only: %i(update destroy)
   before_action :confirm_email, only: :update
 
   def me
@@ -58,6 +60,14 @@ private
 
   def set_user
     @user = @users.find params[:id]
+  end
+
+  def check_current_user
+    forbid unless current_user.blank? || current_user.try(:admin?)
+  end
+
+  def check_permission
+    forbid unless @user.id == current_user.try(:id) || current_user.try(:admin?)
   end
 
   def confirm_email

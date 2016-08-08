@@ -14,10 +14,12 @@ class UserSerializer < ActiveModel::Serializer
   has_many :created_characters
 
   def can_view_email?
-    object.id == current_user.try(:id)
+    object.id == current_user.try(:id) ||
+    current_user.try(:admin?)
   end
 
   def can_view_personal_data?
-    object.id == current_user.try(:id)
+    object.id == current_user.try(:id) ||
+    current_user.try(:admin?)
   end
 end

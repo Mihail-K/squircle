@@ -8,4 +8,8 @@ class ApiController < ActionController::API
   def current_admin
     current_user if current_user.try :admin?
   end
+
+  def forbid(body = { nothing: true })
+    render({ status: :forbidden }.merge(body))
+  end
 end
