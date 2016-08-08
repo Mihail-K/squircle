@@ -8,6 +8,8 @@ class PostSerializer < ActiveModel::Serializer
 
   attribute :title
   attribute :body
+  attribute :created_at
+  attribute :updated_at
 
   belongs_to :poster, serializer: UserSerializer
   belongs_to :editor, serializer: UserSerializer
