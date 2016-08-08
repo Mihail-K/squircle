@@ -24,7 +24,7 @@ class PostsController < ApiController
 
   def create
     @post = Post.new post_params do |post|
-      post.poster = current_user
+      post.author = current_user
     end
 
     if @post.save
@@ -59,8 +59,8 @@ private
   end
 
   def set_posts
-    @posts = Post.all.includes :poster, :editor, :character
-    @posts = @posts.where poster_id: params[:user_id] if params.key? :user_id
+    @posts = Post.all.includes :author, :editor, :character
+    @posts = @posts.where author_id: params[:user_id] if params.key? :user_id
     @posts = @posts.where character_id: params[:character_id] if params.key? :character_id
     @posts = @posts.visible unless current_user.try(:admin?)
   end
@@ -70,7 +70,7 @@ private
   end
 
   def check_permission
-    forbid unless @post.poster_id == current_user.id
+    forbid unless @post.author_id == current_user.id
   end
 
   def check_character_ownership
@@ -81,7 +81,7 @@ private
   end
 
   def check_flood_limit
-    if Post.where(poster_id: current_user).exists? 'created_at > ?', 20.seconds.ago
+    if Post.where(author_id: current_user).exists? 'created_at > ?', 20.seconds.ago
       @post.errors.add :base, 'you can only post once every 20 seconds'
       errors @post
     end
