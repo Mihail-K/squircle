@@ -42,7 +42,7 @@ class PostsController < ApiController
   end
 
   def destroy
-    if @post.destroy
+    if @post.update deleted: true
       head :no_content
     else
       errors @post
