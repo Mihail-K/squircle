@@ -27,12 +27,18 @@ class Conversation < ActiveRecord::Base
 
   accepts_nested_attributes_for :first_post, reject_if: :all_blank
 
+  validates :title, presence: true
   validates :author, presence: true
   validates :first_post, presence: true, on: :create
 
   before_validation on: :create, if: -> { self.first_post.present? } do
-    self.first_post.postable ||= self
-    self.author ||= first_post.author
+    self.first_post.postable = self
+  end
+  before_validation on: :create, unless: :author do
+    self.author = first_post.author
+  end
+  before_validation on: :create, unless: :title? do
+    self.title = first_post.title
   end
 
   scope :visible, -> {

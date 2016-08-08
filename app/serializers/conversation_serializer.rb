@@ -2,6 +2,7 @@ class ConversationSerializer < ActiveModel::Serializer
   attribute :id
   attribute :author_id
 
+  attribute :title
   attribute :views_count
   attribute :posts_count
   attribute :created_at
