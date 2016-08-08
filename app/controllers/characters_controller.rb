@@ -52,7 +52,7 @@ private
 
   def character_params
     params.require(:character).permit(
-      :name, :title, :description
+      :name, :title, :description, :avatar, gallery_images: [ ]
     )
   end
 

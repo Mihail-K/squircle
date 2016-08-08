@@ -14,6 +14,9 @@ class CharacterSerializer < ActiveModel::Serializer
   attribute :avatar_url do
     object.avatar.url
   end
+  attribute :gallery_image_urls do
+    object.gallery_images.map(&:url)
+  end
 
   belongs_to :user
   belongs_to :creator, serializer: UserSerializer
