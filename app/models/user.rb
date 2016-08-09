@@ -19,6 +19,10 @@ class User < ActiveRecord::Base
     previous_changes.key?(:email)
   }
 
+  scope :visible, -> {
+    where deleted: false
+  }
+
   def send_email_confirmation
     # TODO
   end

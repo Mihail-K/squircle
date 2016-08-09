@@ -5,11 +5,11 @@ class Conversation < ActiveRecord::Base
                    as: :postable,
                    inverse_of: :postable
 
-  has_many :post_authors, -> { distinct },
+  has_many :post_authors, -> { visible.distinct },
                           through: :posts,
                           source: :author,
                           class_name: 'User'
-  has_many :post_characters, -> { distinct },
+  has_many :post_characters, -> { visible.distinct },
                              through: :posts,
                              source: :character,
                              class_name: 'Character'

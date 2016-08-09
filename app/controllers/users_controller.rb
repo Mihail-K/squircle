@@ -46,7 +46,7 @@ class UsersController < ApiController
   end
 
   def destroy
-    if @user.destroy
+    if @user.update deleted: true
       head :no_content
     else
       errors @user
@@ -65,6 +65,7 @@ private
 
   def set_users
     @users = User.all.includes :characters, :created_characters
+    @users = @users.visible unless admin?
   end
 
   def set_user

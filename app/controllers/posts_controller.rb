@@ -1,7 +1,13 @@
 class PostsController < ApiController
   before_action :doorkeeper_authorize!, except: %i(index show)
 
-  before_action :set_conversation, only: %i(index show), if: -> {
+  before_action :set_user, except: :create, if: -> {
+    params.key?(:user_id) || params.key?(:author_id)
+  }
+  before_action :set_character, except: :create, if: -> {
+    params.key? :character_id
+  }
+  before_action :set_conversation, except: :create, if: -> {
     params.key? :conversation_id
   }
 
@@ -63,9 +69,9 @@ private
 
   def set_posts
     @posts = Post.all.includes :author, :editor, :character, :postable
-    @posts = @posts.where author_id: params[:user_id] if params.key? :user_id
-    @posts = @posts.where character_id: params[:character_id] if params.key? :character_id
-    @posts = @posts.where postable: @conversation if params.key? :conversation_id
+    @posts = @posts.where author: @user unless @user.nil?
+    @posts = @posts.where character: @character unless @character.nil?
+    @posts = @posts.where postable: @conversation unless @conversation.nil?
     @posts = @posts.visible unless admin?
   end
 
@@ -73,9 +79,22 @@ private
     @post = @posts.find params[:id]
   end
 
+  def set_user
+    @user = User.all
+    @user = @user.visible unless admin?
+    @user = @user.where id: params[:user_id] || params[:author_id]
+  end
+
+  def set_character
+    @character = Character.all
+    @character = @character.visible unless admin?
+    @character = @character.where id: params[:character_id]
+  end
+
   def set_conversation
     @conversation = Conversation.all
     @conversation = @conversation.visible unless admin?
+    @conversation = @conversation.where id: params[:conversation_id]
   end
 
   def check_permission

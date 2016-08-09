@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160808232915) do
+ActiveRecord::Schema.define(version: 20160808234929) do
 
   create_table "characters", force: :cascade do |t|
     t.string   "name",                           null: false
@@ -110,6 +110,7 @@ ActiveRecord::Schema.define(version: 20160808232915) do
     t.integer  "created_characters_count", default: 0,    null: false
     t.integer  "posts_count",              default: 0,    null: false
     t.string   "avatar"
+    t.         "deleted",                  default: "f",  null: false
     t.index ["display_name"], name: "index_users_on_display_name", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["email_token"], name: "index_users_on_email_token", unique: true
