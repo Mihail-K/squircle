@@ -14,6 +14,8 @@ FactoryGirl.define do
     banned false
     deleted false
 
+    # - Characters - #
+
     trait :with_characters do
       characters_count Faker::Number.between(1, 10)
     end
@@ -24,6 +26,20 @@ FactoryGirl.define do
 
     after :build do |user, e|
       user.characters = build_list :character, e.characters_count, user: user
+    end
+
+    # - Bans - #
+
+    trait :with_bans do
+      bans_count 1
+    end
+
+    transient do
+      bans_count 0
+    end
+
+    after :build do |user, e|
+      user.bans = build_list :ban, e.bans_count, user: user
     end
   end
 end

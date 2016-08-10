@@ -44,12 +44,6 @@ class User < ActiveRecord::Base
     where deleted: false
   }
 
-  def banned?
-    bans.exist?
-  end
-
-  alias_method :banned, :banned?
-
   def send_email_confirmation
     # TODO
   end
