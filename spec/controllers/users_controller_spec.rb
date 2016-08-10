@@ -10,9 +10,12 @@ RSpec.describe UsersController, type: :controller do
       json[:users]
     end
 
-    before :each do
-      @user = create :user
-      @deleted_user = create :user, deleted: true
+    let! :user do
+      create :user
+    end
+
+    let! :deleted_user do
+      create :user, deleted: true
     end
 
     it 'responds with 200' do
@@ -22,26 +25,20 @@ RSpec.describe UsersController, type: :controller do
 
     it 'returns only visible users as JSON' do
       get :index, format: :json
-
       expect(json).to have_key :users
-
       expect(users.count).to eq 1
       expect(users.first).to have_key :id
-      expect(users.first[:id]).to eq @user.id
+      expect(users.first[:id]).to eq user.id
     end
 
     it %(doesn't return personal fields in the JSON) do
       get :index, format: :json
-
-      user = users.first
-      expect(user).not_to have_key :password_digest
-
-      expect(user).not_to have_key :email
-      expect(user).not_to have_key :email_confirmed_at
-
-      expect(user).not_to have_key :first_name
-      expect(user).not_to have_key :last_name
-      expect(user).not_to have_key :date_of_birth
+      expect(users.first).not_to have_key :password_digest
+      expect(users.first).not_to have_key :email
+      expect(users.first).not_to have_key :email_confirmed_at
+      expect(users.first).not_to have_key :first_name
+      expect(users.first).not_to have_key :last_name
+      expect(users.first).not_to have_key :date_of_birth
     end
   end
 end
