@@ -49,4 +49,10 @@ RSpec.describe Post, type: :model do
     @post.author.admin = true
     expect(@post).to be_valid
   end
+
+  it 'cannot be edited if it has been deleted' do
+    @post.editor_id = create(:user).id
+    @post.deleted = true
+    expect(@post).not_to be_valid
+  end
 end
