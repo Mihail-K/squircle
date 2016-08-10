@@ -1,10 +1,12 @@
 class Ban < ActiveRecord::Base
-  belongs_to :user
+  belongs_to :user, inverse_of: :bans
   belongs_to :creator, class_name: 'User'
 
   validates :user, presence: true
   validates :creator, presence: true
   validates :reason, presence: true
+
+  after_create :apply_ban_to_user, unless: :expired?
 
   scope :active, -> {
     where 'bans.expires_at >= ?', DateTime.now.utc
@@ -28,4 +30,8 @@ class Ban < ActiveRecord::Base
 
   alias_method :expired, :expired?
   alias_method :permanent, :permanent?
+
+  def apply_ban_to_user
+    user.update! banned: true
+  end
 end

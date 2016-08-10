@@ -62,4 +62,19 @@ RSpec.describe User, type: :model do
     @user.update email: Faker::Internet.email
     expect(@user.email_token).not_to eq old_token
   end
+
+  describe 'with bans' do
+    before :each do
+      @user = create :user, :with_bans
+    end
+
+    it 'has a valid factory' do
+      expect(@user).to be_valid
+      expect(@user.bans).not_to be_empty
+    end
+
+    it 'marks the user as banned' do
+      expect(@user.banned?).to be true
+    end
+  end
 end

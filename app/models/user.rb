@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  has_many :bans, -> { active }
+  has_many :bans, -> { active }, inverse_of: :user
   has_many :previous_bans, -> { expired }, class_name: 'Ban'
   has_many :issued_bans, foreign_key: :creator_id, class_name: 'Ban'
 
@@ -24,20 +24,11 @@ class User < ActiveRecord::Base
   after_commit :send_email_confirmation, if: -> { previous_changes.key?(:email) }
 
   scope :banned, -> {
-    joins(:bans).where.not bans: { id: nil }
+    where banned: true
   }
 
   scope :not_banned, -> {
-    joins(
-      User.arel_table
-          .outer_join(Ban.arel_table)
-          .on(
-            User.arel_table[:id]
-                .eq(Ban.arel_table[:user_id])
-                .and(Ban.active.arel.constraints)
-          )
-          .join_sources
-    ).where bans: { id: nil }
+    where banned: false
   }
 
   scope :visible, -> {
