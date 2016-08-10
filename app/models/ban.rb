@@ -1,3 +1,21 @@
+# == Schema Information
+#
+# Table name: bans
+#
+#  id         :integer          not null, primary key
+#  reason     :string           not null
+#  expires_at :datetime
+#  user_id    :integer          not null
+#  creator_id :integer          not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_bans_on_creator_id  (creator_id)
+#  index_bans_on_user_id     (user_id)
+#
+
 class Ban < ActiveRecord::Base
   belongs_to :user, inverse_of: :bans
   belongs_to :creator, class_name: 'User'

@@ -1,3 +1,33 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id                       :integer          not null, primary key
+#  email                    :string           not null
+#  email_token              :string
+#  email_confirmed_at       :datetime
+#  password_digest          :string
+#  display_name             :string
+#  first_name               :string
+#  last_name                :string
+#  date_of_birth            :datetime
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  admin                    :boolean          default(TRUE), not null
+#  characters_count         :integer          default(0), not null
+#  created_characters_count :integer          default(0), not null
+#  posts_count              :integer          default(0), not null
+#  avatar                   :string
+#  deleted                  :boolean          default(FALSE), not null
+#  banned                   :boolean          default(FALSE), not null
+#
+# Indexes
+#
+#  index_users_on_display_name  (display_name) UNIQUE
+#  index_users_on_email         (email) UNIQUE
+#  index_users_on_email_token   (email_token) UNIQUE
+#
+
 class User < ActiveRecord::Base
   has_many :bans, -> { active }, inverse_of: :user
   has_many :previous_bans, -> { expired }, class_name: 'Ban'

@@ -18,7 +18,7 @@ RSpec.describe Ban, type: :model do
   end
 
   it 'expires when the expiration date has passed' do
-    @ban.expires_at = Faker::Date.between 1.year.ago, 1.hour.ago
+    @ban.expires_at = 1.day.ago
     expect(@ban.expired?).to be true
   end
 

@@ -1,3 +1,27 @@
+# == Schema Information
+#
+# Table name: characters
+#
+#  id             :integer          not null, primary key
+#  name           :string           not null
+#  title          :string
+#  description    :string
+#  user_id        :integer
+#  creator_id     :integer          not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  deleted        :boolean          default(FALSE), not null
+#  posts_count    :integer          default(0), not null
+#  avatar         :string
+#  gallery_images :string
+#
+# Indexes
+#
+#  index_characters_on_creator_id  (creator_id)
+#  index_characters_on_name        (name)
+#  index_characters_on_user_id     (user_id)
+#
+
 class Character < ActiveRecord::Base
   belongs_to :user, counter_cache: :characters_count, inverse_of: :characters
   belongs_to :creator, counter_cache: :created_characters_count, class_name: 'User'

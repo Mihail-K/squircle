@@ -5,6 +5,7 @@ class PostSerializer < ActiveModel::Serializer
   attribute :author_id
   attribute :editor_id
   attribute :character_id
+  attribute :conversation_id
 
   attribute :title
   attribute :body
@@ -14,6 +15,5 @@ class PostSerializer < ActiveModel::Serializer
   belongs_to :author, serializer: UserSerializer
   belongs_to :editor, serializer: UserSerializer
   belongs_to :character
-
-  belongs_to :postable
+  belongs_to :conversation
 end

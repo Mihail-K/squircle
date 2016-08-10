@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160810133056) do
+ActiveRecord::Schema.define(version: 20160810145643) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",     null: false
@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(version: 20160810133056) do
     t.string   "avatar"
     t.string   "gallery_images"
     t.index ["creator_id"], name: "index_characters_on_creator_id"
+    t.index ["name"], name: "index_characters_on_name"
     t.index ["user_id"], name: "index_characters_on_user_id"
   end
 
@@ -90,19 +91,20 @@ ActiveRecord::Schema.define(version: 20160810133056) do
 
   create_table "posts", force: :cascade do |t|
     t.string   "title"
-    t.text     "body",                          null: false
-    t.integer  "author_id",                     null: false
+    t.text     "body",                            null: false
+    t.integer  "author_id",                       null: false
     t.integer  "editor_id"
     t.integer  "character_id"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
-    t.boolean  "deleted",       default: false, null: false
-    t.string   "postable_type"
-    t.integer  "postable_id"
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.boolean  "deleted",         default: false, null: false
+    t.integer  "conversation_id",                 null: false
     t.index ["author_id"], name: "index_posts_on_author_id"
     t.index ["character_id"], name: "index_posts_on_character_id"
+    t.index ["conversation_id"], name: "index_posts_on_conversation_id"
+    t.index ["conversation_id"], name: "index_posts_on_postable_type_and_conversation_id"
     t.index ["editor_id"], name: "index_posts_on_editor_id"
-    t.index ["postable_type", "postable_id"], name: "index_posts_on_postable_type_and_postable_id"
+    t.index ["title"], name: "index_posts_on_title"
   end
 
   create_table "users", force: :cascade do |t|
@@ -121,7 +123,7 @@ ActiveRecord::Schema.define(version: 20160810133056) do
     t.integer  "created_characters_count", default: 0,     null: false
     t.integer  "posts_count",              default: 0,     null: false
     t.string   "avatar"
-    t.         "deleted",                  default: "f",   null: false
+    t.boolean  "deleted",                  default: false, null: false
     t.boolean  "banned",                   default: false, null: false
     t.index ["display_name"], name: "index_users_on_display_name", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true

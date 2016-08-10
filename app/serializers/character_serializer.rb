@@ -20,8 +20,4 @@ class CharacterSerializer < ActiveModel::Serializer
 
   belongs_to :user
   belongs_to :creator, serializer: UserSerializer
-
-  has_many :recent_posts, serializer: PostSerializer do
-    object.posts.last(3)
-  end
 end
