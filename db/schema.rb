@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160808234929) do
+ActiveRecord::Schema.define(version: 20160809132338) do
+
+  create_table "bans", force: :cascade do |t|
+    t.string   "reason",     null: false
+    t.datetime "expires_at"
+    t.integer  "user_id",    null: false
+    t.integer  "creator_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_bans_on_creator_id"
+    t.index ["user_id"], name: "index_bans_on_user_id"
+  end
 
   create_table "characters", force: :cascade do |t|
     t.string   "name",                           null: false
