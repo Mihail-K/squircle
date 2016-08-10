@@ -9,6 +9,7 @@ require 'rspec/rails'
 
 require 'faker'
 require 'factory_girl_rails'
+
 require 'support/factory_girl'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in

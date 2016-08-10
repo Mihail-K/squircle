@@ -11,5 +11,19 @@ FactoryGirl.define do
     password_confirmation '12345678'
 
     admin false
+    banned false
+    deleted false
+
+    trait :with_characters do
+      characters_count Faker::Number.between(1, 10)
+    end
+
+    transient do
+      characters_count 0
+    end
+
+    after :build do |user, e|
+      user.characters = build_list :character, e.characters_count, user: user
+    end
   end
 end

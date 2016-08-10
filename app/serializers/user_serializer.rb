@@ -16,6 +16,9 @@ class UserSerializer < ActiveModel::Serializer
   attribute :created_characters_count
   attribute :posts_count
 
+  attribute :admin
+  attribute :banned
+
   attribute :avatar_url do
     object.avatar.url
   end
