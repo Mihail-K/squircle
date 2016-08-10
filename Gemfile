@@ -18,6 +18,7 @@ group :development, :test do
   gem 'rspec'
   gem 'rspec-rails'
   gem 'factory_girl_rails'
+  gem 'dotenv-rails'
 end
 
 group :development do
@@ -25,8 +26,15 @@ group :development do
   gem 'spring'
 end
 
+group :test do
+  gem 'resque_spec'
+end
+
 gem 'doorkeeper'
 gem 'active_model_serializers', '~> 0.10.0'
 gem 'kaminari'
 gem 'carrierwave', github: 'carrierwaveuploader/carrierwave'
 gem 'validates_timeliness'
+gem 'resque'
+gem 'redis', '~>3.2'
+gem 'redis-rails'
