@@ -5,17 +5,21 @@ RSpec.describe UsersController, type: :controller do
     JSON.parse(response.body).with_indifferent_access
   end
 
+  let! :active_user do
+    create :user
+  end
+
+  let! :deleted_user do
+    create :user, deleted: true
+  end
+
+  let :token do
+    create :access_token, resource_owner_id: active_user.id
+  end
+
   describe 'GET #index' do
     let :users do
       json[:users]
-    end
-
-    let! :user do
-      create :user
-    end
-
-    let! :deleted_user do
-      create :user, deleted: true
     end
 
     it 'responds with 200' do
@@ -28,17 +32,42 @@ RSpec.describe UsersController, type: :controller do
       expect(json).to have_key :users
       expect(users.count).to eq 1
       expect(users.first).to have_key :id
-      expect(users.first[:id]).to eq user.id
+      expect(users.first[:id]).to eq active_user.id
     end
 
     it %(doesn't return personal fields in the JSON) do
       get :index, format: :json
-      expect(users.first).not_to have_key :password_digest
-      expect(users.first).not_to have_key :email
-      expect(users.first).not_to have_key :email_confirmed_at
-      expect(users.first).not_to have_key :first_name
-      expect(users.first).not_to have_key :last_name
-      expect(users.first).not_to have_key :date_of_birth
+      users.each do |user|
+        %i(password_digest email email_confirmed_at first_name last_name date_of_birth).each do |field|
+          expect(user).not_to have_key field
+        end
+      end
+    end
+
+    it 'returns personal fields for the authenticated user only' do
+      create :user # Create a second user (which is not authenticated)
+      get :index, format: :json, params: { access_token: token.token }
+
+      expect(users.count).to eq 2
+      users.each do |user|
+        expect(user).not_to have_key :password_digest
+        %i(email email_confirmed_at first_name last_name date_of_birth).each do |field|
+          expect(user.key?(field)).to eq(user[:id] == active_user.id)
+        end
+      end
+    end
+
+    it 'always returns personal fields for authenticated administrators' do
+      active_user.update admin: true
+      get :index, format: :json, params: { access_token: token.token }
+
+      expect(users.count).to eq 2
+      users.each do |user|
+        expect(user).not_to have_key :password_digest
+        %i(email email_confirmed_at first_name last_name date_of_birth).each do |field|
+          expect(user).to have_key field
+        end
+      end
     end
   end
 end
