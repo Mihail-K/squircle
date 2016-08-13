@@ -73,6 +73,7 @@ private
     @posts = @posts.where author: @author unless @author.nil?
     @posts = @posts.where character: @character unless @character.nil?
     @posts = @posts.where conversation: @conversation unless @conversation.nil?
+    @posts = @posts.order created_at: (params[:reverse] ? :desc : :asc)
     @posts = @posts.visible unless admin?
   end
 

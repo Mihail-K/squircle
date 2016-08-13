@@ -20,7 +20,9 @@ class UserSerializer < ActiveModel::Serializer
   attribute :banned
 
   attribute :avatar_url do
-    object.avatar.url
+    url = object.avatar.url
+    url = 'http://localhost:3000' + url if url && Rails.env.development?
+    url
   end
 
   has_many :characters do

@@ -14,6 +14,12 @@ FactoryGirl.define do
     banned false
     deleted false
 
+    # - Avatar - #
+
+    trait :with_avatar do
+      remote_avatar_url { Faker::Avatar.image }
+    end
+
     # - Characters - #
 
     trait :with_characters do
