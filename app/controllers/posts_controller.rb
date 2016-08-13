@@ -97,7 +97,7 @@ private
   end
 
   def check_flood_limit
-    if Post.where(author_id: current_user).exists? 'created_at > ?', 20.seconds.ago
+    if Post.where(author_id: current_user).where('created_at > ?', 20.seconds.ago).exists?
       @post.errors.add :base, 'you can only post once every 20 seconds'
       errors @post
     end

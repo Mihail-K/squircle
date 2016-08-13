@@ -5,12 +5,8 @@ RSpec.describe PostsController, type: :controller do
     JSON.parse(response.body).with_indifferent_access
   end
 
-  let! :active_user do
+  let :active_user do
     create :user
-  end
-
-  let! :posts do
-    create_list :post, Faker::Number.between(5, 15)
   end
 
   let :token do
@@ -18,6 +14,10 @@ RSpec.describe PostsController, type: :controller do
   end
 
   describe '#GET index' do
+    let! :posts do
+      create_list :post, Faker::Number.between(5, 15)
+    end
+
     it 'returns a list of posts' do
       get :index, format: :json
 
@@ -71,6 +71,35 @@ RSpec.describe PostsController, type: :controller do
 
       expect(response.status).to eq 200
       expect(json[:meta][:total]).to eq conversation.posts_count
+    end
+  end
+
+  describe '#POST create' do
+    let! :conversation do
+      create :conversation
+    end
+
+    let :post_body do
+      build(:post, conversation: conversation).as_json(
+        only: %i(conversation_id title body)
+      )
+    end
+
+    it 'requires an authenticated user' do
+      post :create, format: :post, params: { post: post_body }
+
+      expect(response.status).to eq 401
+    end
+
+    it 'creates a new post on a conversation' do
+      posts_count = conversation.posts.count
+
+      post :create, format: :post, params: { access_token: token.token, post: post_body }
+
+      expect(response.status).to eq 201
+      expect(json).to have_key :post
+
+      expect(conversation.posts.count).to be > posts_count
     end
   end
 end
