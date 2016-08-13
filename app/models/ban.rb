@@ -17,7 +17,7 @@
 #
 
 class Ban < ActiveRecord::Base
-  belongs_to :user, inverse_of: :bans
+  belongs_to :user, -> { readonly }, inverse_of: :bans
   belongs_to :creator, class_name: 'User'
 
   validates :user, presence: true

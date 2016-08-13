@@ -33,7 +33,7 @@ class BansController < ApiController
   end
 
   def update
-    if @ban.update ban_params
+    if @ban.update ban_params.except(:user_id)
       render json: @ban
     else
       errors @ban
@@ -49,6 +49,10 @@ class BansController < ApiController
   end
 
 private
+
+  def ban_params
+    params.require(:ban).permit :reason, :expires_at, :user_id
+  end
 
   def set_bans
     @bans = Ban.all

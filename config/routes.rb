@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   use_doorkeeper
 
+  resources :bans, only: %i(index create show update destroy)
+
   resources :characters, only: %i(index create show update destroy) do
     resources :posts, only: :index
   end
@@ -13,6 +15,7 @@ Rails.application.routes.draw do
   resources :users, only: %i(index create show update destroy) do
     get :me, on: :collection
 
+    resources :bans, only: :index
     resources :characters, only: :index
     resources :conversations, only: :index
     resources :posts, only: :index
