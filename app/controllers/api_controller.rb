@@ -27,6 +27,6 @@ class ApiController < ActionController::API
   end
 
   def not_found(model = 'object')
-    render json: { errors: { model => ['not found'] } }, status: :unprocessable_entity
+    render json: { errors: { model => ['not found'] } }, status: :not_found
   end
 end
