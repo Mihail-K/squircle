@@ -60,7 +60,7 @@ private
   end
 
   def set_conversations
-    @conversations = Conversation.includes :author, :post_authors, :post_characters, :first_post, :last_post
+    @conversations = Conversation.includes :author, :first_post, :last_post
     @conversations = @conversations.where author: @author unless @author.nil?
     @conversations = @conversations.where character: @character unless @character.nil?
     @conversations = @conversations.visible unless admin?

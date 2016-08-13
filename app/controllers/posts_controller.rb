@@ -16,6 +16,7 @@ class PostsController < ApiController
   before_action :set_posts, except: :create
   before_action :set_post, except: %i(index create)
 
+  before_action :check_lock_state, only: %i(create update destroy), unless: :admin?
   before_action :check_permission, only: %i(update destroy), unless: :admin?
   before_action :check_flood_limit, only: :create, unless: :admin?
 
@@ -92,6 +93,14 @@ private
   def set_conversation
     @conversation = Conversation.where id: params[:conversation_id]
     @conversation = @conversation.visible unless admin?
+  end
+
+  def check_lock_state
+    if action_name == 'create'
+      forbid if Conversation.locked.exists? id: post_params[:conversation_id]
+    else
+      forbid if @post.locked?
+    end
   end
 
   def check_permission

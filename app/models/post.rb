@@ -34,6 +34,8 @@ class Post < ActiveRecord::Base
   belongs_to :conversation, counter_cache: :posts_count,
                             inverse_of: :posts
 
+  delegate :locked?, to: :conversation, allow_nil: true
+
   validates :author, presence: true
   validates :conversation, presence: true
   validates :body, presence: true, length: { in: 10 .. 10_000 }

@@ -107,6 +107,14 @@ RSpec.describe PostsController, type: :controller do
       expect(response.status).to eq 422
     end
 
+    it 'does not allow posting in locked conversations' do
+      conversation.update locked: true, locked_by: create(:user, admin: true)
+
+      post :create, format: :json, params: { access_token: token.token, post: post_body }
+
+      expect(response.status).to eq 403
+    end
+
     it 'creates a new post on a conversation' do
       posts_count = conversation.posts.count
 

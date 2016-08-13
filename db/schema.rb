@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160810145643) do
+ActiveRecord::Schema.define(version: 20160813162417) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",     null: false
@@ -41,14 +41,18 @@ ActiveRecord::Schema.define(version: 20160810145643) do
   end
 
   create_table "conversations", force: :cascade do |t|
-    t.integer  "posts_count", default: 0,     null: false
-    t.boolean  "deleted",     default: false, null: false
-    t.integer  "author_id",                   null: false
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
-    t.integer  "views_count", default: 0,     null: false
-    t.string   "title",                       null: false
+    t.integer  "posts_count",  default: 0,     null: false
+    t.boolean  "deleted",      default: false, null: false
+    t.integer  "author_id",                    null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.integer  "views_count",  default: 0,     null: false
+    t.string   "title",                        null: false
+    t.boolean  "locked",       default: false, null: false
+    t.datetime "locked_on"
+    t.integer  "locked_by_id"
     t.index ["author_id"], name: "index_conversations_on_author_id"
+    t.index ["locked_by_id"], name: "index_conversations_on_locked_by_id"
   end
 
   create_table "oauth_access_grants", force: :cascade do |t|
