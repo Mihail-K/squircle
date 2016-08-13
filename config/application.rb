@@ -27,6 +27,9 @@ module Squircle
     Resque.redis = ENV['REDIS_URL']
     Resque.redis.namespace = 'squircle:resque'
 
+    # Enable GZip compression.
+    config.middleware.use Rack::Deflater
+
     # CORS configurations.
     config.middleware.insert_before 0, Rack::Cors do
       allow do
