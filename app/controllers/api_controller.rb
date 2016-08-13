@@ -18,8 +18,12 @@ class ApiController < ActionController::API
            status: :unprocessable_entity
   end
 
-  def forbid(body = { nothing: true })
-    render({ status: :forbidden }.merge(body))
+  def forbid(body = nil)
+    if body.nil?
+      head :forbidden
+    else
+      render({ status: :forbidden }.merge(body))
+    end
   end
 
   def not_found(model = 'object')

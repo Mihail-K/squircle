@@ -1,4 +1,6 @@
 class CharactersController < ApiController
+  include Bannable
+
   before_action :doorkeeper_authorize!, except: %i(index show)
 
   before_action :set_characters, except: :create

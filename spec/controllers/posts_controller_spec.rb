@@ -86,15 +86,23 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'requires an authenticated user' do
-      post :create, format: :post, params: { post: post_body }
+      post :create, format: :json, params: { post: post_body }
 
       expect(response.status).to eq 401
+    end
+
+    it 'does not allow banned users to create posts' do
+      active_user.update banned: true
+
+      post :create, format: :json, params: { access_token: token.token, post: post_body }
+
+      expect(response.status).to eq 403
     end
 
     it 'creates a new post on a conversation' do
       posts_count = conversation.posts.count
 
-      post :create, format: :post, params: { access_token: token.token, post: post_body }
+      post :create, format: :json, params: { access_token: token.token, post: post_body }
 
       expect(response.status).to eq 201
       expect(json).to have_key :post
