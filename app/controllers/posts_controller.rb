@@ -62,9 +62,7 @@ class PostsController < ApiController
 private
 
   def post_params
-    params.require(:post).permit(
-      :character_id, :title, :body
-    )
+    params.require(:post).permit :conversation_id, :character_id, :title, :body
   end
 
   def set_posts

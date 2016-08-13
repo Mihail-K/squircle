@@ -54,5 +54,23 @@ RSpec.describe PostsController, type: :controller do
       expect(response.status).to eq 200
       expect(json[:meta][:total]).to eq posts.count
     end
+
+    it 'accepts an author_id as a parameter' do
+      author = posts.sample.author
+
+      get :index, format: :json, params: { author_id: author.id }
+
+      expect(response.status).to eq 200
+      expect(json[:meta][:total]).to eq author.posts_count
+    end
+
+    it 'accepts a conversation_id as a parameter' do
+      conversation = posts.sample.conversation
+
+      get :index, format: :json, params: { conversation_id: conversation.id }
+
+      expect(response.status).to eq 200
+      expect(json[:meta][:total]).to eq conversation.posts_count
+    end
   end
 end
