@@ -99,6 +99,14 @@ RSpec.describe PostsController, type: :controller do
       expect(response.status).to eq 403
     end
 
+    it 'does not allow posting in conversations that do not exist' do
+      post :create, format: :json, params: {
+        access_token: token.token, post: post_body.merge(conversation_id: 1000)
+      }
+
+      expect(response.status).to eq 422
+    end
+
     it 'creates a new post on a conversation' do
       posts_count = conversation.posts.count
 
