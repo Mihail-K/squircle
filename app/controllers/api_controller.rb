@@ -21,4 +21,8 @@ class ApiController < ActionController::API
   def forbid(body = { nothing: true })
     render({ status: :forbidden }.merge(body))
   end
+
+  def not_found(model = 'object')
+    render json: { errors: { model => ['not found'] } }, status: :unprocessable_entity
+  end
 end

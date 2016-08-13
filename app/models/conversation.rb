@@ -19,7 +19,7 @@
 class Conversation < ActiveRecord::Base
   belongs_to :author, class_name: 'User'
 
-  has_many :posts, -> { visible }, inverse_of: :postable
+  has_many :posts, -> { visible }, inverse_of: :conversation
 
   has_many :post_authors, -> { visible.distinct }, through: :posts,
                                                    source: :author,
@@ -37,9 +37,7 @@ class Conversation < ActiveRecord::Base
   validates :author, presence: true
   validates :first_post, presence: true, on: :create
 
-  before_validation :set_conversation_in_first_post, on: :create, if: -> {
-    first_post.present?
-  }
+  before_validation :set_conversation_in_first_post, on: :create, if: :first_post
 
   before_validation :set_author_in_first_post, on: :create, unless: :author
   before_validation :set_title_from_first_post, on: :create, unless: :title?

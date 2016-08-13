@@ -70,6 +70,8 @@ private
 
   def set_user
     @user = @users.find params[:id]
+  rescue ActiveRecord::RecordNotFound
+    not_found :user
   end
 
   def check_current_user

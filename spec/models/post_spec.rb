@@ -14,11 +14,6 @@ RSpec.describe Post, type: :model do
     expect(post).not_to be_valid
   end
 
-  it 'is invalid without a conversation' do
-    post.conversation = nil
-    expect(post).not_to be_valid
-  end
-
   it 'is invalid without a body' do
     post.body = nil
     expect(post).not_to be_valid

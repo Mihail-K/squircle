@@ -1,7 +1,7 @@
 class PostsController < ApiController
   before_action :doorkeeper_authorize!, except: %i(index show)
 
-  before_action :set_user, except: :create, if: -> {
+  before_action :set_author, except: :create, if: -> {
     params.key?(:user_id) || params.key?(:author_id)
   }
   before_action :set_character, except: :create, if: -> {
@@ -18,7 +18,7 @@ class PostsController < ApiController
   before_action :check_flood_limit, only: :create, unless: :admin?
 
   def index
-    render json: @posts,
+    render json: @posts.page(params[:page]).per(params[:count] || 10),
            each_serializer: PostSerializer,
            meta: {
              page:  params[:page] || 1,
@@ -68,10 +68,10 @@ private
   end
 
   def set_posts
-    @posts = Post.all.includes :author, :editor, :character, :postable
-    @posts = @posts.where author: @user unless @user.nil?
+    @posts = Post.includes :author, :editor, :character, :conversation
+    @posts = @posts.where author: @author unless @author.nil?
     @posts = @posts.where character: @character unless @character.nil?
-    @posts = @posts.where postable: @conversation unless @conversation.nil?
+    @posts = @posts.where conversation: @conversation unless @conversation.nil?
     @posts = @posts.visible unless admin?
   end
 
@@ -79,22 +79,19 @@ private
     @post = @posts.find params[:id]
   end
 
-  def set_user
-    @user = User.all
-    @user = @user.visible unless admin?
-    @user = @user.where id: params[:user_id] || params[:author_id]
+  def set_author
+    @author = User.where id: params[:user_id] || params[:author_id]
+    @author = @author.visible unless admin?
   end
 
   def set_character
-    @character = Character.all
+    @character = Character.where id: params[:character_id]
     @character = @character.visible unless admin?
-    @character = @character.where id: params[:character_id]
   end
 
   def set_conversation
-    @conversation = Conversation.all
+    @conversation = Conversation.where id: params[:conversation_id]
     @conversation = @conversation.visible unless admin?
-    @conversation = @conversation.where id: params[:conversation_id]
   end
 
   def check_permission

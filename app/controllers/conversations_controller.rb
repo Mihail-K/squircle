@@ -1,6 +1,13 @@
 class ConversationsController < ApiController
   before_action :doorkeeper_authorize!, except: %i(index show)
 
+  before_action :set_author, except: :create, if: -> {
+    params.key? :user_id
+  }
+  before_action :set_character, except: :create, if: -> {
+    params.key? :character_id
+  }
+
   before_action :set_conversations, except: :create
   before_action :set_conversation, except: :index
 
@@ -51,13 +58,24 @@ private
   end
 
   def set_conversations
-    @conversations = Conversation.all.includes :author, :post_authors, :post_characters, :first_post, :last_post
-    @conversations = @conversations.where author_id: params[:user_id] if params.key? :user_id
+    @conversations = Conversation.includes :author, :post_authors, :post_characters, :first_post, :last_post
+    @conversations = @conversations.where author: @author unless @author.nil?
+    @conversations = @conversations.where character: @character unless @character.nil?
     @conversations = @conversations.visible unless admin?
   end
 
   def set_conversation
     @conversation = @conversations.find params[:id]
+  end
+
+  def set_author
+    @author = User.where id: params[:author_id]
+    @author = @author.visible unless admin?
+  end
+
+  def set_character
+    @character = Character.where id: params[:character_id]
+    @character = @character.visible unless admin?
   end
 
   def check_permission

@@ -26,5 +26,13 @@ module Squircle
     config.cache_store = :redis_store, ENV['REDIS_URL']
     Resque.redis = ENV['REDIS_URL']
     Resque.redis.namespace = 'squircle:resque'
+
+    # CORS configurations.
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'
+        resource '*', headers: :any, methods: %i(get post options)
+      end
+    end
   end
 end
