@@ -14,7 +14,7 @@ class UsersController < ApiController
   end
 
   def index
-    render json: @users.page(params[:page]).per(params[:count].to_i || 10),
+    render json: @users.page(params[:page]).per(params[:count]),
            each_serializer: UserSerializer,
            meta: {
              page:  params[:page] || 1,

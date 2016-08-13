@@ -19,7 +19,7 @@ class ConversationsController < ApiController
   after_action :increment_views_count, only: :show
 
   def index
-    render json: @conversations,
+    render json: @conversations.page(params[:page]).per(params[:count]),
            each_serializer: ConversationSerializer,
            meta: {
              page:  params[:page] || 1,

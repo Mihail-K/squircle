@@ -21,7 +21,7 @@ class PostsController < ApiController
   before_action :check_flood_limit, only: :create, unless: :admin?
 
   def index
-    render json: @posts.page(params[:page]).per(params[:count] || 10),
+    render json: @posts.page(params[:page]).per(params[:count]),
            each_serializer: PostSerializer,
            meta: {
              page:  params[:page] || 1,

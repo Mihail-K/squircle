@@ -24,6 +24,8 @@ class Ban < ActiveRecord::Base
   validates :creator, presence: true
   validates :reason, presence: true
 
+  validate :creator_is_admin, on: :create
+
   after_create :apply_ban_to_user, unless: :expired?
 
   scope :active, -> {
@@ -48,6 +50,10 @@ class Ban < ActiveRecord::Base
 
   alias_method :expired, :expired?
   alias_method :permanent, :permanent?
+
+  def creator_is_admin
+    errors.add :creator, 'must be an admin user' unless creator.try(:admin?)
+  end
 
   def apply_ban_to_user
     user.update! banned: true

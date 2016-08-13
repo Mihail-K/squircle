@@ -9,7 +9,7 @@ class CharactersController < ApiController
   before_action :check_permission, only: %i(update destroy), unless: :admin?
 
   def index
-    render json: @characters.page(params[:page]).per(params[:count].to_i || 10),
+    render json: @characters.page(params[:page]).per(params[:count]),
            each_serializer: CharacterSerializer,
            meta: {
              page:  params[:page] || 1,
