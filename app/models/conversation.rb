@@ -43,6 +43,8 @@ class Conversation < ActiveRecord::Base
   validates :first_post, presence: true, on: :create
   validates :locked_by, presence: true, if: :locked?
 
+  validate :locking_user_is_admin, if: -> { locked_changed? to: true }
+
   before_validation :set_conversation_in_first_post, on: :create, if: :first_post
 
   before_validation :set_author_in_first_post, on: :create, unless: :author
@@ -55,6 +57,10 @@ class Conversation < ActiveRecord::Base
   scope :locked,   -> { where locked: true }
   scope :unlocked, -> { where locked: false }
   scope :visible,  -> { where deleted: false }
+
+  def locking_user_is_admin
+    errors.add :locked, 'can only be changed by admins' unless locked_by.try(:admin?)
+  end
 
   def set_conversation_in_first_post
     first_post.conversation = self

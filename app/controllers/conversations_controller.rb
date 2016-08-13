@@ -13,6 +13,7 @@ class ConversationsController < ApiController
   before_action :set_conversations, except: :create
   before_action :set_conversation, except: :index
 
+  before_action :check_locking_permission, only: %i(create update)
   before_action :check_permission, only: :destroy, unless: :admin?
 
   after_action :increment_views_count, only: :show
@@ -33,11 +34,22 @@ class ConversationsController < ApiController
 
   def create
     @conversation = Conversation.new conversation_params do |conversation|
-      conversation.author = current_user
+      conversation.author    = current_user
+      conversation.locked_by = current_user if conversation.locked?
     end
 
     if @conversation.save
       render json: @conversation, status: :created
+    else
+      errors @conversation
+    end
+  end
+
+  def update
+    if @conversation.update(conversation_params) { |conversation|
+         conversation.locked_by = current_user if conversation_params[:locked].present?
+       }
+      render json: @conversation
     else
       errors @conversation
     end
@@ -55,7 +67,7 @@ private
 
   def conversation_params
     params.require(:conversation).permit(
-      first_post_attributes: [ :character_id, :title, :body ]
+      :locked, first_post_attributes: [ :character_id, :title, :body ]
     )
   end
 
@@ -78,6 +90,10 @@ private
   def set_character
     @character = Character.where id: params[:character_id]
     @character = @character.visible unless admin?
+  end
+
+  def check_locking_permissision
+    conversation_params.delete :locked unless admin?
   end
 
   def check_permission

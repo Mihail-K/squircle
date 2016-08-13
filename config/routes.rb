@@ -8,9 +8,9 @@ Rails.application.routes.draw do
     resources :posts, only: %i(index create)
   end
 
-  resources :posts, only: %i(index show create update destroy)
+  resources :posts, only: %i(index create show update destroy)
 
-  resources :users, only: %i(index show create update destroy) do
+  resources :users, only: %i(index create show update destroy) do
     get :me, on: :collection
 
     resources :characters, only: :index
