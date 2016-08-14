@@ -21,12 +21,13 @@ class PostsController < ApiController
   before_action :check_flood_limit, only: :create, unless: :admin?
 
   def index
-    render json: @posts.page(params[:page]).per(params[:count]),
+    render json: @posts = @posts.page(params[:page]).per(params[:count]),
            each_serializer: PostSerializer,
            meta: {
-             page:  params[:page] || 1,
-             count: params[:count] || 10,
-             total: @posts.count
+             page:  @posts.current_page,
+             count: @posts.limit_value,
+             total: @posts.total_count,
+             pages: @posts.total_pages
            }
   end
 
@@ -111,6 +112,7 @@ private
 
   def check_flood_limit
     if Post.where(author_id: current_user).where('created_at > ?', 20.seconds.ago).exists?
+      @post = Post.new
       @post.errors.add :base, 'you can only post once every 20 seconds'
       errors @post
     end
