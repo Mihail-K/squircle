@@ -1,4 +1,6 @@
 class ConversationSerializer < ActiveModel::Serializer
+  cache expires_in: 1.hour
+  
   attribute :id
   attribute :author_id
   attribute :locked_by_id, if: :can_view_locking_user?

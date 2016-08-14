@@ -41,7 +41,7 @@ class Post < ActiveRecord::Base
   validates :body, presence: true, length: { in: 10 .. 10_000 }
 
   validate :character_ownership, on: :create, if: :character, unless: 'author.admin?'
-  validate if: :editor_id_changed?, unless: 'author.admin?' do
+  validate if: %i(deleted? editor_id_changed?), unless: 'author.admin?' do
     errors.add :base, 'you cannot edit deleted posts'
   end
 

@@ -47,7 +47,8 @@ class PostsController < ApiController
   end
 
   def update
-    if @post.update(post_params) { |post| post.editor = current_user }
+    @post.editor = current_user
+    if @post.update post_params
       render json: @post
     else
       errors @post
