@@ -9,10 +9,12 @@ class PostSerializer < ActiveModel::Serializer
 
   attribute :title
   attribute :body
+  attribute :formatted_body
   attribute :editable do
     object.author_id == current_user.try(:id) ||
     current_user.try(:admin?)
   end
+  attribute :deleted
   attribute :created_at
   attribute :updated_at
 

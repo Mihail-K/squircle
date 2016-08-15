@@ -12,6 +12,7 @@
 #  updated_at      :datetime         not null
 #  deleted         :boolean          default(FALSE), not null
 #  conversation_id :integer          not null
+#  formatted_body  :text
 #
 # Indexes
 #
@@ -24,6 +25,8 @@
 #
 
 class Post < ActiveRecord::Base
+  include Formattable
+
   belongs_to :author, class_name: 'User',
                       counter_cache: :posts_count,
                       inverse_of: :posts
@@ -44,6 +47,8 @@ class Post < ActiveRecord::Base
   validate if: %i(deleted? editor_id_changed?), unless: 'author.admin?' do
     errors.add :base, 'you cannot edit deleted posts'
   end
+
+  formattable :body
 
   scope :visible, -> {
     where deleted: false

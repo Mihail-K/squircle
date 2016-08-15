@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160813162417) do
+ActiveRecord::Schema.define(version: 20160815024515) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",     null: false
@@ -103,6 +103,7 @@ ActiveRecord::Schema.define(version: 20160813162417) do
     t.datetime "updated_at",                      null: false
     t.boolean  "deleted",         default: false, null: false
     t.integer  "conversation_id",                 null: false
+    t.text     "formatted_body"
     t.index ["author_id"], name: "index_posts_on_author_id"
     t.index ["character_id"], name: "index_posts_on_character_id"
     t.index ["conversation_id"], name: "index_posts_on_conversation_id"

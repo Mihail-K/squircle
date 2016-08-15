@@ -40,3 +40,5 @@ gem 'resque'
 gem 'redis', '~>3.2'
 gem 'redis-rails'
 gem 'rack-cors', require: 'rack/cors'
+
+gem 'redcarpet'
