@@ -46,8 +46,24 @@ RSpec.describe Post, type: :model do
   end
 
   it 'cannot be edited if it has been deleted' do
-    post.editor_id = create(:user).id
+    post.editor = create :user
     post.deleted = true
     expect(post).not_to be_valid
+  end
+
+  describe '.formatted_body' do
+    before :each do
+      post.save
+    end
+
+    it 'is generated when the post is saved' do
+      expect(post.formatted_body).not_to be_blank
+    end
+
+    it 'is updated when the body changes' do
+      old_formatted_body = post.formatted_body
+      post.update body: Faker::Hipster.paragraph
+      expect(post.formatted_body).not_to eq old_formatted_body
+    end
   end
 end
