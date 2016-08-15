@@ -50,6 +50,9 @@ class Post < ActiveRecord::Base
 
   formattable :body
 
+  after_save :update_visible_posts_count, if: :deleted_changed?
+  after_destroy :update_visible_posts_count
+
   scope :visible, -> {
     where deleted: false
   }
@@ -63,5 +66,12 @@ class Post < ActiveRecord::Base
   def editable_by?(user)
     return true if user.try(:admin?)
     author_id == user.try(:id) && !user.try(:banned?)
+  end
+
+private
+
+  def update_visible_posts_count
+    author.update_columns visible_posts_count: author.posts.visible.count
+    conversation.update_columns visible_posts_count: onversation.posts.visible.count
   end
 end

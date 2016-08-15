@@ -20,6 +20,7 @@
 #  avatar                   :string
 #  deleted                  :boolean          default(FALSE), not null
 #  banned                   :boolean          default(FALSE), not null
+#  visible_posts_count      :integer          default(0), not null
 #
 # Indexes
 #

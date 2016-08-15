@@ -7,7 +7,10 @@ class ConversationSerializer < ActiveModel::Serializer
 
   attribute :title
   attribute :views_count
-  attribute :posts_count
+  attribute :posts_count do
+    # Unless the viewer is an admin, show only visible post count.
+    current_user.try(:admin?) ? object.posts_count : object.visible_posts_count
+  end
   attribute :created_at
   attribute :updated_at
   attribute :participated, if: :include_participation? do

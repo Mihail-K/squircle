@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160815024515) do
+ActiveRecord::Schema.define(version: 20160815191537) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",     null: false
@@ -41,16 +41,17 @@ ActiveRecord::Schema.define(version: 20160815024515) do
   end
 
   create_table "conversations", force: :cascade do |t|
-    t.integer  "posts_count",  default: 0,     null: false
-    t.boolean  "deleted",      default: false, null: false
-    t.integer  "author_id",                    null: false
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.integer  "views_count",  default: 0,     null: false
-    t.string   "title",                        null: false
-    t.boolean  "locked",       default: false, null: false
+    t.integer  "posts_count",         default: 0,     null: false
+    t.boolean  "deleted",             default: false, null: false
+    t.integer  "author_id",                           null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.integer  "views_count",         default: 0,     null: false
+    t.string   "title",                               null: false
+    t.boolean  "locked",              default: false, null: false
     t.datetime "locked_on"
     t.integer  "locked_by_id"
+    t.integer  "visible_posts_count", default: 0,     null: false
     t.index ["author_id"], name: "index_conversations_on_author_id"
     t.index ["locked_by_id"], name: "index_conversations_on_locked_by_id"
   end
@@ -130,6 +131,7 @@ ActiveRecord::Schema.define(version: 20160815024515) do
     t.string   "avatar"
     t.boolean  "deleted",                  default: false, null: false
     t.boolean  "banned",                   default: false, null: false
+    t.integer  "visible_posts_count",      default: 0,     null: false
     t.index ["display_name"], name: "index_users_on_display_name", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["email_token"], name: "index_users_on_email_token", unique: true
