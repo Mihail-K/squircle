@@ -61,6 +61,10 @@ class User < ActiveRecord::Base
     where banned: false
   }
 
+  scope :no_active_bans, -> {
+    joins('LEFT OUTER JOIN bans ON bans.user_id = users.id').where bans: { id: nil }
+  }
+
   scope :visible, -> {
     where deleted: false
   }

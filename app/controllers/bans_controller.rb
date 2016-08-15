@@ -7,12 +7,13 @@ class BansController < ApiController
   before_action :check_permission, only: %i(create update destroy)
 
   def index
-    render json: @bans.page(params[:page]).per(params[:count]),
+    render json: @bans = @bans.page(params[:page]).per(params[:count]),
            each_serializer: BanSerializer,
            meta: {
-             page:  params[:page] || 1,
-             count: params[:count] || 10,
-             total: @bans.count
+             page:  @bans.current_page,
+             count: @bans.limit_value,
+             total: @bans.total_count,
+             pages: @bans.total_pages
            }
   end
 

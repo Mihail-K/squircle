@@ -59,4 +59,9 @@ class Post < ActiveRecord::Base
       errors.add :base, 'you cannot make posts as this character'
     end
   end
+
+  def editable_by?(user)
+    return true if user.try(:admin?)
+    author_id == user.try(:id) && !user.try(:banned?)
+  end
 end

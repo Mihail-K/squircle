@@ -1,6 +1,6 @@
 class ConversationSerializer < ActiveModel::Serializer
   cache expires_in: 1.hour
-  
+
   attribute :id
   attribute :author_id
   attribute :locked_by_id, if: :can_view_locking_user?
@@ -10,7 +10,7 @@ class ConversationSerializer < ActiveModel::Serializer
   attribute :posts_count
   attribute :created_at
   attribute :updated_at
-  attribute :participated do
+  attribute :participated, if: :include_participation? do
     current_user && object.post_authors.exists?(id: current_user.id)
   end
 
@@ -26,5 +26,9 @@ class ConversationSerializer < ActiveModel::Serializer
   def can_view_locking_user?
     object.locked_by_id == current_user.try(:id) ||
     current_user.try(:admin?)
+  end
+
+  def include_participation?
+    false # TODO : Set as a controller parameter.
   end
 end

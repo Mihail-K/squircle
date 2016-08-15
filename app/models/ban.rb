@@ -18,13 +18,14 @@
 
 class Ban < ActiveRecord::Base
   belongs_to :user, -> { readonly }, inverse_of: :bans
-  belongs_to :creator, class_name: 'User'
+  belongs_to :creator, -> { readonly }, class_name: 'User'
 
   validates :user, presence: true
   validates :creator, presence: true
   validates :reason, presence: true
 
   validate :creator_is_admin, on: :create
+  validate :creator_is_not_user, on: :create
 
   after_create :apply_ban_to_user, unless: :expired?
 
@@ -53,6 +54,10 @@ class Ban < ActiveRecord::Base
 
   def creator_is_admin
     errors.add :creator, 'must be an admin user' unless creator.try(:admin?)
+  end
+
+  def creator_is_not_user
+    errors.add :base, 'you cannot ban yourself' if user_id == creator_id
   end
 
   def apply_ban_to_user

@@ -11,8 +11,7 @@ class PostSerializer < ActiveModel::Serializer
   attribute :body
   attribute :formatted_body
   attribute :editable do
-    object.author_id == current_user.try(:id) ||
-    current_user.try(:admin?)
+    object.editable_by? current_user
   end
   attribute :deleted
   attribute :created_at
