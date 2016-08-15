@@ -144,6 +144,16 @@ RSpec.describe PostsController, type: :controller do
       expect(post.reload.body).not_to eq old_body
     end
 
+    it 'updates the title of a post' do
+      old_title = post.title
+      patch :update, format: :json, params: {
+        access_token: token.token, id: post.id, post: { title: Faker::Book.title }
+      }
+
+      expect(response.status).to eq 200
+      expect(post.reload.title).not_to eq old_title
+    end
+
     it 'sets the editor when a post is modified' do
       expect(post.editor).to be nil
       patch :update, format: :json, params: {
@@ -177,7 +187,7 @@ RSpec.describe PostsController, type: :controller do
       expect(post.body).to eq old_body
     end
 
-    it %(it allows admin users to edit other user's posts) do
+    it %(allows admin users to edit other user's posts) do
       old_body = post.body
       active_user.update admin: true
       post.update author: build(:user)
@@ -188,6 +198,46 @@ RSpec.describe PostsController, type: :controller do
       expect(response.status).to eq 200
       expect(post.reload.editor).to eq active_user
       expect(post.body).not_to eq old_body
+    end
+
+    it 'cannot update the deleted state of a post' do
+      patch :update, format: :json, params: {
+        access_token: token.token, id: post.id, post: { deleted: true }
+      }
+
+      expect(response.status).to eq 200
+      expect(post.reload.deleted?).to eq false
+    end
+
+    it 'updates the deleted state of a post for admin users' do
+      active_user.update admin: true
+      patch :update, format: :json, params: {
+        access_token: token.token, id: post.id, post: { deleted: true }
+      }
+
+      expect(response.status).to eq 200
+      expect(post.reload.deleted?).to eq true
+    end
+
+    it 'cannot update the editor of a post' do
+      expect(post.editor).to be nil
+      patch :update, format: :json, params: {
+        access_token: token.token, id: post.id, post: { editor_id: active_user.id }
+      }
+
+      expect(response.status).to eq 200
+      expect(post.reload.editor).to eq active_user
+    end
+
+    it 'updates the editor of a post for admin users' do
+      expect(post.editor).to be nil
+      active_user.update admin: true
+      patch :update, format: :json, params: {
+        access_token: token.token, id: post.id, post: { editor_id: nil }
+      }
+
+      expect(response.status).to eq 200
+      expect(post.reload.editor).to be nil
     end
   end
 
