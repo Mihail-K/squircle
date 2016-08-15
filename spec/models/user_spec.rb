@@ -75,6 +75,21 @@ RSpec.describe User, type: :model do
 
     it 'marks the user as banned' do
       expect(user.banned?).to be true
+      expect(User.banned.exists?(id: user)).to be true
+    end
+
+    it 'is ready to be unbanned when no active bans are present' do
+      user.bans.update_all expires_at: 1.day.ago
+      expect(User.banned.no_active_bans.exists?(id: user)).to be true
+    end
+
+    it 'is unbanned by the unban-job once all bans are expired' do
+      UnbanJob.perform
+      expect(user.reload.banned?).to be true
+
+      user.bans.update_all expires_at: 1.day.ago
+      UnbanJob.perform
+      expect(user.reload.banned?).to be false
     end
   end
 end

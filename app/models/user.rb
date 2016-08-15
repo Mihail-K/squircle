@@ -63,7 +63,21 @@ class User < ActiveRecord::Base
   }
 
   scope :no_active_bans, -> {
-    joins('LEFT OUTER JOIN bans ON bans.user_id = users.id').where bans: { id: nil }
+    joins(
+      User.arel_table
+          .outer_join(Ban.arel_table)
+          .on(
+            Ban.arel_table[:user_id]
+               .eq(User.arel_table[:id])
+               .and(
+                 Ban.arel_table[:expires_at]
+                    .gteq(Time.zone.now)
+               )
+          )
+          .join_sources
+          .first
+    )
+    .where bans: { id: nil }
   }
 
   scope :visible, -> {
