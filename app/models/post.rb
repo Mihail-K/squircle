@@ -72,6 +72,6 @@ private
 
   def update_visible_posts_count
     author.update_columns visible_posts_count: author.posts.visible.count
-    conversation.update_columns visible_posts_count: onversation.posts.visible.count
+    conversation.update_columns visible_posts_count: conversation.posts.visible.count
   end
 end

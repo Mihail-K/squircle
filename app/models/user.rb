@@ -37,7 +37,7 @@ class User < ActiveRecord::Base
   has_many :characters, -> { visible }, inverse_of: :user
   has_many :created_characters, -> { visible }, foreign_key: :creator_id, class_name: 'Character'
 
-  has_many :posts, -> { visible }, inverse_of: :author
+  has_many :posts, -> { visible }, foreign_key: :author_id, inverse_of: :author
 
   has_secure_token :email_token
   has_secure_password

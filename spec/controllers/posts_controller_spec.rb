@@ -15,7 +15,7 @@ RSpec.describe PostsController, type: :controller do
 
   describe '#GET index' do
     let! :posts do
-      create_list :post, Faker::Number.between(5, 15)
+      create_list :post, Faker::Number.between(1, 5)
     end
 
     it 'returns a list of posts' do
@@ -33,7 +33,7 @@ RSpec.describe PostsController, type: :controller do
     it 'returns a list of only visible posts' do
       # Mark some number of posts as deleted.
       post_ids  = posts.select { Faker::Boolean.boolean }.map(&:id)
-      post_ids += posts.first(3).id if post_ids.empty?
+      post_ids += posts.first(3).map(&:id) if post_ids.empty?
       Post.where(id: post_ids).update_all deleted: true
 
       get :index, format: :json
@@ -85,6 +85,17 @@ RSpec.describe PostsController, type: :controller do
       )
     end
 
+    it 'creates a new post on a conversation' do
+      posts_count = conversation.posts.count
+
+      post :create, format: :json, params: { access_token: token.token, post: post_body }
+
+      expect(response.status).to eq 201
+      expect(json).to have_key :post
+
+      expect(conversation.posts.count).to be > posts_count
+    end
+
     it 'requires an authenticated user' do
       post :create, format: :json, params: { post: post_body }
 
@@ -114,16 +125,112 @@ RSpec.describe PostsController, type: :controller do
 
       expect(response.status).to eq 403
     end
+  end
 
-    it 'creates a new post on a conversation' do
-      posts_count = conversation.posts.count
+  describe '#PATCH update' do
+    let! :post do
+      create :post, author: active_user
+    end
 
-      post :create, format: :json, params: { access_token: token.token, post: post_body }
+    it 'updates the body of a post' do
+      old_body = post.body
+      patch :update, format: :json, params: {
+        access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
+      }
 
-      expect(response.status).to eq 201
+      expect(response.status).to eq 200
       expect(json).to have_key :post
 
-      expect(conversation.posts.count).to be > posts_count
+      expect(post.reload.body).not_to eq old_body
+    end
+
+    it 'sets the editor when a post is modified' do
+      expect(post.editor).to be nil
+      patch :update, format: :json, params: {
+        access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
+      }
+
+      expect(response.status).to eq 200
+      expect(post.reload.editor).to eq active_user
+    end
+
+    it 'requires an authenticated user' do
+      old_body = post.body
+      patch :update, format: :json, params: {
+        id: post.id, post: { body: Faker::Hipster.paragraph }
+      }
+
+      expect(response.status).to eq 401
+      expect(post.reload.editor).to be nil
+      expect(post.body).to eq old_body
+    end
+
+    it %(does not allow user's to edit other user's posts) do
+      old_body = post.body
+      post.update author: build(:user)
+      patch :update, format: :json, params: {
+        access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
+      }
+
+      expect(response.status).to eq 403
+      expect(post.reload.editor).to be nil
+      expect(post.body).to eq old_body
+    end
+
+    it %(it allows admin users to edit other user's posts) do
+      old_body = post.body
+      active_user.update admin: true
+      post.update author: build(:user)
+      patch :update, format: :json, params: {
+        access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
+      }
+
+      expect(response.status).to eq 200
+      expect(post.reload.editor).to eq active_user
+      expect(post.body).not_to eq old_body
+    end
+  end
+
+  describe '#DELETE destroy' do
+    let! :post do
+      create :post, author: active_user
+    end
+
+    it 'marks a post as deleted' do
+      delete :destroy, format: :json, params: {
+        access_token: token.token, id: post.id
+      }
+
+      expect(response.status).to eq 204
+      expect(post.reload.deleted?).to be true
+    end
+
+    it 'requires an authenticated user' do
+      delete :destroy, format: :json, params: { id: post.id }
+
+      expect(response.status).to eq 401
+      expect(post.reload.deleted?).to be false
+    end
+
+    it %(does not allow users to delete other user's posts) do
+      post.update author: build(:user)
+      delete :destroy, format: :json, params: {
+        access_token: token.token, id: post.id
+      }
+
+      expect(response.status).to eq 403
+      expect(post.reload.deleted?).to be false
+    end
+
+    it %(allows admin users to delete other user's posts) do
+      post.update author: build(:user)
+      active_user.update admin: true
+      delete :destroy, format: :json, params: {
+        access_token: token.token, id: post.id
+      }
+
+      expect(response.status).to eq 204
+      expect(post.reload.deleted?).to be true
     end
   end
 end

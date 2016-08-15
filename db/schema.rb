@@ -107,7 +107,6 @@ ActiveRecord::Schema.define(version: 20160815191537) do
     t.text     "formatted_body"
     t.index ["author_id"], name: "index_posts_on_author_id"
     t.index ["character_id"], name: "index_posts_on_character_id"
-    t.index ["conversation_id"], name: "index_posts_on_conversation_id"
     t.index ["conversation_id"], name: "index_posts_on_postable_type_and_conversation_id"
     t.index ["editor_id"], name: "index_posts_on_editor_id"
     t.index ["title"], name: "index_posts_on_title"
