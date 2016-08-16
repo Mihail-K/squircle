@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160816004321) do
+ActiveRecord::Schema.define(version: 20160816004655) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",     null: false
@@ -123,7 +123,7 @@ ActiveRecord::Schema.define(version: 20160816004321) do
     t.date     "date_of_birth",                            null: false
     t.datetime "created_at",                               null: false
     t.datetime "updated_at",                               null: false
-    t.boolean  "admin",                    default: true,  null: false
+    t.boolean  "admin",                    default: false, null: false
     t.integer  "characters_count",         default: 0,     null: false
     t.integer  "created_characters_count", default: 0,     null: false
     t.integer  "posts_count",              default: 0,     null: false

@@ -13,7 +13,7 @@
 #  date_of_birth            :date             not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
-#  admin                    :boolean          default(TRUE), not null
+#  admin                    :boolean          default(FALSE), not null
 #  characters_count         :integer          default(0), not null
 #  created_characters_count :integer          default(0), not null
 #  posts_count              :integer          default(0), not null
