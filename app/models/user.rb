@@ -10,7 +10,7 @@
 #  display_name             :string
 #  first_name               :string
 #  last_name                :string
-#  date_of_birth            :datetime
+#  date_of_birth            :date             not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  admin                    :boolean          default(TRUE), not null
@@ -48,8 +48,11 @@ class User < ActiveRecord::Base
   validates :display_name, presence: true, uniqueness: true
 
   validates :date_of_birth, presence: true
-  validates :date_of_birth, timeliness: { before: :today, type: :date }
-  validates :date_of_birth, timeliness: { after: -> { 100.years.ago } }, on: :create
+
+  with_options if: :date_of_birth_changed? do |o|
+    o.validates :date_of_birth, timeliness: { before: :today, type: :date }
+    o.validates :date_of_birth, timeliness: { after: -> { 100.years.ago }, type: :date }
+  end
 
   after_commit :regenerate_email_token, if: -> { previous_changes.key?(:email) }
   after_commit :send_email_confirmation, if: -> { previous_changes.key?(:email) }

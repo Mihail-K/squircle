@@ -17,7 +17,7 @@ class ConversationsController < ApiController
   before_action :load_first_posts, only: :index
 
   before_action :check_locking_permission, only: %i(create update)
-  before_action :check_permission, only: :destroy, unless: :admin?
+  before_action :check_permission, only: %i(update destroy), unless: :admin?
 
   after_action :increment_views_count, only: :show
 
@@ -51,9 +51,8 @@ class ConversationsController < ApiController
   end
 
   def update
-    if @conversation.update(conversation_params) { |conversation|
-         conversation.locked_by = current_user if conversation_params[:locked].present?
-       }
+    @conversation.locked_by = current_user if conversation_params[:locked].present?
+    if @conversation.update conversation_params
       render json: @conversation
     else
       errors @conversation

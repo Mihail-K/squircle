@@ -39,15 +39,9 @@ RSpec.describe User, type: :model do
     expect(user).not_to be_valid
   end
 
-  it 'is not valid if the date is more than 100 years in the past, on creation' do
+  it 'is not valid if the date is more than 100 years in the past' do
     user.date_of_birth = 100.years.ago
     expect(user).not_to be_valid
-
-    user.date_of_birth = Faker::Date.between 50.years.ago, 13.years.ago
-    expect(user.save).to be_truthy
-
-    user.date_of_birth = 100.years.ago
-    expect(user).to be_valid
   end
 
   it 'generates an email token on creation' do
