@@ -3,18 +3,25 @@ class CharactersController < ApiController
 
   before_action :doorkeeper_authorize!, except: %i(index show)
 
+  before_action :set_user, except: :create, if: -> {
+    params.key? :user_id
+  }
+
   before_action :set_characters, except: :create
   before_action :set_character, only: %i(show update destroy)
+
+  before_action :apply_pagination, only: :index
 
   before_action :check_permission, only: %i(update destroy), unless: :admin?
 
   def index
-    render json: @characters.page(params[:page]).per(params[:count]),
+    render json: @characters,
            each_serializer: CharacterSerializer,
            meta: {
-             page:  params[:page] || 1,
-             count: params[:count] || 10,
-             total: @characters.count
+             page:  @characters.current_page,
+             count: @characters.limit_value,
+             total: @characters.total_count,
+             pages: @characters.total_pages
            }
   end
 
@@ -58,11 +65,19 @@ private
     )
   end
 
+  def set_user
+    @user = User.where id: params[:user_id]
+    @user = @user.visible unless admin?
+  end
+
   def set_characters
-    @characters = Character.all
-    @characters = @characters.visible if current_admin.nil?
-    @characters = @characters.where user_id: params[:user_id] if params.key? :user_id
-    @characters = @characters.includes :user, :creator, :posts
+    @characters = Character.includes :user, :creator
+    @characters = @characters.where user: @user unless @user.nil?
+    @characters = @characters.visible unless admin?
+  end
+
+  def apply_pagination
+    @characters = @characters.page(params[:page]).per(params[:count])
   end
 
   def set_character
