@@ -41,7 +41,7 @@ class Post < ActiveRecord::Base
 
   validates :author, presence: true
   validates :conversation, presence: true
-  validates :body, presence: true, length: { in: 10 .. 10_000 }
+  validates :body, presence: true, length: { in: 10 .. 10_000, if: :body? }
 
   validate :character_ownership, on: :create, if: :character, unless: 'author.admin?'
   validate if: %i(deleted? editor_id_changed?), unless: 'editor.try(:admin?)' do
