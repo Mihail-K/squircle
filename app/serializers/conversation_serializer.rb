@@ -23,8 +23,7 @@ class ConversationSerializer < ActiveModel::Serializer
   belongs_to :author, serializer: UserSerializer
   belongs_to :locked_by, serializer: UserSerializer, if: :can_view_locking_user?
 
-  has_one :first_post, serializer: PostSerializer
-  has_one :last_post, serializer: PostSerializer
+  has_one :first_post, serializer: PostSerializer, if: :include_first_post?
 
   def can_view_locking_user?
     object.locked_by_id == current_user.try(:id) ||
@@ -33,5 +32,13 @@ class ConversationSerializer < ActiveModel::Serializer
 
   def include_participation?
     false # TODO : Set as a controller parameter.
+  end
+
+  def include_first_post?
+    instance_options[:first_posts].is_a? Hash
+  end
+
+  def first_post
+    instance_options[:first_posts][object.id]
   end
 end

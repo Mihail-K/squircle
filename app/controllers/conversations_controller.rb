@@ -13,18 +13,23 @@ class ConversationsController < ApiController
   before_action :set_conversations, except: :create
   before_action :set_conversation, except: :index
 
+  before_action :apply_pagination, only: :index
+  before_action :load_first_posts, only: :index
+
   before_action :check_locking_permission, only: %i(create update)
   before_action :check_permission, only: :destroy, unless: :admin?
 
   after_action :increment_views_count, only: :show
 
   def index
-    render json: @conversations.page(params[:page]).per(params[:count]),
+    render json: @conversations,
            each_serializer: ConversationSerializer,
+           first_posts: @first_posts,
            meta: {
-             page:  params[:page] || 1,
-             count: params[:count] || 10,
-             total: @conversations.count
+             page:  @conversations.current_page,
+             count: @conversations.limit_value,
+             total: @conversations.total_count,
+             pages: @conversations.total_pages
            }
   end
 
@@ -71,8 +76,18 @@ private
     )
   end
 
+  def set_author
+    @author = User.where id: params[:author_id]
+    @author = @author.visible unless admin?
+  end
+
+  def set_character
+    @character = Character.where id: params[:character_id]
+    @character = @character.visible unless admin?
+  end
+
   def set_conversations
-    @conversations = Conversation.includes :author, :first_post, :last_post
+    @conversations = Conversation.includes :author
     @conversations = @conversations.where author: @author unless @author.nil?
     @conversations = @conversations.where character: @character unless @character.nil?
     @conversations = @conversations.visible unless admin?
@@ -82,14 +97,17 @@ private
     @conversation = @conversations.find params[:id]
   end
 
-  def set_author
-    @author = User.where id: params[:author_id]
-    @author = @author.visible unless admin?
+  def apply_pagination
+    @conversations = @conversations.page(params[:page]).per(params[:count])
   end
 
-  def set_character
-    @character = Character.where id: params[:character_id]
-    @character = @character.visible unless admin?
+  def load_first_posts
+    # Load a list of first posts for the list of conversations.
+    @first_posts = Post.first_posts.where conversation: @conversations
+    @first_posts = @first_posts.visible unless admin?
+
+    # Re-map the first posts to a Hash keyed by the posts' conversation ids.
+    @first_posts = @first_posts.map { |post| [ post.conversation_id, post ] }.to_h
   end
 
   def check_locking_permissision

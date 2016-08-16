@@ -53,6 +53,22 @@ class Post < ActiveRecord::Base
   after_save :update_visible_posts_count, if: :deleted_changed?
   after_destroy :update_visible_posts_count
 
+  scope :first_posts, -> {
+    where id: Post.group(:conversation_id)
+                  .having(
+                    Post.arel_table[:created_at]
+                        .eq(Post.arel_table[:created_at].minimum)
+                  )
+  }
+
+  scope :last_posts, -> {
+    where id: Post.group(:conversation_id)
+                  .having(
+                    Post.arel_table[:created_at]
+                        .eq(Post.arel_table[:created_at].maximum)
+                  )
+  }
+
   scope :visible, -> {
     where deleted: false
   }
