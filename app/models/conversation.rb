@@ -41,7 +41,6 @@ class Conversation < ActiveRecord::Base
 
   validates :title, presence: true
   validates :author, presence: true
-  validates :first_post, presence: true, on: :create
   validates :locked_by, presence: true, if: :locked?
 
   validate :locking_user_is_admin, if: -> { locked_changed? to: true }
@@ -49,9 +48,9 @@ class Conversation < ActiveRecord::Base
   before_validation :set_first_post_author, on: :create, if: 'author.present?'
   before_validation :set_title_from_first_post, on: :create, unless: :title?
 
-  before_save if: -> { locked_changed? to: true } do
-    self.locked_on = Time.zone.now
-  end
+  before_save :set_locked_on_timestamp, if: -> { locked_changed? to: true }
+
+  after_create :set_visible_posts_count
 
   scope :locked,   -> { where locked: true }
   scope :unlocked, -> { where locked: false }
@@ -63,10 +62,18 @@ class Conversation < ActiveRecord::Base
   end
 
   def set_first_post_author
-    first_post.author = author
+    posts.first.author = author
   end
 
   def set_title_from_first_post
-    self.title = first_post.title
+    self.title = posts.first.title
+  end
+
+  def set_locked_on_timestamp
+    self.locked_on = Time.zone.now
+  end
+
+  def set_visible_posts_count
+    update_columns visible_posts_count: posts.visible.count
   end
 end

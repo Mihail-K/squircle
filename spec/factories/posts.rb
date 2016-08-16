@@ -6,7 +6,9 @@ FactoryGirl.define do
     body { Faker::Hipster.paragraph }
 
     after :build do |post|
-      post.conversation ||= build :conversation, first_post: post, author: post.author
+      if post.conversation.nil?
+        post.conversation = create :conversation, author: post.author, post_count: 0, posts: [ post ]
+      end
     end
   end
 end

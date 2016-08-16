@@ -43,14 +43,15 @@ class Post < ActiveRecord::Base
   validates :conversation, presence: true
   validates :body, presence: true, length: { in: 10 .. 10_000, if: :body? }
 
-  validate :character_ownership, on: :create, if: :character, unless: 'author.admin?'
+  validate :character_ownership, if: :character_id_changed?, unless: 'author.admin?'
   validate if: %i(deleted? editor_id_changed?), unless: 'editor.try(:admin?)' do
     errors.add :base, 'you cannot edit deleted posts'
   end
 
   formattable :body
 
-  after_save :update_visible_posts_count, if: :deleted_changed?
+  after_create :update_visible_posts_count
+  after_update :update_visible_posts_count, if: :deleted_changed?
   after_destroy :update_visible_posts_count
 
   scope :first_posts, -> {
@@ -73,12 +74,6 @@ class Post < ActiveRecord::Base
     where deleted: false
   }
 
-  def character_ownership
-    unless author.characters.exists? id: character_id
-      errors.add :base, 'you cannot make posts as this character'
-    end
-  end
-
   def editable_by?(user)
     return true if user.try(:admin?)
     author_id == user.try(:id) && !user.try(:banned?)
@@ -86,8 +81,14 @@ class Post < ActiveRecord::Base
 
 private
 
+  def character_ownership
+    unless character.present? && author.characters.exists?(id: character_id)
+      errors.add :base, 'you cannot make posts as this character'
+    end
+  end
+
   def update_visible_posts_count
-    author.update_columns visible_posts_count: author.posts.visible.count
-    conversation.update_columns visible_posts_count: conversation.posts.visible.count
+    author.update! visible_posts_count: author.posts.visible.count
+    conversation.update! visible_posts_count: conversation.posts.visible.count
   end
 end
