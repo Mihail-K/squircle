@@ -69,10 +69,10 @@ class PostsController < ApiController
 private
 
   def post_params
-    params.require(:post).permit *post_permitted_params
+    params.require(:post).permit *permitted_params
   end
 
-  def post_permitted_params
+  def permitted_params
     params  = %i(conversation_id character_id title body)
     params += %i(editor_id deleted) if admin?
     params

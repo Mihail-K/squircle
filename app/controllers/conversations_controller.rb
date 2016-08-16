@@ -16,7 +16,6 @@ class ConversationsController < ApiController
   before_action :apply_pagination, only: :index
   before_action :load_first_posts, only: :index
 
-  before_action :check_locking_permission, only: %i(create update)
   before_action :check_permission, only: %i(update destroy), unless: :admin?
 
   after_action :increment_views_count, only: :show
@@ -51,7 +50,10 @@ class ConversationsController < ApiController
   end
 
   def update
-    @conversation.locked_by = current_user if conversation_params[:locked].present?
+    if conversation_params[:locked].present?
+      @conversation.locked_by = current_user
+    end
+
     if @conversation.update conversation_params
       render json: @conversation
     else
@@ -70,9 +72,13 @@ class ConversationsController < ApiController
 private
 
   def conversation_params
-    params.require(:conversation).permit(
-      :locked, first_post_attributes: [ :character_id, :title, :body ]
-    )
+    params.require(:conversation).permit *permitted_params
+  end
+
+  def permitted_params
+    permitted  = [ posts_attributes: %i(character_id title body) ]
+    permitted << :locked if admin?
+    permitted
   end
 
   def set_author
@@ -92,10 +98,6 @@ private
     @conversations = @conversations.visible unless admin?
   end
 
-  def set_conversation
-    @conversation = @conversations.find params[:id]
-  end
-
   def apply_pagination
     @conversations = @conversations.page(params[:page]).per(params[:count])
   end
@@ -109,8 +111,8 @@ private
     @first_posts = @first_posts.map { |post| [ post.conversation_id, post ] }.to_h
   end
 
-  def check_locking_permissision
-    conversation_params.delete :locked unless admin?
+  def set_conversation
+    @conversation = @conversations.find params[:id]
   end
 
   def check_permission

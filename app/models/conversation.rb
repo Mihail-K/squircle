@@ -37,7 +37,7 @@ class Conversation < ActiveRecord::Base
   has_one :first_post, -> { first_posts }, class_name: 'Post'
   has_one :last_post, -> { last_posts }, class_name: 'Post'
 
-  accepts_nested_attributes_for :first_post, reject_if: :all_blank
+  accepts_nested_attributes_for :posts, limit: 1, reject_if: :all_blank
 
   validates :title, presence: true
   validates :author, presence: true
