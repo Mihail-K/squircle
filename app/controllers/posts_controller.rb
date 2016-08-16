@@ -16,12 +16,14 @@ class PostsController < ApiController
   before_action :set_posts, except: :create
   before_action :set_post, except: %i(index create)
 
+  before_action :apply_pagination, only: :index
+
   before_action :check_lock_state, only: %i(create update destroy), unless: :admin?
   before_action :check_permission, only: %i(update destroy), unless: :admin?
   before_action :check_flood_limit, only: :create, unless: :admin?
 
   def index
-    render json: @posts = @posts.page(params[:page]).per(params[:count]),
+    render json: @posts,
            each_serializer: PostSerializer,
            meta: {
              page:  @posts.current_page,
@@ -83,6 +85,10 @@ private
     @posts = @posts.where conversation: @conversation unless @conversation.nil?
     @posts = @posts.order created_at: (params[:reverse] ? :desc : :asc)
     @posts = @posts.visible unless admin?
+  end
+
+  def apply_pagination
+    @posts = @posts.page(params[:page]).per(params[:count])
   end
 
   def set_post
