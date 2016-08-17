@@ -16,7 +16,8 @@ class ConversationsController < ApiController
   before_action :apply_pagination, only: :index
   before_action :load_first_posts, only: :index
 
-  before_action :check_permission, only: %i(update destroy), unless: :admin?
+  before_action :check_update_permission, only: :update, unless: :admin?
+  before_action :check_delete_permission, only: :destroy
 
   after_action :increment_views_count, only: :show
 
@@ -115,8 +116,12 @@ private
     @conversation = @conversations.find params[:id]
   end
 
-  def check_permission
+  def check_update_permission
     forbid unless @conversation.author_id == current_user.id
+  end
+
+  def check_delete_permission
+    forbid unless admin?
   end
 
   def increment_views_count
