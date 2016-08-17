@@ -4,10 +4,12 @@ class BansController < ApiController
   before_action :set_bans, except: :create
   before_action :set_ban, except: %i(index create)
 
+  before_action :apply_pagination, only: :index
+
   before_action :check_permission, only: %i(create update destroy)
 
   def index
-    render json: @bans = @bans.page(params[:page]).per(params[:count]),
+    render json: @bans,
            each_serializer: BanSerializer,
            meta: {
              page:  @bans.current_page,
@@ -34,7 +36,7 @@ class BansController < ApiController
   end
 
   def update
-    if @ban.update ban_params.except(:user_id)
+    if @ban.update ban_params
       render json: @ban
     else
       errors @ban
@@ -58,6 +60,10 @@ private
   def set_bans
     @bans = Ban.all
     @bans = @bans.where user_id: current_user.id unless admin?
+  end
+
+  def apply_pagination
+    @bans = @bans.page(params[:page]).per(params[:count])
   end
 
   def set_ban
