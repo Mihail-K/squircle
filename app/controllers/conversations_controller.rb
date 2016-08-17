@@ -11,7 +11,7 @@ class ConversationsController < ApiController
   }
 
   before_action :set_conversations, except: :create
-  before_action :set_conversation, except: :index
+  before_action :set_conversation, except: %i(index create)
 
   before_action :apply_pagination, only: :index
   before_action :load_first_posts, only: :index
