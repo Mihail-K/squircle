@@ -33,11 +33,11 @@ class Ban < ActiveRecord::Base
   after_create :apply_ban_to_user, unless: :expired?
 
   scope :active, -> {
-    where 'bans.expires_at >= ?', DateTime.now.utc
+    where 'bans.expires_at >= ?', Time.zone.now
   }
 
   scope :expired, -> {
-    where 'bans.expires_at < ?', DateTime.now.utc
+    where 'bans.expires_at < ?', Time.zone.now
   }
 
   scope :permanent, -> {
