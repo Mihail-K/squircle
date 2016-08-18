@@ -1,4 +1,5 @@
 class PostsController < ApiController
+  include Authorization
   include Bannable
 
   before_action :doorkeeper_authorize!, except: %i(index show)
@@ -18,9 +19,15 @@ class PostsController < ApiController
 
   before_action :apply_pagination, only: :index
 
-  before_action :check_lock_state, only: %i(create update destroy), unless: :admin?
-  before_action :check_permission, only: %i(update destroy), unless: :admin?
   before_action :check_flood_limit, only: :create, unless: :admin?
+
+  before_action do
+    if %w(index create).include? action_name
+      policy! Post
+    else
+      policy! @post
+    end
+  end
 
   def index
     render json: @posts,
@@ -69,22 +76,16 @@ class PostsController < ApiController
 private
 
   def post_params
-    params.require(:post).permit *permitted_params
-  end
-
-  def permitted_params
-    params  = %i(conversation_id character_id title body)
-    params += %i(editor_id deleted) if admin?
-    params
+    params.require(:post).permit *policy_params
   end
 
   def set_posts
-    @posts = Post.includes :author, :editor, :character, :conversation
+    @posts = policy_scope(Post)
+    @posts = @posts.includes :author, :editor, :character, :conversation
     @posts = @posts.where author: @author unless @author.nil?
     @posts = @posts.where character: @character unless @character.nil?
     @posts = @posts.where conversation: @conversation unless @conversation.nil?
     @posts = @posts.order created_at: (params[:reverse] ? :desc : :asc)
-    @posts = @posts.visible unless admin?
   end
 
   def apply_pagination
@@ -110,23 +111,15 @@ private
     @conversation = @conversation.visible unless admin?
   end
 
-  def check_lock_state
-    if action_name == 'create'
-      forbid if Conversation.locked.exists? id: post_params[:conversation_id]
-    else
-      forbid if @post.locked?
-    end
-  end
-
-  def check_permission
-    forbid unless @post.author_id == current_user.id
-  end
-
   def check_flood_limit
     if Post.where(author_id: current_user).where('created_at > ?', 20.seconds.ago).exists?
       @post = Post.new
       @post.errors.add :base, 'you can only post once every 20 seconds'
       errors @post
     end
+  end
+
+  def policy_denied!
+    forbid
   end
 end
