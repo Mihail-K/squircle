@@ -64,4 +64,7 @@ class Policy
       scope.none
     end
   end
+
+  class ActionNotAllowed < StandardError
+  end
 end

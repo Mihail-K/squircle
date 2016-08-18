@@ -20,6 +20,6 @@ protected
   end
 
   def policy_denied!
-    raise 'Action not permitted' # TODO : Exception class.
+    raise Policy::ActionNotAllowed, 'Action not allowed'
   end
 end
