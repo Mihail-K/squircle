@@ -51,6 +51,7 @@ private
 
   def locked?
     if klass?
+      return false unless params[:post].respond_to? :[]
       Conversation.locked.exists? id: params[:post][:conversation_id]
     else
       post.locked?
