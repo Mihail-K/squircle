@@ -1,4 +1,4 @@
-class PostPolicy < Policy
+class PostPolicy < Political::Policy
   alias_method :post, :record
 
   def index?
@@ -6,35 +6,35 @@ class PostPolicy < Policy
   end
 
   def show?
-    scope.relation.exists? id: record.id
+    scope.apply.exists? id: record.id
   end
 
   def create?
     return true if user.try(:admin?)
-    user? && !user.banned? && !locked?
+    authenticated? && !user.banned? && !locked?
   end
 
   def update?
     return true if user.try(:admin?)
-    author? && !user.banned? && !locked?
+    author? && !banned? && !locked?
   end
 
   def destroy?
     return true if user.try(:admin?)
-    author? && !user.banned? && !locked?
+    author? && !banned? && !locked?
   end
 
-  class Params < Policy::Params
+  class Parameters < Political::Policy::Parameters
     def permitted
-      params  = %i(character_id title body)
-      params += %i(conversation_id)   if action_name == 'create'
-      params += %i(deleted editor_id) if user.try(:admin?)
-      params
+      permitted  = %i(character_id title body)
+      permitted += %i(conversation_id)   if params[:action] == 'create'
+      permitted += %i(deleted editor_id) if user.try(:admin?)
+      permitted
     end
   end
 
-  class Scope < Policy::Scope
-    def relation
+  class Scope < Political::Policy::Scope
+    def apply
       if user.try(:admin?)
         scope.all
       else
@@ -46,15 +46,19 @@ class PostPolicy < Policy
 private
 
   def author?
-    user? && user.id == post.author_id
+    authenticated? && user.id == post.author_id
+  end
+
+  def banned?
+    authenticated? && user.banned?
   end
 
   def locked?
-    if klass?
+    if model?
       return false unless params[:post].respond_to? :[]
       Conversation.locked.exists? id: params[:post][:conversation_id]
     else
-      post.locked?
+      post.conversation.locked?
     end
   end
 end

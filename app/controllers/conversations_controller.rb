@@ -1,4 +1,5 @@
 class ConversationsController < ApiController
+  include Political::Authority
   include Bannable
 
   before_action :doorkeeper_authorize!, except: %i(index show)
@@ -16,8 +17,13 @@ class ConversationsController < ApiController
   before_action :apply_pagination, only: :index
   before_action :load_first_posts, only: :index
 
-  before_action :check_update_permission, only: :update, unless: :admin?
-  before_action :check_delete_permission, only: :destroy
+  before_action do
+    if %w(index create).include? action_name
+      policy! Conversation
+    else
+      policy! @conversation
+    end
+  end
 
   after_action :increment_views_count, only: :show
 
@@ -73,13 +79,7 @@ class ConversationsController < ApiController
 private
 
   def conversation_params
-    params.require(:conversation).permit *permitted_params
-  end
-
-  def permitted_params
-    permitted  = [ posts_attributes: %i(character_id title body) ]
-    permitted << :locked if admin?
-    permitted
+    params.require(:conversation).permit *policy_params
   end
 
   def set_author
@@ -93,10 +93,9 @@ private
   end
 
   def set_conversations
-    @conversations = Conversation.includes :author
+    @conversations = policy_scope(Conversation).includes :author
     @conversations = @conversations.where author: @author unless @author.nil?
     @conversations = @conversations.where character: @character unless @character.nil?
-    @conversations = @conversations.visible unless admin?
   end
 
   def apply_pagination
@@ -105,8 +104,7 @@ private
 
   def load_first_posts
     # Load a list of first posts for the list of conversations.
-    @first_posts = Post.first_posts.where conversation: @conversations
-    @first_posts = @first_posts.visible unless admin?
+    @first_posts = policy_scope(Post).first_posts.where conversation: @conversations
 
     # Re-map the first posts to a Hash keyed by the posts' conversation ids.
     @first_posts = @first_posts.map { |post| [ post.conversation_id, post ] }.to_h
@@ -114,14 +112,6 @@ private
 
   def set_conversation
     @conversation = @conversations.find params[:id]
-  end
-
-  def check_update_permission
-    forbid unless @conversation.author_id == current_user.id
-  end
-
-  def check_delete_permission
-    forbid unless admin?
   end
 
   def increment_views_count

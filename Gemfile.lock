@@ -7,6 +7,12 @@ GIT
       activesupport (>= 4.0.0)
       mime-types (>= 1.16)
 
+PATH
+  remote: ../political
+  specs:
+    political (0.1.0)
+      activerecord (>= 4.2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -237,6 +243,7 @@ DEPENDENCIES
   factory_girl_rails
   faker
   kaminari
+  political!
   rack-cors
   rails
   redcarpet

@@ -1,5 +1,5 @@
 class PostsController < ApiController
-  include Authorization
+  include Political::Authority
   include Bannable
 
   before_action :doorkeeper_authorize!, except: %i(index show)
@@ -107,8 +107,7 @@ private
   end
 
   def set_conversation
-    @conversation = Conversation.where id: params[:conversation_id]
-    @conversation = @conversation.visible unless admin?
+    @conversation = policy_scope(Conversation).where id: params[:conversation_id]
   end
 
   def check_flood_limit
@@ -117,9 +116,5 @@ private
       @post.errors.add :base, 'you can only post once every 20 seconds'
       errors @post
     end
-  end
-
-  def policy_denied!
-    forbid
   end
 end
