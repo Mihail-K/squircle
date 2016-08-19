@@ -23,7 +23,7 @@ class ConversationPolicy < Political::Policy
     user.try(:admin?)
   end
 
-  class Parameters < Political::Policy::Parameters
+  class Parameters < Political::Parameters
     def permitted
       permitted  = [ ]
       permitted << { posts_attributes: %i(character_id title body) } if create?
@@ -36,7 +36,7 @@ class ConversationPolicy < Political::Policy
     end
   end
 
-  class Scope < Political::Policy::Scope
+  class Scope < Political::Scope
     def apply
       if user.try(:admin?)
         scope.all
