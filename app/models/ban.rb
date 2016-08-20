@@ -26,6 +26,7 @@ class Ban < ActiveRecord::Base
   validates :user, presence: true
   validates :creator, presence: true
   validates :reason, presence: true
+  validates :expires_at, timeliness: { after: :today, if: :expires_at? }
 
   validate :creator_is_admin, on: :create
   validate :creator_is_not_user, on: :create
@@ -33,11 +34,13 @@ class Ban < ActiveRecord::Base
   after_create :apply_ban_to_user, unless: :expired?
 
   scope :active, -> {
-    where 'bans.expires_at >= ?', Time.zone.now
+    where <<-SQL.squish, Time.zone.now
+      bans.expires_at IS NULL OR bans.expires_at >= ?
+    SQL
   }
 
   scope :expired, -> {
-    where 'bans.expires_at < ?', Time.zone.now
+    where.not(expires_at: nil).where('bans.expires_at < ?', Time.zone.now)
   }
 
   scope :permanent, -> {
@@ -64,6 +67,6 @@ class Ban < ActiveRecord::Base
   end
 
   def apply_ban_to_user
-    user.update! banned: true
+    user.update! banned: true unless expired?
   end
 end

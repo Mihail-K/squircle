@@ -57,4 +57,50 @@ RSpec.describe Ban, type: :model do
     ban.user = ban.creator
     expect(ban).not_to be_valid
   end
+
+  describe '.active' do
+    let :ban do
+      create :ban
+    end
+
+    it 'includes bans that expire in the future' do
+      expect(Ban.active.exists?(id: ban)).to be true
+    end
+
+    it 'includes bans without an exipiry (permanent)' do
+      ban.update expires_at: nil
+
+      expect(Ban.active.exists?(id: ban)).to be true
+    end
+
+    it 'does not include bans the expire in the past' do
+      ban.update_columns expires_at: Faker::Date.between(1.year.ago, 1.hour.ago)
+
+      expect(Ban.active.exists?(id: ban)).to be false
+    end
+  end
+
+  describe '.expired' do
+    let :ban do
+      ban = create :ban
+      ban.update_columns expires_at: Faker::Date.between(1.year.ago, 1.hour.ago)
+      ban.reload
+    end
+
+    it 'includes bans that expire in the past' do
+      expect(Ban.expired.exists?(id: ban)).to be true
+    end
+
+    it 'does not include bans without an expiry (permanent)' do
+      ban.update expires_at: nil
+
+      expect(Ban.expired.exists?(id: ban)).to be false
+    end
+
+    it 'does not include bans that expire in the future' do
+      ban.update expires_at: Faker::Date.between(1.hour.from_now, 1.year.from_now)
+
+      expect(Ban.expired.exists?(id: ban)).to be false
+    end
+  end
 end
