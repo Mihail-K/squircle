@@ -74,7 +74,7 @@ RSpec.describe Ban, type: :model do
     end
 
     it 'does not include bans the expire in the past' do
-      ban.update_columns expires_at: Faker::Date.between(1.year.ago, 1.hour.ago)
+      ban.update expires_at: Faker::Date.between(1.year.ago, 1.hour.ago)
 
       expect(Ban.active.exists?(id: ban)).to be false
     end
@@ -82,9 +82,7 @@ RSpec.describe Ban, type: :model do
 
   describe '.expired' do
     let :ban do
-      ban = create :ban
-      ban.update_columns expires_at: Faker::Date.between(1.year.ago, 1.hour.ago)
-      ban.reload
+      create :ban, :expired
     end
 
     it 'includes bans that expire in the past' do

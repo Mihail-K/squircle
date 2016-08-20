@@ -9,5 +9,9 @@ FactoryGirl.define do
     trait :permanent do
       expires_at nil
     end
+
+    trait :expired do
+      expires_at { Faker::Date.between(1.year.ago, 1.hour.ago) }
+    end
   end
 end

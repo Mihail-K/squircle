@@ -26,7 +26,6 @@ class Ban < ActiveRecord::Base
   validates :user, presence: true
   validates :creator, presence: true
   validates :reason, presence: true
-  validates :expires_at, timeliness: { after: :today, if: :expires_at? }
 
   validate :creator_is_admin, on: :create
   validate :creator_is_not_user, on: :create
