@@ -14,7 +14,7 @@ RSpec.describe BansController, type: :controller do
   end
 
   describe '#GET index' do
-    before :each do
+    let! :bans do
       create_list :ban, Faker::Number.between(1, 5), user: active_user
     end
 
@@ -33,19 +33,19 @@ RSpec.describe BansController, type: :controller do
       expect(json).to have_key :bans
       expect(json).to have_key :meta
 
-      expect(json[:meta][:total]).to eq active_user.bans.count
+      expect(json[:meta][:total]).to eq bans.count
     end
 
     it 'only returns the bans that belong to the user' do
       ban = create :ban
-      expect(active_user.bans.count).to eq(Ban.count - 1)
+      expect(bans.count).to eq(Ban.count - 1)
 
       get :index, format: :json, params: {
         access_token: token.token
       }
 
       expect(response.status).to eq 200
-      expect(json[:meta][:total]).to eq active_user.bans.count
+      expect(json[:meta][:total]).to eq bans.count
     end
 
     it 'returns all bans for admin users' do
@@ -57,7 +57,19 @@ RSpec.describe BansController, type: :controller do
       }
 
       expect(response.status).to eq 200
-      expect(json[:meta][:total]).to eq Ban.count
+      expect(json[:meta][:total]).to eq(bans.count + 1)
+    end
+
+    it 'returns only the bans for a specific user' do
+      user = create :user, :with_bans
+      active_user.update admin: true
+
+      get :index, format: :json, params: {
+        access_token: token.token, user_id: user.id
+      }
+
+      expect(response.status).to eq 200
+      expect(json[:meta][:total]).to eq user.bans.count
     end
   end
 
