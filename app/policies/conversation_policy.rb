@@ -11,12 +11,12 @@ class ConversationPolicy < Political::Policy
 
   def create?
     return true if user.try(:admin?)
-    authenticated? && !user.try(:banned?)
+    user.present? && !user.banned?
   end
 
   def update?
     return true if user.try(:admin?)
-    authenticated? && author? && !user.banned? && !locked?
+    user.present? && author? && !user.banned? && !locked?
   end
 
   def destroy?

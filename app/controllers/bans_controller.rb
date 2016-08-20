@@ -1,4 +1,6 @@
 class BansController < ApiController
+  include Political::Authority
+
   before_action :doorkeeper_authorize!
 
   before_action :set_bans, except: :create
@@ -6,7 +8,7 @@ class BansController < ApiController
 
   before_action :apply_pagination, only: :index
 
-  before_action :check_permission, only: %i(create update destroy)
+  before_action { policy!(@ban || Ban) }
 
   def index
     render json: @bans,
@@ -54,23 +56,18 @@ class BansController < ApiController
 private
 
   def ban_params
-    params.require(:ban).permit :reason, :expires_at, :user_id
+    params.require(:ban).permit *policy_params
   end
 
   def set_bans
-    @bans = Ban.all
-    @bans = @bans.where user_id: current_user.id unless admin?
-  end
-
-  def apply_pagination
-    @bans = @bans.page(params[:page]).per(params[:count])
+    @bans = policy_scope
   end
 
   def set_ban
     @ban = @bans.find params[:id]
   end
 
-  def check_permission
-    forbid unless admin?
+  def apply_pagination
+    @bans = @bans.page(params[:page]).per(params[:count])
   end
 end

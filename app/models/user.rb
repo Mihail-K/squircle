@@ -54,8 +54,10 @@ class User < ActiveRecord::Base
     o.validates :date_of_birth, timeliness: { after: -> { 100.years.ago }, type: :date }
   end
 
-  after_commit :regenerate_email_token, if: -> { previous_changes.key?(:email) }
-  after_commit :send_email_confirmation, if: -> { previous_changes.key?(:email) }
+  with_options if: -> { previous_changes.key?(:email) } do |o|
+    o.after_commit :regenerate_email_token
+    o.after_commit :send_email_confirmation
+  end
 
   scope :banned, -> {
     where banned: true
