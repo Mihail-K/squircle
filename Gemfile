@@ -14,32 +14,33 @@ gem 'bcrypt', '~> 3.1.7'
 
 group :development, :test do
   gem 'byebug'
+  gem 'dotenv-rails'
+  gem 'factory_girl_rails'
   gem 'faker'
   gem 'rspec'
   gem 'rspec-rails'
-  gem 'factory_girl_rails'
-  gem 'dotenv-rails'
 end
 
 group :development do
-  gem 'web-console', '~> 2.0'
-  gem 'spring'
   gem 'annotate'
+  gem 'spring'
+  gem 'web-console', '~> 2.0'
 end
 
 group :test do
   gem 'resque_spec'
+  gem 'simplecov', require: false
 end
 
-gem 'doorkeeper'
 gem 'active_model_serializers', '~> 0.10.0'
-gem 'kaminari'
+gem 'awesome_print'
 gem 'carrierwave', github: 'carrierwaveuploader/carrierwave'
-gem 'validates_timeliness'
-gem 'resque'
+gem 'doorkeeper'
+gem 'kaminari'
+gem 'political', path: '../political'
+gem 'rack-cors', require: 'rack/cors'
+gem 'redcarpet'
 gem 'redis', '~>3.2'
 gem 'redis-rails'
-gem 'rack-cors', require: 'rack/cors'
-gem 'awesome_print'
-gem 'redcarpet'
-gem 'political', path: '../political'
+gem 'resque'
+gem 'validates_timeliness'
