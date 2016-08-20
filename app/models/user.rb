@@ -31,7 +31,7 @@
 
 class User < ActiveRecord::Base
   has_many :bans, -> { active }, inverse_of: :user
-  has_many :previous_bans, -> { expired }, class_name: 'Ban'
+  has_many :previous_bans, -> { inactive }, class_name: 'Ban'
   has_many :issued_bans, foreign_key: :creator_id, class_name: 'Ban'
 
   has_many :characters, -> { visible }, inverse_of: :user

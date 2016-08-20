@@ -78,27 +78,39 @@ RSpec.describe Ban, type: :model do
 
       expect(Ban.active.exists?(id: ban)).to be false
     end
+
+    it 'does not include bans that have been waived' do
+      ban.update waived: true
+
+      expect(Ban.active.exists?(id: ban)).to be false
+    end
   end
 
-  describe '.expired' do
+  describe '.inactive' do
     let :ban do
       create :ban, :expired
     end
 
     it 'includes bans that expire in the past' do
-      expect(Ban.expired.exists?(id: ban)).to be true
+      expect(Ban.inactive.exists?(id: ban)).to be true
     end
 
     it 'does not include bans without an expiry (permanent)' do
       ban.update expires_at: nil
 
-      expect(Ban.expired.exists?(id: ban)).to be false
+      expect(Ban.inactive.exists?(id: ban)).to be false
     end
 
     it 'does not include bans that expire in the future' do
       ban.update expires_at: Faker::Date.between(1.hour.from_now, 1.year.from_now)
 
-      expect(Ban.expired.exists?(id: ban)).to be false
+      expect(Ban.inactive.exists?(id: ban)).to be false
+    end
+
+    it 'includes bans that have been waived' do
+      ban.update waived: true
+
+      expect(Ban.inactive.exists?(id: ban)).to be true
     end
   end
 end

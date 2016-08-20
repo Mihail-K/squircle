@@ -9,6 +9,7 @@
 #  creator_id :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  waived     :boolean          default(FALSE), not null
 #
 # Indexes
 #
@@ -33,18 +34,38 @@ class Ban < ActiveRecord::Base
   after_create :apply_ban_to_user, unless: :expired?
 
   scope :active, -> {
-    where <<-SQL.squish, Time.zone.now
-      bans.expires_at IS NULL OR bans.expires_at >= ?
-    SQL
+    where Ban.arel_table[:waived]
+             .eq(false)
+             .and(
+               Ban.arel_table[:expires_at]
+                  .eq(nil)
+                  .or(
+                    Ban.arel_table[:expires_at]
+                       .gteq(Time.zone.now)
+                  )
+             )
   }
 
-  scope :expired, -> {
-    where.not(expires_at: nil).where('bans.expires_at < ?', Time.zone.now)
+  scope :inactive, -> {
+    where Ban.arel_table[:waived]
+             .eq(true)
+             .or(
+               Ban.arel_table[:expires_at]
+                  .not_eq(nil)
+                  .and(
+                    Ban.arel_table[:expires_at]
+                       .lt(Time.zone.now)
+                  )
+             )
   }
 
   scope :permanent, -> {
     where expires_at: nil
   }
+
+  def active?
+    !waived? && !expired?
+  end
 
   def expired?
     expires_at.present? && expires_at.past?
