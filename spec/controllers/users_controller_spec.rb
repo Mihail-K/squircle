@@ -125,5 +125,16 @@ RSpec.describe UsersController, type: :controller do
 
       expect(User.count).to be > old_count
     end
+
+    it %q(doesn't allow authenticated users to create new users) do
+      old_count = User.count
+
+      post :create, format: :json, params: {
+        access_token: token.token, user: user_attributes
+      }
+
+      expect(response.status).to eq 403
+      expect(User.count).to eq old_count
+    end
   end
 end
