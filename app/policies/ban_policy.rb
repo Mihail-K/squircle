@@ -23,7 +23,16 @@ class BanPolicy < Political::Policy
 
   class Parameters < Political::Parameters
     def permitted
-      %i(user_id reason expires_at)
+      permitted  = %i(reason expires_at)
+      permitted << :user_id if action? 'create'
+      permitted << :deleted if action? 'update'
+      permitted
+    end
+
+  private
+
+    def action?(action_name)
+      params[:action] == action_name
     end
   end
 

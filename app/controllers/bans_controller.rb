@@ -46,7 +46,7 @@ class BansController < ApiController
   end
 
   def destroy
-    if @ban.destroy
+    if @ban.update deleted: true
       head :no_content
     else
       errors @ban

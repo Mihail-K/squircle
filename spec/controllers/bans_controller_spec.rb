@@ -116,4 +116,21 @@ RSpec.describe BansController, type: :controller do
       expect(user.bans.count).to eq 1
     end
   end
+
+  describe '#DELETE destroy' do
+    let! :ban do
+      create :ban
+    end
+
+    it 'marks a ban as deleted' do
+      active_user.update admin: true
+
+      delete :destroy, format: :json, params: {
+        access_token: token.token, id: ban.id
+      }
+
+      expect(response.status).to eq 204
+      expect(ban.reload.deleted?).to eq true
+    end
+  end
 end

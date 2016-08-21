@@ -79,8 +79,8 @@ RSpec.describe Ban, type: :model do
       expect(Ban.active.exists?(id: ban)).to be false
     end
 
-    it 'does not include bans that have been waived' do
-      ban.update waived: true
+    it 'does not include bans that have been deleted' do
+      ban.update deleted: true
 
       expect(Ban.active.exists?(id: ban)).to be false
     end
@@ -107,8 +107,8 @@ RSpec.describe Ban, type: :model do
       expect(Ban.inactive.exists?(id: ban)).to be false
     end
 
-    it 'includes bans that have been waived' do
-      ban.update waived: true
+    it 'includes bans that have been deleted' do
+      ban.update deleted: true
 
       expect(Ban.inactive.exists?(id: ban)).to be true
     end

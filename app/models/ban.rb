@@ -9,7 +9,7 @@
 #  creator_id :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  waived     :boolean          default(FALSE), not null
+#  deleted    :boolean          default(FALSE), not null
 #
 # Indexes
 #
@@ -34,7 +34,7 @@ class Ban < ActiveRecord::Base
   after_create :apply_ban_to_user, unless: :expired?
 
   scope :active, -> {
-    where Ban.arel_table[:waived]
+    where Ban.arel_table[:deleted]
              .eq(false)
              .and(
                Ban.arel_table[:expires_at]
@@ -47,7 +47,7 @@ class Ban < ActiveRecord::Base
   }
 
   scope :inactive, -> {
-    where Ban.arel_table[:waived]
+    where Ban.arel_table[:deleted]
              .eq(true)
              .or(
                Ban.arel_table[:expires_at]
@@ -64,7 +64,7 @@ class Ban < ActiveRecord::Base
   }
 
   def active?
-    !waived? && !expired?
+    !deleted? && !expired?
   end
 
   def expired?
@@ -87,6 +87,6 @@ class Ban < ActiveRecord::Base
   end
 
   def apply_ban_to_user
-    user.update! banned: true unless expired?
+    user.update! banned: true if active?
   end
 end
