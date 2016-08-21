@@ -1,16 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe ConversationsController, type: :controller do
+  include_context 'authentication'
+
   let :json do
     JSON.parse(response.body).with_indifferent_access
-  end
-
-  let :active_user do
-    create :user
-  end
-
-  let :token do
-    create :access_token, resource_owner_id: active_user.id
   end
 
   describe '#GET index' do
