@@ -15,7 +15,7 @@ RSpec.describe BansController, type: :controller do
 
   describe '#GET index' do
     let! :bans do
-      create_list :ban, Faker::Number.between(1, 5), user: active_user
+      create_list :ban, Faker::Number.between(1, 3), user: active_user
     end
 
     it 'requires an authenticated user' do
@@ -70,6 +70,57 @@ RSpec.describe BansController, type: :controller do
 
       expect(response.status).to eq 200
       expect(json[:meta][:total]).to eq user.bans.count
+    end
+  end
+
+  describe '#GET show' do
+    let! :bans do
+      create_list :ban, Faker::Number.between(1, 3), user: active_user
+    end
+
+    it 'requires an authenticated user' do
+      get :show, format: :json, params: { id: bans.sample.id }
+
+      expect(response.status).to eq 401
+    end
+
+    it %q(returns a ban that's owned by the user) do
+      get :show, format: :json, params: { access_token: token.token, id: bans.sample.id }
+
+      expect(response.status).to eq 200
+      expect(json).to have_key :ban
+
+      expect(json[:ban]).not_to have_key :creator_id
+      expect(json[:ban]).not_to have_key :creator
+    end
+
+    it %q(doesn't return bans owned by a different user) do
+      ban = create :ban
+
+      get :show, format: :json, params: { access_token: token.token, id: ban.id }
+
+      expect(response.status).to eq 404
+    end
+
+    it 'allows admins to see all bans' do
+      ban = create :ban
+      active_user.update admin: true
+
+      get :show, format: :json, params: { access_token: token.token, id: ban.id }
+
+      expect(response.status).to eq 200
+      expect(json).to have_key :ban
+
+      expect(json[:ban]).to have_key :creator_id
+      expect(json[:ban]).to have_key :creator
+    end
+
+    it %q(returns 404 if the ban doesn't exist) do
+      active_user.update admin: true
+
+      get :show, format: :json, params: { access_token: token.token, id: Ban.count + 1 }
+
+      expect(response.status).to eq 404
     end
   end
 
