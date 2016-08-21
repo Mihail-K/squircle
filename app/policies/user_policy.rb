@@ -1,4 +1,8 @@
 class UserPolicy < Political::Policy
+  def me?
+    user.present?
+  end
+
   def index?
     true
   end

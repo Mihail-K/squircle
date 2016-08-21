@@ -7,6 +7,23 @@ RSpec.describe UsersController, type: :controller do
     JSON.parse(response.body).with_indifferent_access
   end
 
+  describe 'GET #me' do
+    it 'requires an authenticated user' do
+      get :me, format: :json
+
+      expect(response.status).to eq 401
+    end
+
+    it 'returns the current user' do
+      get :me, format: :json, params: { access_token: token.token }
+
+      expect(response.status).to eq 200
+      expect(json).to have_key :user
+
+      expect(json[:user][:id]).to eq active_user.id
+    end
+  end
+
   describe 'GET #index' do
     let :users do
       json[:users]
