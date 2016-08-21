@@ -6,7 +6,7 @@ class BanPolicy < Political::Policy
   end
 
   def show?
-    scope.apply.exists?(id: ban.id)
+    scope.apply.exists? id: params[:id]
   end
 
   def create?
@@ -14,11 +14,11 @@ class BanPolicy < Political::Policy
   end
 
   def update?
-    create?
+    show? && create?
   end
 
   def destroy?
-    create?
+    show? && create?
   end
 
   class Parameters < Political::Parameters

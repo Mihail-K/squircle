@@ -122,6 +122,24 @@ RSpec.describe BansController, type: :controller do
       create :ban
     end
 
+    it 'requires an authenticated user' do
+      delete :destroy, format: :json, params: {
+        id: ban.id
+      }
+
+      expect(response.status).to eq 401
+      expect(ban.reload.deleted?).to be false
+    end
+
+    it 'only allows admins to delete bans' do
+      delete :destroy, format: :json, params: {
+        access_token: token.token, id: ban.id
+      }
+
+      expect(response.status).to eq 404
+      expect(ban.reload.deleted?).to be false
+    end
+
     it 'marks a ban as deleted' do
       active_user.update admin: true
 
@@ -130,7 +148,7 @@ RSpec.describe BansController, type: :controller do
       }
 
       expect(response.status).to eq 204
-      expect(ban.reload.deleted?).to eq true
+      expect(ban.reload.deleted?).to be true
     end
   end
 end
