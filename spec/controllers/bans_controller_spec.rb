@@ -117,6 +117,58 @@ RSpec.describe BansController, type: :controller do
     end
   end
 
+  describe '#PATCH update' do
+    let! :ban do
+      create :ban
+    end
+
+    it 'requires an authenticated user' do
+      old_reason = ban.reason
+
+      patch :update, format: :json, params: {
+        id: ban.id, ban: { reason: Faker::Hipster.paragraph }
+      }
+
+      expect(response.status).to eq 401
+      expect(ban.reload.reason).to eq old_reason
+    end
+
+    it 'only allows admins to delete bans' do
+      old_reason = ban.reason
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: ban.id, ban: { reason: Faker::Hipster.paragraph }
+      }
+
+      expect(response.status).to eq 404
+      expect(ban.reload.reason).to eq old_reason
+    end
+
+    it 'updates the reason on a ban' do
+      old_reason = ban.reason
+      active_user.update admin: true
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: ban.id, ban: { reason: Faker::Hipster.paragraph }
+      }
+
+      expect(response.status).to eq 200
+      expect(ban.reload.reason).not_to eq old_reason
+    end
+
+    it 'updates the deleted state on a ban' do
+      ban.update deleted: true
+      active_user.update admin: true
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: ban.id, ban: { deleted: false }
+      }
+
+      expect(response.status).to eq 200
+      expect(ban.reload.deleted?).to be false
+    end
+  end
+
   describe '#DELETE destroy' do
     let! :ban do
       create :ban
