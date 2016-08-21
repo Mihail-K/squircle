@@ -1,25 +1,28 @@
 class UsersController < ApiController
+  include Political::Authority
+
   before_action :doorkeeper_authorize!, except: %i(index show create)
 
   before_action :set_users, except: %i(me create)
   before_action :set_user, only: %i(show update destroy)
-
-  before_action :check_current_user, only: :create, unless: :admin?
-  before_action :check_permission, only: %i(update destroy), unless: :admin?
+  before_action :apply_pagination, only: :index
 
   before_action :confirm_email, only: :update
+
+  before_action { policy!(@user || User) }
 
   def me
     render json: current_user
   end
 
   def index
-    render json: @users.page(params[:page]).per(params[:count]),
+    render json: @users,
            each_serializer: UserSerializer,
            meta: {
-             page:  params[:page] || 1,
-             count: params[:count] || 10,
-             total: @users.count
+             page:  @users.current_page,
+             count: @users.limit_value,
+             total: @users.total_count,
+             pages: @users.total_pages
            }
   end
 
@@ -56,30 +59,19 @@ class UsersController < ApiController
 private
 
   def user_params
-    params.require(:user).permit(
-      :email, :display_name, :first_name, :last_name, :date_of_birth,
-      :password, :password_confirmation,
-      :avatar
-    )
+    params.require(:user).permit *policy_params
   end
 
   def set_users
-    @users = User.all.includes :characters, :created_characters
-    @users = @users.visible unless admin?
+    @users = policy_scope.includes :characters, :created_characters
   end
 
   def set_user
     @user = @users.find params[:id]
-  rescue ActiveRecord::RecordNotFound
-    not_found :user
   end
 
-  def check_current_user
-    forbid unless current_user.blank?
-  end
-
-  def check_permission
-    forbid unless @user.id == current_user.id
+  def apply_pagination
+    @users = @users.page(params[:page]).per(params[:count])
   end
 
   def confirm_email

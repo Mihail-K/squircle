@@ -7,13 +7,13 @@ RSpec.describe UsersController, type: :controller do
     JSON.parse(response.body).with_indifferent_access
   end
 
-  let! :deleted_user do
-    create :user, deleted: true
-  end
-
   describe 'GET #index' do
     let :users do
       json[:users]
+    end
+
+    let! :deleted_user do
+      create :user, deleted: true
     end
 
     it 'responds with 200' do
@@ -80,6 +80,33 @@ RSpec.describe UsersController, type: :controller do
           expect(user).to have_key field
         end
       end
+    end
+  end
+
+  describe '#POST create' do
+    let :user_attributes do
+      {
+        email: Faker::Internet.email,
+        date_of_birth: Faker::Date.between(50.years.ago, 13.years.ago),
+
+        display_name: Faker::Internet.user_name,
+        first_name: Faker::Name.first_name,
+        last_name: Faker::Name.last_name,
+
+        password: '12345678',
+        password_confirmation: '12345678'
+      }
+    end
+
+    it 'creates a new user' do
+      old_count = User.count
+
+      post :create, format: :json, params: { user: user_attributes }
+
+      expect(response.status).to eq 201
+      expect(json).to have_key :user
+
+      expect(User.count).to be > old_count
     end
   end
 end

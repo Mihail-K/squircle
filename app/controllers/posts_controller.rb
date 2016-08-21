@@ -21,13 +21,7 @@ class PostsController < ApiController
 
   before_action :check_flood_limit, only: :create, unless: :admin?
 
-  before_action do
-    if %w(index create).include? action_name
-      policy! Post
-    else
-      policy! @post
-    end
-  end
+  before_action { policy!(@post || Post) }
 
   def index
     render json: @posts,
