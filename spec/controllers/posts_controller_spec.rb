@@ -140,6 +140,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'updates the title of a post' do
       old_title = post.title
+
       patch :update, format: :json, params: {
         access_token: token.token, id: post.id, post: { title: Faker::Book.title }
       }
@@ -150,6 +151,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'sets the editor when a post is modified' do
       expect(post.editor).to be nil
+
       patch :update, format: :json, params: {
         access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
       }
@@ -160,6 +162,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'requires an authenticated user' do
       old_body = post.body
+
       patch :update, format: :json, params: {
         id: post.id, post: { body: Faker::Hipster.paragraph }
       }
@@ -172,6 +175,7 @@ RSpec.describe PostsController, type: :controller do
     it %(does not allow user's to edit other user's posts) do
       old_body = post.body
       post.update author: build(:user)
+
       patch :update, format: :json, params: {
         access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
       }
@@ -185,6 +189,7 @@ RSpec.describe PostsController, type: :controller do
       old_body = post.body
       active_user.update admin: true
       post.update author: build(:user)
+
       patch :update, format: :json, params: {
         access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
       }
@@ -205,6 +210,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'updates the deleted state of a post for admin users' do
       active_user.update admin: true
+
       patch :update, format: :json, params: {
         access_token: token.token, id: post.id, post: { deleted: true }
       }
@@ -215,6 +221,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'cannot update the editor of a post' do
       expect(post.editor).to be nil
+
       patch :update, format: :json, params: {
         access_token: token.token, id: post.id, post: { editor_id: active_user.id }
       }
@@ -226,12 +233,39 @@ RSpec.describe PostsController, type: :controller do
     it 'updates the editor of a post for admin users' do
       expect(post.editor).to be nil
       active_user.update admin: true
+
       patch :update, format: :json, params: {
         access_token: token.token, id: post.id, post: { editor_id: nil }
       }
 
       expect(response.status).to eq 200
       expect(post.reload.editor).to be nil
+    end
+
+    it 'cannot change deleted posts' do
+      old_body = post.body
+      post.update deleted: true
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
+      }
+
+      expect(response.status).to eq 404
+      expect(post.reload.body).to eq old_body
+    end
+
+    it 'returns errors if the post is invalid' do
+      old_body = post.body
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: post.id, post: { body: nil }
+      }
+
+      expect(response.status).to eq 422
+      expect(json).to have_key :errors
+      expect(json[:errors]).to have_key :body
+
+      expect(post.reload.body).to eq old_body
     end
   end
 
