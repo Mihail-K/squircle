@@ -27,6 +27,16 @@ class UserSerializer < ActiveModel::Serializer
     url = 'http://localhost:3000' + url if url && Rails.env.development?
     url
   end
+  attribute :avatar_medium_url do
+    url = object.avatar.medium.url
+    url = 'http://localhost:3000' + url if url && Rails.env.development?
+    url
+  end
+  attribute :avatar_thumb_url do
+    url = object.avatar.thumb.url
+    url = 'http://localhost:3000' + url if url && Rails.env.development?
+    url
+  end
 
   has_many :characters do
     object.characters.first(10)

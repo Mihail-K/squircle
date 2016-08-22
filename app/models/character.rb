@@ -28,9 +28,10 @@ class Character < ActiveRecord::Base
 
   has_many :posts, -> { visible }, inverse_of: :character
 
-  serialize :gallery_images, Array
-
   mount_uploader :avatar, AvatarUploader
+  process_in_background :avatar
+
+  serialize :gallery_images, Array
   mount_uploaders :gallery_images, AvatarUploader
 
   validates :name, presence: true
