@@ -28,13 +28,18 @@ class Character < ActiveRecord::Base
 
   has_many :posts, -> { visible }, inverse_of: :character
 
+  attr_readonly :creator_id
+
   mount_uploader :avatar, AvatarUploader
   process_in_background :avatar
 
   serialize :gallery_images, Array
   mount_uploaders :gallery_images, AvatarUploader
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: 30 }
+  validates :title, length: { in: 5..100 }
+  validates :description, length: { maximum: 10_000 }
+
   validates :user, presence: true, on: :create
   validates :creator, presence: true
   validates :gallery_images, length: { maximum: 5 }

@@ -14,6 +14,26 @@ RSpec.describe Character, type: :model do
     expect(character).not_to be_valid
   end
 
+  it 'is not valid if the name is too long' do
+    character.name = Faker::Lorem.characters 31
+    expect(character).not_to be_valid
+  end
+
+  it 'is not valid if the title is too short' do
+    character.title = Faker::Lorem.characters 4
+    expect(character).not_to be_valid
+  end
+
+  it 'is not valid if the title is too long' do
+    character.title = Faker::Lorem.characters 101
+    expect(character).not_to be_valid
+  end
+
+  it 'is not valid if the description is too long' do
+    character.description = Faker::Lorem.characters 10_001
+    expect(character).not_to be_valid
+  end
+
   it 'is not valid without a user' do
     character.user = nil
     expect(character).not_to be_valid
