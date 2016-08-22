@@ -16,7 +16,6 @@ class PostsController < ApiController
 
   before_action :set_posts, except: :create
   before_action :set_post, except: %i(index create)
-
   before_action :apply_pagination, only: :index
 
   before_action :check_flood_limit, only: :create, unless: :admin?
@@ -73,13 +72,24 @@ private
     params.require(:post).permit *policy_params
   end
 
+  def set_author
+    @author = policy_scope(User).where(id: params[:user_id] || params[:author_id])
+  end
+
+  def set_character
+    @character = policy_scope(Character).where(id: params[:character_id])
+  end
+
+  def set_conversation
+    @conversation = policy_scope(Conversation).where(id: params[:conversation_id])
+  end
+
   def set_posts
-    @posts = policy_scope(Post)
-    @posts = @posts.includes :author, :editor, :character, :conversation
-    @posts = @posts.where author: @author unless @author.nil?
-    @posts = @posts.where character: @character unless @character.nil?
-    @posts = @posts.where conversation: @conversation unless @conversation.nil?
-    @posts = @posts.order created_at: (params[:reverse] ? :desc : :asc)
+    @posts = policy_scope(Post).includes(:author, :editor, :character, :conversation)
+    @posts = @posts.where(author: @author) unless @author.nil?
+    @posts = @posts.where(character: @character) unless @character.nil?
+    @posts = @posts.where(conversation: @conversation) unless @conversation.nil?
+    @posts = @posts.order(created_at: :asc)
   end
 
   def apply_pagination
@@ -88,20 +98,6 @@ private
 
   def set_post
     @post = @posts.find params[:id]
-  end
-
-  def set_author
-    @author = User.where id: params[:user_id] || params[:author_id]
-    @author = @author.visible unless admin?
-  end
-
-  def set_character
-    @character = Character.where id: params[:character_id]
-    @character = @character.visible unless admin?
-  end
-
-  def set_conversation
-    @conversation = policy_scope(Conversation).where id: params[:conversation_id]
   end
 
   def check_flood_limit

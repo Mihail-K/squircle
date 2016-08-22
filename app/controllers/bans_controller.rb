@@ -5,7 +5,6 @@ class BansController < ApiController
 
   before_action :set_bans, except: :create
   before_action :set_ban, except: %i(index create)
-
   before_action :apply_pagination, only: :index
 
   before_action { policy!(@ban || Ban) }
@@ -60,7 +59,9 @@ private
   end
 
   def set_bans
-    @bans = policy_scope
+    @bans = policy_scope(Ban).includes(:user)
+    @bans = @bans.where(user_id: params[:user_id]) if admin? && params.key?(:user_id)
+    @bans = @bans.includes(:creator) if admin?
   end
 
   def set_ban

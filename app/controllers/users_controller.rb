@@ -63,7 +63,7 @@ private
   end
 
   def set_users
-    @users = policy_scope.includes :characters, :created_characters
+    @users = policy_scope(User).includes(:characters, :created_characters)
   end
 
   def set_user

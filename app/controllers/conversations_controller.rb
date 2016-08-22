@@ -83,12 +83,11 @@ private
   end
 
   def set_character
-    @character = Character.where id: params[:character_id]
-    @character = @character.visible unless admin?
+    @character = policy_scope(Character).where id: params[:character_id]
   end
 
   def set_conversations
-    @conversations = policy_scope(Conversation).includes :author
+    @conversations = policy_scope(Conversation).includes(:author)
     @conversations = @conversations.where(author: @author) unless @author.nil?
     @conversations = @conversations.where(character: @character) unless @character.nil?
   end

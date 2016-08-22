@@ -1,5 +1,5 @@
 class CharactersController < ApiController
-  include Bannable
+  include Political::Authority
 
   before_action :doorkeeper_authorize!, except: %i(index show)
 
@@ -9,10 +9,9 @@ class CharactersController < ApiController
 
   before_action :set_characters, except: :create
   before_action :set_character, only: %i(show update destroy)
-
   before_action :apply_pagination, only: :index
 
-  before_action :check_permission, only: %i(update destroy), unless: :admin?
+  before_action { policy!(@character || Character) }
 
   def index
     render json: @characters,
@@ -60,20 +59,16 @@ class CharactersController < ApiController
 private
 
   def character_params
-    params.require(:character).permit(
-      :name, :title, :description, :avatar, gallery_images: [ ]
-    )
+    params.require(:character).permit *policy_params
   end
 
   def set_user
-    @user = User.where id: params[:user_id]
-    @user = @user.visible unless admin?
+    @user = policy_scope(User).where(id: params[:user_id])
   end
 
   def set_characters
-    @characters = Character.includes :user, :creator
-    @characters = @characters.where user: @user unless @user.nil?
-    @characters = @characters.visible unless admin?
+    @characters = policy_scope(Character).includes(:user, :creator)
+    @characters = @characters.where(user: @user) unless @user.nil?
   end
 
   def apply_pagination
@@ -82,9 +77,5 @@ private
 
   def set_character
     @character = @characters.find params[:id]
-  end
-
-  def check_permission
-    forbid unless @character.user_id == current_user.id
   end
 end

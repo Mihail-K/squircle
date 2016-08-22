@@ -41,18 +41,10 @@ class BanPolicy < Political::Policy
       if user.nil?
         scope.none
       elsif user.admin?
-        admin_scope
+        scope.all
       else
         scope.where(user_id: user)
       end
-    end
-
-  private
-
-    def admin_scope
-      scope = self.scope.all
-      scope = scope.where(user_id: params[:user_id]) if params.key? :user_id
-      scope
     end
   end
 end
