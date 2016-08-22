@@ -84,6 +84,20 @@ RSpec.describe CharactersController, type: :controller do
       expect(Character.count).to be > old_count
     end
 
+    it 'returns errors if the character is invalid' do
+      old_count = Character.count
+
+      post :create, format: :json, params: {
+        access_token: token.token, character: character_attributes.merge(name: nil)
+      }
+
+      expect(response.status).to eq 422
+      expect(json).to have_key :errors
+      expect(json[:errors]).to have_key :name
+
+      expect(Character.count).to eq old_count
+    end
+
     it %q(doesn't allow banned users to create characters) do
       old_count = Character.count
       active_user.update banned: true
@@ -123,6 +137,20 @@ RSpec.describe CharactersController, type: :controller do
 
       expect(response.status).to eq 200
       expect(character.reload.name).not_to eq old_name
+    end
+
+    it 'returns errors if the change is invalid' do
+      old_name = character.name
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: character.id, character: { name: nil }
+      }
+
+      expect(response.status).to eq 422
+      expect(json).to have_key :errors
+      expect(json[:errors]).to have_key :name
+
+      expect(character.reload.name).to eq old_name
     end
   end
 
