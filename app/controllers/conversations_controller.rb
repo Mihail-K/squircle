@@ -16,7 +16,7 @@ class ConversationsController < ApiController
 
   before_action :apply_pagination, only: :index
   before_action :load_first_posts, only: :index
-  before_action :load_participation, only: :index, if: -> { current_user.present? }
+  before_action :load_participated, only: :index, if: -> { current_user.present? }
 
   before_action { policy!(@conversation || Conversation) }
 
@@ -26,7 +26,7 @@ class ConversationsController < ApiController
     render json: @conversations,
            each_serializer: ConversationSerializer,
            first_posts: @first_posts,
-           participation: @participation,
+           participated: @participated,
            meta: {
              page:  @conversations.current_page,
              count: @conversations.limit_value,
@@ -105,13 +105,13 @@ private
     @first_posts = @first_posts.map { |post| [ post.conversation_id, post ] }.to_h
   end
 
-  def load_participation
-    # Load a hash containing the current user's participation in the conversations.
-    @participation = policy_scope(Post).joins(:conversation)
-                                       .group(Post.arel_table[:conversation_id])
-                                       .where(posts: { author_id: current_user })
-                                       .where(conversations: { id: @conversations })
-                                       .count
+  def load_participated
+    # Construct a hash containing the current user's participation in conversations.
+    @participated = policy_scope(Post).joins(:conversation)
+                                      .group(Post.arel_table[:conversation_id])
+                                      .where(posts: { author_id: current_user })
+                                      .where(conversations: { id: @conversations })
+                                      .count
   end
 
   def set_conversation
