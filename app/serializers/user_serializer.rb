@@ -38,13 +38,6 @@ class UserSerializer < ActiveModel::Serializer
     url
   end
 
-  has_many :characters do
-    object.characters.first(10)
-  end
-  has_many :created_characters, serializer: CharacterSerializer do
-    object.created_characters.first(10)
-  end
-
   def can_view_email?
     object.id == current_user.try(:id) ||
     current_user.try(:admin?)
