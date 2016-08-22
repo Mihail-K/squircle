@@ -83,6 +83,25 @@ RSpec.describe ConversationsController, type: :controller do
       expect(response.status).to eq 403
       expect(Conversation.count).to eq 0
     end
+
+    it 'returns errors if the conversation is invalid' do
+      post :create, format: :json, params: {
+        access_token: token.token,
+        conversation: {
+          posts_attributes: [
+            title: Faker::Book.title,
+            body:  nil
+          ]
+        }
+      }
+
+      expect(response.status).to eq 422
+      expect(json).to have_key :errors
+      expect(json[:errors]).to have_key 'posts.body'
+
+      expect(Conversation.count).to eq 0
+      expect(Post.count).to eq 0
+    end
   end
 
   describe '#PATCH update' do

@@ -66,7 +66,7 @@ class Post < ActiveRecord::Base
   }
 
   scope :visible, -> {
-    where deleted: false
+    joins(:conversation).where deleted: false, conversations: { deleted: false }
   }
 
   def editable_by?(user)
@@ -83,7 +83,7 @@ private
   end
 
   def update_visible_posts_count
-    author.update! visible_posts_count: author.posts.visible.count
-    conversation.update! visible_posts_count: conversation.posts.visible.count
+    author.update_columns visible_posts_count: author.posts.visible.count
+    conversation.update_columns visible_posts_count: conversation.posts.visible.count
   end
 end
