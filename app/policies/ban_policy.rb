@@ -28,12 +28,6 @@ class BanPolicy < Political::Policy
       permitted << :deleted if action? 'update'
       permitted
     end
-
-  private
-
-    def action?(action_name)
-      params[:action] == action_name
-    end
   end
 
   class Scope < Political::Scope

@@ -6,28 +6,28 @@ class PostPolicy < Political::Policy
   end
 
   def show?
-    scope.apply.exists? id: record.id
+    scope.apply.exists?(id: post.id)
   end
 
   def create?
     return true if user.try(:admin?)
-    authenticated? && !user.banned? && !locked?
+    user.present? && !user.banned? && !locked?
   end
 
   def update?
     return true if user.try(:admin?)
-    author? && !banned? && !locked?
+    user.present? && author? && !user.banned? && !locked?
   end
 
   def destroy?
     return true if user.try(:admin?)
-    author? && !banned? && !locked?
+    user.present? && author? && !user.banned? && !locked?
   end
 
   class Parameters < Political::Policy::Parameters
     def permitted
       permitted  = %i(character_id title body)
-      permitted += %i(conversation_id)   if params[:action] == 'create'
+      permitted += %i(conversation_id)   if action?('create')
       permitted += %i(deleted editor_id) if user.try(:admin?)
       permitted
     end
@@ -46,17 +46,13 @@ class PostPolicy < Political::Policy
 private
 
   def author?
-    authenticated? && user.id == post.author_id
-  end
-
-  def banned?
-    authenticated? && user.banned?
+    post.author_id == user.id
   end
 
   def locked?
     if model?
-      return false unless params[:post].respond_to? :[]
-      Conversation.locked.exists? id: params[:post][:conversation_id]
+      return false unless params[:post].respond_to?(:[])
+      Conversation.locked.exists?(id: params[:post][:conversation_id])
     else
       post.conversation.locked?
     end
