@@ -64,4 +64,18 @@ RSpec.describe Post, type: :model do
       expect(Post.visible.exists?(id: post)).to be false
     end
   end
+
+  describe '.editable_by?' do
+    it 'is true when the user is the author of the post' do
+      expect(post.editable_by?(post.author)).to be true
+    end
+
+    it 'is false when the user is not the author' do
+      expect(post.editable_by?(create(:user))).to be false
+    end
+
+    it 'is true when the user is an admin' do
+      expect(post.editable_by?(create(:user, admin: true))).to be true
+    end
+  end
 end
