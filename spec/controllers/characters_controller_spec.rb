@@ -97,6 +97,35 @@ RSpec.describe CharactersController, type: :controller do
     end
   end
 
+  describe '#PATCH update' do
+    let! :character do
+      create :character, user: active_user
+    end
+
+    it 'requires an authenticated user' do
+      old_name = character.name
+
+      patch :update, format: :json, params: {
+        id: character.id, character: { name: Faker::Pokemon.name }
+      }
+
+      expect(response.status).to eq 401
+      expect(character.reload.name).to eq old_name
+    end
+
+    it 'updates a character owned by the user' do
+      old_name = character.name
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: character.id,
+        character: { name: Faker::Pokemon.name }
+      }
+
+      expect(response.status).to eq 200
+      expect(character.reload.name).not_to eq old_name
+    end
+  end
+
   describe '#DELETE destroy' do
     let! :character do
       create :character, user: active_user
