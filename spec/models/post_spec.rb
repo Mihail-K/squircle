@@ -45,12 +45,22 @@ RSpec.describe Post, type: :model do
     end
   end
 
-  describe '.deleted' do
-    before :each do
-      post.update deleted: true
+  describe '.visible' do
+    let :post do
+      create :post
     end
 
-    it 'is not visible' do
+    it 'includes posts that are not deleted' do
+      expect(Post.visible.exists?(id: post)).to be true
+    end
+
+    it 'does not include posts that are deleted' do
+      post.update deleted: true
+      expect(Post.visible.exists?(id: post)).to be false
+    end
+
+    it 'does not include posts that are in deleted conversations' do
+      post.conversation.update deleted: true
       expect(Post.visible.exists?(id: post)).to be false
     end
   end
