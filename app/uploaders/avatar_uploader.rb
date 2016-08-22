@@ -40,6 +40,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
   # Override the filename of the uploaded files:
   # Avoid using model.id or version_name here, see uploader/store.rb for details.
   def filename
+    return nil if original_filename.blank?
     require 'active_support/core_ext/digest/uuid'
     "#{Digest::UUID.uuid_v5(model.class.name, original_filename)}.#{file.extension}"
   end
