@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :bans, only: %i(index create show update destroy)
 
   resources :characters, only: %i(index create show update destroy) do
+    resources :conversations, only: :index
     resources :posts, only: :index
   end
   resources :conversations, only: %i(index create show update destroy) do

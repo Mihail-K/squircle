@@ -1,6 +1,5 @@
 class ConversationsController < ApiController
   include Political::Authority
-  include Bannable
 
   before_action :doorkeeper_authorize!, except: %i(index show)
 
