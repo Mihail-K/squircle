@@ -18,4 +18,9 @@ RSpec.describe Character, type: :model do
     character.user = nil
     expect(character).not_to be_valid
   end
+
+  it 'sets the user as its creator' do
+    character.save
+    expect(character.creator).to eq character.user
+  end
 end

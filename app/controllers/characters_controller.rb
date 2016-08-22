@@ -30,7 +30,7 @@ class CharactersController < ApiController
 
   def create
     @character = Character.new character_params do |character|
-      character.user_id = current_user
+      character.user = current_user
     end
 
     if @character.save
