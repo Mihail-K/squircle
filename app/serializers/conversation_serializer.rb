@@ -13,9 +13,7 @@ class ConversationSerializer < ActiveModel::Serializer
   end
   attribute :created_at
   attribute :updated_at
-  attribute :participated, if: :include_participation? do
-    current_user && object.post_authors.exists?(id: current_user.id)
-  end
+  attribute :participated, if: :include_participation?
 
   attribute :locked
   attribute :locked_on
@@ -31,11 +29,16 @@ class ConversationSerializer < ActiveModel::Serializer
   end
 
   def include_participation?
-    false # TODO : Set as a controller parameter.
+    instance_options[:participated].is_a?(Hash)
   end
 
   def include_first_post?
-    instance_options[:first_posts].is_a? Hash
+    instance_options[:first_posts].is_a?(Hash)
+  end
+
+  def participated
+    instance_options[:participated][object.id].present? &&
+    instance_options[:participated][object.id] > 0
   end
 
   def first_post

@@ -16,14 +16,9 @@ class ConversationsController < ApiController
 
   before_action :apply_pagination, only: :index
   before_action :load_first_posts, only: :index
+  before_action :load_participation, only: :index, if: -> { current_user.present? }
 
-  before_action do
-    if %w(index create).include? action_name
-      policy! Conversation
-    else
-      policy! @conversation
-    end
-  end
+  before_action { policy!(@conversation || Conversation) }
 
   after_action :increment_views_count, only: :show
 
@@ -31,6 +26,7 @@ class ConversationsController < ApiController
     render json: @conversations,
            each_serializer: ConversationSerializer,
            first_posts: @first_posts,
+           participation: @participation,
            meta: {
              page:  @conversations.current_page,
              count: @conversations.limit_value,
@@ -83,8 +79,7 @@ private
   end
 
   def set_author
-    @author = User.where id: params[:author_id]
-    @author = @author.visible unless admin?
+    @author = policy_scope(User).where id: params[:author_id]
   end
 
   def set_character
@@ -94,8 +89,8 @@ private
 
   def set_conversations
     @conversations = policy_scope(Conversation).includes :author
-    @conversations = @conversations.where author: @author unless @author.nil?
-    @conversations = @conversations.where character: @character unless @character.nil?
+    @conversations = @conversations.where(author: @author) unless @author.nil?
+    @conversations = @conversations.where(character: @character) unless @character.nil?
   end
 
   def apply_pagination
@@ -108,6 +103,15 @@ private
 
     # Re-map the first posts to a Hash keyed by the posts' conversation ids.
     @first_posts = @first_posts.map { |post| [ post.conversation_id, post ] }.to_h
+  end
+
+  def load_participation
+    # Load a hash containing the current user's participation in the conversations.
+    @participation = policy_scope(Post).joins(:conversation)
+                                       .group(Post.arel_table[:conversation_id])
+                                       .where(posts: { author_id: current_user })
+                                       .where(conversations: { id: @conversations })
+                                       .count
   end
 
   def set_conversation
