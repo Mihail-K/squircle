@@ -43,11 +43,6 @@ class Post < ActiveRecord::Base
   validates :conversation, presence: true
   validates :body, presence: true, length: { in: 10 .. 10_000, if: :body? }
 
-  validate :character_ownership, if: :character_id_changed?, unless: 'author.admin?'
-  validate if: %i(deleted? editor_id_changed?), unless: 'editor.try(:admin?)' do
-    errors.add :base, 'you cannot edit deleted posts'
-  end
-
   formattable :body
 
   after_create :update_visible_posts_count

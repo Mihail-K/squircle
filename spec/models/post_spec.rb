@@ -29,24 +29,6 @@ RSpec.describe Post, type: :model do
     expect(post).not_to be_valid
   end
 
-  describe '.character' do
-    it 'is valid when it is owned by the author' do
-      post.character = create :character, user: post.author
-      expect(post).to be_valid
-    end
-
-    it 'is not valid if the character is not owned by the author' do
-      post.character = create :character
-      expect(post).not_to be_valid
-    end
-
-    it 'is valid when the author is an admin' do
-      post.character = create :character
-      post.author.admin = true
-      expect(post).to be_valid
-    end
-  end
-
   describe '.formatted_body' do
     before :each do
       post.save
@@ -68,17 +50,7 @@ RSpec.describe Post, type: :model do
       post.update deleted: true
     end
 
-    it 'prevents the post from being edited' do
-      post.editor = create :user
-      expect(post).not_to be_valid
-    end
-
-    it %(doesn't prevent the post from being edited by an admin) do
-      post.editor = create :user, admin: true
-      expect(post).to be_valid
-    end
-
-    it 'hides it from the general public' do
+    it 'is not visible' do
       expect(Post.visible.exists?(id: post)).to be false
     end
   end
