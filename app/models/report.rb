@@ -27,7 +27,7 @@ class Report < ActiveRecord::Base
   enum status: {
     open:     'open',
     resolved: 'resolved',
-    invalid:  'invalid',
+    wontfix:  'wontfix',
     spite:    'spite'
   }
 
