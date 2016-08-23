@@ -13,6 +13,8 @@ Rails.application.routes.draw do
 
   resources :posts, only: %i(index create show update destroy)
 
+  resources :reports, only: %i(index create show update destroy)
+
   resources :users, only: %i(index create show update destroy) do
     get :me, on: :collection
 
@@ -20,5 +22,6 @@ Rails.application.routes.draw do
     resources :characters, only: :index
     resources :conversations, only: :index
     resources :posts, only: :index
+    resources :reports, only: :index
   end
 end

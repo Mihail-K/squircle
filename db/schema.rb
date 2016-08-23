@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160823174025) do
+ActiveRecord::Schema.define(version: 20160823180337) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                     null: false
@@ -111,6 +111,19 @@ ActiveRecord::Schema.define(version: 20160823174025) do
     t.index ["conversation_id"], name: "index_posts_on_postable_type_and_conversation_id"
     t.index ["editor_id"], name: "index_posts_on_editor_id"
     t.index ["title"], name: "index_posts_on_title"
+  end
+
+  create_table "reports", force: :cascade do |t|
+    t.string   "reportable_type",                  null: false
+    t.integer  "reportable_id",                    null: false
+    t.string   "status",          default: "open", null: false
+    t.text     "description"
+    t.integer  "creator_id",                       null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.index ["creator_id"], name: "index_reports_on_creator_id"
+    t.index ["reportable_type", "reportable_id"], name: "index_reports_on_reportable_type_and_reportable_id"
+    t.index ["status"], name: "index_reports_on_status"
   end
 
   create_table "users", force: :cascade do |t|
