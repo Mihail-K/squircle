@@ -21,6 +21,7 @@
 #  deleted                  :boolean          default(FALSE), not null
 #  banned                   :boolean          default(FALSE), not null
 #  visible_posts_count      :integer          default(0), not null
+#  last_active_at           :datetime
 #
 # Indexes
 #
@@ -55,6 +56,8 @@ class User < ActiveRecord::Base
     o.validates :date_of_birth, timeliness: { after: -> { 100.years.ago }, type: :date }
   end
 
+  before_create :set_last_active_at
+
   with_options if: -> { previous_changes.key?(:email) } do |o|
     o.after_commit :regenerate_email_token
     o.after_commit :send_email_confirmation
@@ -81,14 +84,22 @@ class User < ActiveRecord::Base
                )
           )
           .join_sources
-          .first
     )
     .where bans: { id: nil }
+  }
+
+  scope :recently_active, -> {
+    where User.arel_table[:last_active_at]
+              .gteq(5.minutes.ago)
   }
 
   scope :visible, -> {
     where deleted: false
   }
+
+  def set_last_active_at
+    self.last_active_at = Time.zone.now
+  end
 
   def send_email_confirmation
     # TODO

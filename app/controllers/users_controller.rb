@@ -64,6 +64,7 @@ private
 
   def set_users
     @users = policy_scope(User).includes(:characters, :created_characters)
+    @users = @users.recently_active if params.key?(:recently_active)
   end
 
   def set_user

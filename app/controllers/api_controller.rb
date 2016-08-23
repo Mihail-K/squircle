@@ -7,6 +7,10 @@ class ApiController < ActionController::API
     forbid
   end
 
+  after_action if: -> { current_user.present? } do
+    current_user.touch :last_active_at
+  end
+
   def current_resource_owner
     @current_resource_owner ||= User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
   end

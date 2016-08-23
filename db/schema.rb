@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160821165951) do
+ActiveRecord::Schema.define(version: 20160823174025) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                     null: false
@@ -132,6 +132,7 @@ ActiveRecord::Schema.define(version: 20160821165951) do
     t.boolean  "deleted",                  default: false, null: false
     t.boolean  "banned",                   default: false, null: false
     t.integer  "visible_posts_count",      default: 0,     null: false
+    t.datetime "last_active_at"
     t.index ["display_name"], name: "index_users_on_display_name", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["email_token"], name: "index_users_on_email_token", unique: true

@@ -4,6 +4,7 @@ class UserSerializer < ActiveModel::Serializer
   attribute :id
   attribute :display_name
   attribute :created_at
+  attribute :last_active_at
 
   attribute :email, if: :can_view_email?
   attribute :email_confirmed_at, if: :can_view_email?
