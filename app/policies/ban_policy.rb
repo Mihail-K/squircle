@@ -6,7 +6,7 @@ class BanPolicy < Political::Policy
   end
 
   def show?
-    scope.apply.exists? id: params[:id]
+    scope.apply.exists? id: ban.id
   end
 
   def create?
@@ -24,8 +24,8 @@ class BanPolicy < Political::Policy
   class Parameters < Political::Parameters
     def permitted
       permitted  = %i(reason expires_at)
-      permitted << :user_id if action? 'create'
-      permitted << :deleted if action? 'update'
+      permitted << :user_id if action?('create')
+      permitted << :deleted if action?('update')
       permitted
     end
   end

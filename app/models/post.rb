@@ -54,6 +54,10 @@ class Post < ActiveRecord::Base
                   .having(
                     Post.arel_table[:created_at]
                         .eq(Post.arel_table[:created_at].minimum)
+                        .and(
+                          Post.arel_table[:id]
+                              .eq(Post.arel_table[:id].minimum)
+                        )
                   )
   }
 
@@ -62,6 +66,10 @@ class Post < ActiveRecord::Base
                   .having(
                     Post.arel_table[:created_at]
                         .eq(Post.arel_table[:created_at].maximum)
+                        .and(
+                          Post.arel_table[:id]
+                              .eq(Post.arel_table[:id].maximum)
+                        )
                   )
   }
 
