@@ -149,4 +149,56 @@ RSpec.describe UsersController, type: :controller do
       expect(User.count).to eq old_count
     end
   end
+
+  describe '#PATCH update' do
+    it 'requires an authenticated user' do
+      old_email = active_user.email
+
+      patch :update, format: :json, params: {
+        id: active_user.id, user: { email: Faker::Internet.email }
+      }
+
+      expect(response.status).to eq 401
+      expect(active_user.reload.email).to eq old_email
+    end
+
+    it 'updates the user' do
+      old_email = active_user.email
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: active_user.id, user: { email: Faker::Internet.email }
+      }
+
+      expect(response.status).to eq 200
+      expect(json).to have_key :user
+
+      expect(active_user.reload.email).not_to eq old_email
+    end
+
+    it %q(does not allow users to update other users' attributes) do
+      user = create(:user)
+      old_email = user.email
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: user.id, user: { email: Faker::Internet.email }
+      }
+
+      expect(response.status).to eq 403
+      expect(user.reload.email).to eq old_email
+    end
+
+    it 'returns errors if the user is invalid' do
+      old_email = active_user.email
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: active_user.id, user: { email: nil }
+      }
+
+      expect(response.status).to eq 422
+      expect(json).to have_key :errors
+      expect(json[:errors]).to have_key :email
+
+      expect(active_user.reload.email).to eq old_email
+    end
+  end
 end
