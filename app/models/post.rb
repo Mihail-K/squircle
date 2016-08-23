@@ -76,12 +76,6 @@ class Post < ActiveRecord::Base
 
 private
 
-  def character_ownership
-    unless character.present? && author.characters.exists?(id: character_id)
-      errors.add :base, 'you cannot make posts as this character'
-    end
-  end
-
   def update_visible_posts_count
     author.update_columns visible_posts_count: author.posts.visible.count
     conversation.update_columns visible_posts_count: conversation.posts.visible.count
