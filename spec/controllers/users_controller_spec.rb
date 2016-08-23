@@ -136,5 +136,17 @@ RSpec.describe UsersController, type: :controller do
       expect(response.status).to eq 403
       expect(User.count).to eq old_count
     end
+
+    it 'returns errors when the user is invalid' do
+      old_count = User.count
+
+      post :create, format: :json, params: { user: user_attributes.merge(email: nil) }
+
+      expect(response.status).to eq 422
+      expect(json).to have_key :errors
+      expect(json[:errors]).to have_key :email
+
+      expect(User.count).to eq old_count
+    end
   end
 end
