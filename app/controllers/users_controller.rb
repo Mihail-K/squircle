@@ -18,12 +18,7 @@ class UsersController < ApiController
   def index
     render json: @users,
            each_serializer: UserSerializer,
-           meta: {
-             page:  @users.current_page,
-             count: @users.limit_value,
-             total: @users.total_count,
-             pages: @users.total_pages
-           }
+           meta: meta_for(@users)
   end
 
   def show

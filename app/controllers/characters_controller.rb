@@ -16,12 +16,7 @@ class CharactersController < ApiController
   def index
     render json: @characters,
            each_serializer: CharacterSerializer,
-           meta: {
-             page:  @characters.current_page,
-             count: @characters.limit_value,
-             total: @characters.total_count,
-             pages: @characters.total_pages
-           }
+           meta: meta_for(@characters)
   end
 
   def show

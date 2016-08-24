@@ -24,12 +24,7 @@ class PostsController < ApiController
   def index
     render json: @posts,
            each_serializer: PostSerializer,
-           meta: {
-             page:  @posts.current_page,
-             count: @posts.limit_value,
-             total: @posts.total_count,
-             pages: @posts.total_pages
-           }
+           meta: meta_for(@posts)
   end
 
   def show

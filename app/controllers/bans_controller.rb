@@ -12,12 +12,7 @@ class BansController < ApiController
   def index
     render json: @bans,
            each_serializer: BanSerializer,
-           meta: {
-             page:  @bans.current_page,
-             count: @bans.limit_value,
-             total: @bans.total_count,
-             pages: @bans.total_pages
-           }
+           meta: meta_for(@bans)
   end
 
   def show

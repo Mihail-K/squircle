@@ -12,12 +12,7 @@ class ReportsController < ApiController
   def index
     render json: @reports,
            each_serializer: ReportSerializer,
-           meta: {
-             page:  @reports.current_page,
-             count: @reports.limit_value,
-             total: @reports.total_count,
-             pages: @reports.total_pages
-           }
+           meta: meta_for(@reports)
   end
 
   def show

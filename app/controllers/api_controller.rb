@@ -41,4 +41,13 @@ class ApiController < ActionController::API
   def not_found(model = 'object')
     render json: { errors: { model => ['not found'] } }, status: :not_found
   end
+
+  def meta_for(objects)
+    {
+      page:  objects.current_page,
+      count: objects.limit_value,
+      total: objects.total_count,
+      pages: objects.total_pages
+    }
+  end
 end

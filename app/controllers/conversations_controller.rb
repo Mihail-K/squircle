@@ -26,12 +26,7 @@ class ConversationsController < ApiController
            each_serializer: ConversationSerializer,
            first_posts: @first_posts,
            participated: @participated,
-           meta: {
-             page:  @conversations.current_page,
-             count: @conversations.limit_value,
-             total: @conversations.total_count,
-             pages: @conversations.total_pages
-           }
+           meta: meta_for(@conversations)
   end
 
   def show
