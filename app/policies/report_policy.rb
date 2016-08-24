@@ -24,8 +24,9 @@ class ReportPolicy < Political::Policy
 
   class Parameters < Political::Parameters
     def permitted
-      permitted  = %i(reportable_id reportable_type description)
-      permitted << :status if user.try(:admin?)
+      permitted  = %i(description)
+      permitted += %i(reportable_id reportable_type) if action?('create')
+      permitted += %i(status deleted) if user.try(:admin?)
       permitted
     end
   end

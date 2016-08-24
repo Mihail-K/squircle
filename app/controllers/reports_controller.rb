@@ -55,7 +55,7 @@ class ReportsController < ApiController
 private
 
   def report_params
-    params.require(:report).permitted *policy_params
+    params.require(:report).permit *policy_params
   end
 
   def set_reports

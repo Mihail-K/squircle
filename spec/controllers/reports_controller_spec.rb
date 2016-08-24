@@ -40,5 +40,81 @@ RSpec.describe ReportsController, type: :controller do
       expect(response.status).to eq 200
       expect(json[:meta][:total]).to eq 0
     end
+
+    it 'returns all reports for admin users' do
+      active_user.update admin: true
+
+      get :index, format: :json, params: { access_token: token.token }
+
+      expect(response.status).to eq 200
+      expect(json[:meta][:total]).to eq reports.count
+    end
+  end
+
+  describe '#PATCH' do
+    let! :report do
+      create :report, :reportable_user, creator: active_user
+    end
+
+    it 'requires an authenticated user' do
+      old_status = report.status
+
+      patch :update, format: :json, params: {
+        id: report.id, report: { status: :resolved }
+      }
+
+      expect(response.status).to eq 401
+      expect(report.reload.status).to eq old_status
+    end
+
+    it 'allows the creator to update the description of a report' do
+      old_description = report.description
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: report.id,
+        report: { description: Faker::Hipster.paragraph }
+      }
+
+      expect(response.status).to eq 200
+      expect(report.reload.description).not_to eq old_description
+    end
+
+    it 'only allows admin users to change the status of a report' do
+      old_status = report.status
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: report.id, report: { status: :resolved }
+      }
+
+      expect(response.status).to eq 200
+      expect(report.reload.status).to eq old_status
+    end
+
+    it 'updates the status of a report' do
+      old_status = report.status
+      active_user.update admin: true
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: report.id, report: { status: :resolved }
+      }
+
+      expect(response.status).to eq 200
+      expect(report.reload.status).not_to eq old_status
+      expect(report.status).to eq 'resolved'
+    end
+
+    it 'returns errors if the report is invalid' do
+      old_description = report.description
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: report.id, report: { description: nil }
+      }
+
+      expect(response.status).to eq 422
+      expect(json).to have_key :errors
+      expect(json[:errors]).to have_key :description
+
+      expect(report.reload.description).to eq old_description
+    end
   end
 end
