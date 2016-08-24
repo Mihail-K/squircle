@@ -20,7 +20,7 @@ RSpec.describe PostsController, type: :controller do
       expect(json).to have_key :meta
 
       expect(json[:meta][:page]).to eq 1
-      expect(json[:meta][:count]).to eq 10
+      expect(json[:meta][:per]).to eq 10
       expect(json[:meta][:total]).to eq posts.length
     end
 
