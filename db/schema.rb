@@ -119,9 +119,11 @@ ActiveRecord::Schema.define(version: 20160823180337) do
     t.string   "status",          default: "open", null: false
     t.text     "description"
     t.integer  "creator_id",                       null: false
+    t.boolean  "deleted",         default: false,  null: false
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
     t.index ["creator_id"], name: "index_reports_on_creator_id"
+    t.index ["deleted"], name: "index_reports_on_deleted"
     t.index ["reportable_type", "reportable_id"], name: "index_reports_on_reportable_type_and_reportable_id"
     t.index ["status"], name: "index_reports_on_status"
   end

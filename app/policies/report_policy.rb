@@ -35,7 +35,7 @@ class ReportPolicy < Political::Policy
       if user.try(:admin?)
         scope.all
       elsif user.present?
-        scope.open.visible.where(creator: user)
+        scope.visible.where(creator: user)
       else
         scope.none
       end
