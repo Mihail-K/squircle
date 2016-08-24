@@ -44,7 +44,7 @@ class ReportsController < ApiController
 
   def destroy
     if @report.update deleted: true
-      render json: @report
+      head :no_content
     else
       errors @report
     end

@@ -111,6 +111,7 @@ RSpec.describe ReportsController, type: :controller do
       expect(response.status).to eq 200
       expect(report.reload.status).not_to eq old_status
       expect(report.status).to eq 'resolved'
+      expect(report.closed_by).to eq active_user
     end
 
     it 'returns errors if the report is invalid' do
@@ -125,6 +126,35 @@ RSpec.describe ReportsController, type: :controller do
       expect(json[:errors]).to have_key :description
 
       expect(report.reload.description).to eq old_description
+    end
+  end
+
+  describe '#DELETE destroy' do
+    let! :report do
+      create :report, :reportable_user, creator: active_user
+    end
+
+    it 'requires an authenticated user' do
+      delete :destroy, format: :json, params: { id: report.id }
+
+      expect(response.status).to eq 401
+      expect(report.reload.deleted?).to be false
+    end
+
+    it 'prevents non-admins from deleting reports' do
+      delete :destroy, format: :json, params: { access_token: token.token, id: report.id }
+
+      expect(response.status).to eq 403
+      expect(report.reload.deleted?).to be false
+    end
+
+    it 'marks a report as deleted' do
+      active_user.update admin: true
+
+      delete :destroy, format: :json, params: { access_token: token.token, id: report.id }
+
+      expect(response.status).to eq 204
+      expect(report.reload.deleted?).to be true
     end
   end
 end
