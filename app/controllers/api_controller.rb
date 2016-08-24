@@ -45,7 +45,10 @@ class ApiController < ActionController::API
   def meta_for(objects)
     {
       page:  objects.current_page,
-      count: objects.limit_value,
+      next:  objects.next_page,
+      prev:  objects.prev_page,
+      size:  objects.size,
+      per:   objects.limit_value,
       total: objects.total_count,
       pages: objects.total_pages
     }

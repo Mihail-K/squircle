@@ -23,17 +23,17 @@ class UserSerializer < ActiveModel::Serializer
   attribute :admin
   attribute :banned
 
-  attribute :avatar_url do
+  attribute :avatar_url, if: -> { object.avatar.file.present? } do
     url = object.avatar.url
     url = 'http://localhost:3000' + url if url && Rails.env.development?
     url
   end
-  attribute :avatar_medium_url do
+  attribute :avatar_medium_url, if: -> { object.avatar.medium.file.present? } do
     url = object.avatar.medium.url
     url = 'http://localhost:3000' + url if url && Rails.env.development?
     url
   end
-  attribute :avatar_thumb_url do
+  attribute :avatar_thumb_url, if: -> { object.avatar.thumb.file.present? } do
     url = object.avatar.thumb.url
     url = 'http://localhost:3000' + url if url && Rails.env.development?
     url

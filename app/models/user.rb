@@ -88,6 +88,10 @@ class User < ActiveRecord::Base
     .where bans: { id: nil }
   }
 
+  scope :most_active, -> {
+    where.not(visible_posts_count: 0).order(visible_posts_count: :desc)
+  }
+
   scope :recently_active, -> {
     where User.arel_table[:last_active_at]
               .gteq(5.minutes.ago)
