@@ -5,6 +5,7 @@ class ReportSerializer < ActiveModel::Serializer
   attribute :creator_id
 
   attribute :status
+  attribute :closed
   attribute :description
   attribute :created_at
   attribute :updated_at

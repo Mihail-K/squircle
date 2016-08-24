@@ -11,9 +11,12 @@
 #  deleted         :boolean          default(FALSE), not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  closed_at       :datetime
+#  closed_by_id    :integer
 #
 # Indexes
 #
+#  index_reports_on_closed_by_id                       (closed_by_id)
 #  index_reports_on_creator_id                         (creator_id)
 #  index_reports_on_deleted                            (deleted)
 #  index_reports_on_reportable_type_and_reportable_id  (reportable_type,reportable_id)
@@ -23,6 +26,7 @@
 class Report < ActiveRecord::Base
   belongs_to :reportable, polymorphic: true
   belongs_to :creator, class_name: 'User'
+  belongs_to :closed_by, class_name: 'User'
 
   enum status: {
     open:     'open',
@@ -33,11 +37,28 @@ class Report < ActiveRecord::Base
 
   validates :reportable, presence: true
   validates :creator, presence: true
+  validates :closed_by, presence: true, if: :closed?
 
   validates :status, presence: true
   validates :description, presence: true, length: { in: 10..1_000 }
 
+  before_save :set_closed_at_timestamp, if: -> { status_changed? from: 'open' }
+
+  scope :closed, -> {
+    where.not status: 'open'
+  }
+
   scope :visible, -> {
     where deleted: false
   }
+
+  def closed?
+    status != 'open'
+  end
+
+  alias_method :closed, :closed?
+
+  def set_closed_at_timestamp
+    self.closed_at = Time.zone.now
+  end
 end

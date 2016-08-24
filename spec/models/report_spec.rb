@@ -38,4 +38,20 @@ RSpec.describe Report, type: :model do
     report.status = nil
     expect(report).not_to be_valid
   end
+
+  it 'is closed when its status is not open' do
+    report.status = 'resolved'
+    expect(report.closed?).to be true
+  end
+
+  it 'is not valid if closed without a closing user' do
+    report.status = 'resolved'
+    expect(report).not_to be_valid
+  end
+
+  it 'sets a closed_at timestamp when it becomes closed' do
+    report.update status: 'resolved', closed_by: create(:user)
+    expect(report.status).to eq 'resolved'
+    expect(report.closed_at).not_to be nil
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160823180337) do
+ActiveRecord::Schema.define(version: 20160824185518) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                     null: false
@@ -122,6 +122,9 @@ ActiveRecord::Schema.define(version: 20160823180337) do
     t.boolean  "deleted",         default: false,  null: false
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
+    t.datetime "closed_at"
+    t.integer  "closed_by_id"
+    t.index ["closed_by_id"], name: "index_reports_on_closed_by_id"
     t.index ["creator_id"], name: "index_reports_on_creator_id"
     t.index ["deleted"], name: "index_reports_on_deleted"
     t.index ["reportable_type", "reportable_id"], name: "index_reports_on_reportable_type_and_reportable_id"

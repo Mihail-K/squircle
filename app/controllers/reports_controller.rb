@@ -32,7 +32,10 @@ class ReportsController < ApiController
   end
 
   def update
-    if @report.update report_params
+    @report.attributes = report_params
+    @report.closed_by = current_user if @report.status_changed?(from: 'open')
+
+    if @report.save
       render json: @report
     else
       errors @report

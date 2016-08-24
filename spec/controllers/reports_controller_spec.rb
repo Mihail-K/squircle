@@ -52,7 +52,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'allows filtering by report status' do
       active_user.update admin: true
-      reports.sample.update status: 'resolved'
+      reports.sample.update status: 'resolved', closed_by: active_user
 
       get :index, format: :json, params: { access_token: token.token, status: 'resolved' }
 
