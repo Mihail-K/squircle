@@ -60,7 +60,7 @@ private
 
   def set_reports
     @reports = policy_scope(Report).includes(:creator, :reportable)
-    @reports = @reports.where(status: params[:status]) if admin? && params.key?(:status)
+    @reports = @reports.where(status: params[:status]) if params.key?(:status)
   end
 
   def set_report

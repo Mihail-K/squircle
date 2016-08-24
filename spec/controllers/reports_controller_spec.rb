@@ -49,6 +49,16 @@ RSpec.describe ReportsController, type: :controller do
       expect(response.status).to eq 200
       expect(json[:meta][:total]).to eq reports.count
     end
+
+    it 'allows filtering by report status' do
+      active_user.update admin: true
+      reports.sample.update status: 'resolved'
+
+      get :index, format: :json, params: { access_token: token.token, status: 'resolved' }
+
+      expect(response.status).to eq 200
+      expect(json[:meta][:total]).to eq reports.select(&:resolved?).count
+    end
   end
 
   describe '#PATCH' do
