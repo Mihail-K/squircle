@@ -61,7 +61,58 @@ RSpec.describe ReportsController, type: :controller do
     end
   end
 
-  describe '#PATCH' do
+  describe '#GET show' do
+    let! :report do
+      create :report, :reportable_user, creator: active_user
+    end
+
+    it 'requires an authenticated user' do
+      get :show, format: :json, params: { id: report.id }
+
+      expect(response.status).to eq 401
+    end
+
+    it 'returns the report as json' do
+      get :show, format: :json, params: { access_token: token.token, id: report.id }
+
+      expect(response.status).to eq 200
+      expect(json).to have_key :report
+    end
+
+    it 'prevents users from viewing reports created by other users' do
+      report.update creator: create(:user)
+
+      get :show, format: :json, params: { access_token: token.token, id: report.id }
+
+      expect(response.status).to eq 404
+    end
+
+    it 'prevents users from viewing deleted reports' do
+      report.update deleted: true
+
+      get :show, format: :json, params: { access_token: token.token, id: report.id }
+
+      expect(response.status).to eq 404
+    end
+
+    it 'returns a 404 if the report does not exist' do
+      get :show, format: :json, params: { access_token: token.token, id: report.id + 1 }
+
+      expect(response.status).to eq 404
+    end
+
+    it 'allows admins to view all reports' do
+      report.update creator: create(:user)
+      active_user.update admin: true
+
+      get :show, format: :json, params: { access_token: token.token, id: report.id }
+
+      expect(response.status).to eq 200
+      expect(json).to have_key :report
+    end
+  end
+
+  describe '#PATCH update' do
     let! :report do
       create :report, :reportable_user, creator: active_user
     end
@@ -87,6 +138,19 @@ RSpec.describe ReportsController, type: :controller do
 
       expect(response.status).to eq 200
       expect(report.reload.description).not_to eq old_description
+    end
+
+    it 'prevents users from updating reports created by other users' do
+      old_description = report.description
+      report.update creator: create(:user)
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: report.id,
+        report: { description: Faker::Hipster.paragraph }
+      }
+
+      expect(response.status).to eq 404
+      expect(report.reload.description).to eq old_description
     end
 
     it 'only allows admin users to change the status of a report' do
