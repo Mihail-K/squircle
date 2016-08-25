@@ -6,7 +6,7 @@ class ReportPolicy < Political::Policy
   end
 
   def show?
-    scope.apply.exists? id: report.id
+    scope.apply.exists?(id: report.id)
   end
 
   def create?

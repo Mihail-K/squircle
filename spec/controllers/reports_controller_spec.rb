@@ -112,6 +112,59 @@ RSpec.describe ReportsController, type: :controller do
     end
   end
 
+  describe '#POST create' do
+    let :reportable do
+      create :user
+    end
+
+    let :report_attributes do
+      {
+        reportable_id:   reportable.id,
+        reportable_type: reportable.class.name,
+        description:     Faker::Hipster.paragraph
+      }
+    end
+
+    it 'requires an authenticated user' do
+      post :create, format: :json, params: { report: report_attributes }
+
+      expect(response.status).to eq 401
+      expect(Report.count).to eq 0
+    end
+
+    it 'creates a report' do
+      post :create, format: :json, params: {
+        access_token: token.token, report: report_attributes
+      }
+
+      expect(response.status).to eq 201
+      expect(json).to have_key :report
+      expect(Report.count).to eq 1
+    end
+
+    it 'prevents banned users from creating reports' do
+      active_user.update banned: true
+
+      post :create, format: :json, params: {
+        access_token: token.token, report: report_attributes
+      }
+
+      expect(response.status).to eq 403
+      expect(Report.count).to eq 0
+    end
+
+    it 'returns errors if the report is invalid' do
+      post :create, format: :json, params: {
+        access_token: token.token, report: report_attributes.merge(description: nil)
+      }
+
+      expect(response.status).to eq 422
+      expect(json).to have_key :errors
+      expect(json[:errors]).to have_key :description
+      expect(Report.count).to eq 0
+    end
+  end
+
   describe '#PATCH update' do
     let! :report do
       create :report, :reportable_user, creator: active_user
