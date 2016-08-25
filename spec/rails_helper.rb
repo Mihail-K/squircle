@@ -8,6 +8,9 @@ if Rails.env.test?
   require 'simplecov'
   SimpleCov.start 'rails' do
     add_filter 'app/uploaders'
+    add_group  'Policies', 'app/policies'
+    add_group  'Serializers', 'app/serializers'
+    add_group  'Services', 'app/services'
   end
 end
 
