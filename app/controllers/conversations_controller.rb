@@ -92,7 +92,7 @@ private
 
   def load_first_posts
     # Load a list of first posts for the list of conversations.
-    @first_posts = policy_scope(Post).first_posts.where conversation: @conversations
+    @first_posts = policy_scope(Post).first_posts.where(conversation: @conversations)
 
     # Re-map the first posts to a Hash keyed by the posts' conversation ids.
     @first_posts = @first_posts.map { |post| [ post.conversation_id, post ] }.to_h

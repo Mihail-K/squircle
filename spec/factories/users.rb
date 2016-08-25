@@ -49,5 +49,19 @@ FactoryGirl.define do
     after :build do |user, e|
       user.bans = build_list :ban, e.bans_count, user: user
     end
+
+    # - Posts - #
+
+    trait :with_posts do
+      posts_count 1
+    end
+
+    transient do
+      posts_count 0
+    end
+
+    after :build do |user, e|
+      user.posts = build_list :post, e.posts_count, author: user
+    end
   end
 end

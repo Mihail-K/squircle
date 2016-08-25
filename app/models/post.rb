@@ -50,7 +50,7 @@ class Post < ActiveRecord::Base
   after_destroy :update_visible_posts_count
 
   scope :first_posts, -> {
-    where id: Post.group(:conversation_id)
+    where id: Post.group(Post.arel_table[:conversation_id])
                   .having(
                     Post.arel_table[:created_at]
                         .eq(Post.arel_table[:created_at].minimum)
@@ -62,7 +62,7 @@ class Post < ActiveRecord::Base
   }
 
   scope :last_posts, -> {
-    where id: Post.group(:conversation_id)
+    where id: Post.group(Post.arel_table[:conversation_id])
                   .having(
                     Post.arel_table[:created_at]
                         .eq(Post.arel_table[:created_at].maximum)

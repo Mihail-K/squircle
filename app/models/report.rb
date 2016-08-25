@@ -40,13 +40,9 @@ class Report < ActiveRecord::Base
   validates :closed_by, presence: true, if: :closed?
 
   validates :status, presence: true
-  validates :description, presence: true, length: { in: 10..1_000 }
+  validates :description, presence: true, length: { in: 10..1000 }
 
   before_save :set_closed_at_timestamp, if: -> { status_changed? from: 'open' }
-
-  scope :closed, -> {
-    where.not status: 'open'
-  }
 
   scope :visible, -> {
     where deleted: false

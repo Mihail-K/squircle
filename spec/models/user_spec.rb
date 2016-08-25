@@ -86,4 +86,24 @@ RSpec.describe User, type: :model do
       expect(user.reload.banned?).to be false
     end
   end
+
+  describe '.most_active' do
+    let :user do
+      create :user, :with_posts
+    end
+
+    it 'includes users that have visible posts' do
+      expect(User.most_active.exists?(id: user)).to be true
+    end
+
+    it 'does not includes users that have no visible posts' do
+      user.posts.each { |post| post.update(deleted: true) }
+      expect(User.most_active.exists?(id: user)).to be false
+    end
+
+    it 'does not include banned users' do
+      user.update banned: true
+      expect(User.most_active.exists?(id: user)).to be false
+    end
+  end
 end

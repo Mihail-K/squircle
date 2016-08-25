@@ -89,7 +89,8 @@ class User < ActiveRecord::Base
   }
 
   scope :most_active, -> {
-    where.not(visible_posts_count: 0).order(visible_posts_count: :desc)
+    not_banned.where(User.arel_table[:visible_posts_count].gt(0))
+              .order(visible_posts_count: :desc)
   }
 
   scope :recently_active, -> {
