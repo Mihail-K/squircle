@@ -14,6 +14,7 @@
 #  locked_on           :datetime
 #  locked_by_id        :integer
 #  visible_posts_count :integer          default(0), not null
+#  last_active_at      :datetime
 #
 # Indexes
 #
@@ -57,6 +58,11 @@ class Conversation < ActiveRecord::Base
   scope :visible,  -> { where deleted: false }
   scope :deleted,  -> { where deleted: true }
 
+  scope :recently_active, -> {
+    order(last_active_at: :desc).where Conversation.arel_table[:last_active_at]
+                                                   .gteq(1.day.ago)
+  }
+
   def locking_user_is_admin
     errors.add :locked, 'can only be changed by admins' unless locked_by.try(:admin?)
   end
@@ -72,6 +78,8 @@ class Conversation < ActiveRecord::Base
   def set_locked_on_timestamp
     self.locked_on = Time.zone.now
   end
+
+private
 
   def set_visible_posts_count
     update_columns visible_posts_count: posts.visible.count

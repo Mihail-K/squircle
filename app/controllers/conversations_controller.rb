@@ -84,6 +84,7 @@ private
     @conversations = policy_scope(Conversation).includes(:author)
     @conversations = @conversations.where(author: @author) unless @author.nil?
     @conversations = @conversations.where(character: @character) unless @character.nil?
+    @conversations = @conversations.recently_active if params.key?(:recently_active)
   end
 
   def apply_pagination

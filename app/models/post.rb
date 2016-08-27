@@ -49,6 +49,10 @@ class Post < ActiveRecord::Base
   after_update :update_visible_posts_count, if: :deleted_changed?
   after_destroy :update_visible_posts_count
 
+  after_create :update_conversation_activity
+  after_update :update_conversation_activity, if: :deleted_changed?
+  after_destroy :update_conversation_activity
+
   scope :first_posts, -> {
     where id: Post.group(Post.arel_table[:conversation_id])
                   .having(
@@ -87,5 +91,10 @@ private
   def update_visible_posts_count
     author.update_columns visible_posts_count: author.posts.visible.count
     conversation.update_columns visible_posts_count: conversation.posts.visible.count
+  end
+
+  def update_conversation_activity
+    last_activity = conversation.posts.visible.maximum(:updated_at)
+    conversation.update_columns(last_active_at: last_activity)
   end
 end

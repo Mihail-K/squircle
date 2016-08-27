@@ -13,6 +13,7 @@ class ConversationSerializer < ActiveModel::Serializer
   end
   attribute :created_at
   attribute :updated_at
+  attribute :last_active_at
   attribute :participated, if: :include_participation?
 
   attribute :locked
