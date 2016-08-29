@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160826183752) do
+ActiveRecord::Schema.define(version: 20160827181114) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                     null: false
@@ -54,8 +54,10 @@ ActiveRecord::Schema.define(version: 20160826183752) do
     t.integer  "locked_by_id"
     t.integer  "visible_posts_count", default: 0,     null: false
     t.datetime "last_active_at"
+    t.integer  "section_id"
     t.index ["author_id"], name: "index_conversations_on_author_id"
     t.index ["locked_by_id"], name: "index_conversations_on_locked_by_id"
+    t.index ["section_id"], name: "index_conversations_on_section_id"
   end
 
   create_table "oauth_access_grants", force: :cascade do |t|
@@ -109,7 +111,6 @@ ActiveRecord::Schema.define(version: 20160826183752) do
     t.text     "formatted_body"
     t.index ["author_id"], name: "index_posts_on_author_id"
     t.index ["character_id"], name: "index_posts_on_character_id"
-    t.index ["conversation_id"], name: "index_posts_on_conversation_id"
     t.index ["conversation_id"], name: "index_posts_on_postable_type_and_conversation_id"
     t.index ["editor_id"], name: "index_posts_on_editor_id"
     t.index ["title"], name: "index_posts_on_title"
@@ -131,6 +132,19 @@ ActiveRecord::Schema.define(version: 20160826183752) do
     t.index ["deleted"], name: "index_reports_on_deleted"
     t.index ["reportable_type", "reportable_id"], name: "index_reports_on_reportable_type_and_reportable_id"
     t.index ["status"], name: "index_reports_on_status"
+  end
+
+  create_table "sections", force: :cascade do |t|
+    t.string   "title",                               null: false
+    t.text     "description"
+    t.string   "logo"
+    t.integer  "conversations_count", default: 0,     null: false
+    t.boolean  "deleted",             default: false, null: false
+    t.integer  "creator_id",                          null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.index ["creator_id"], name: "index_sections_on_creator_id"
+    t.index ["title"], name: "index_sections_on_title"
   end
 
   create_table "users", force: :cascade do |t|

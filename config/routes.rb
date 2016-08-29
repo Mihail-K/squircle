@@ -15,6 +15,10 @@ Rails.application.routes.draw do
 
   resources :reports, only: %i(index create show update destroy)
 
+  resources :sections, only: %i(index create show update destroy) do
+    resources :conversations, only: :index
+  end
+
   resources :users, only: %i(index create show update destroy) do
     get :me, on: :collection
 

@@ -15,16 +15,21 @@
 #  locked_by_id        :integer
 #  visible_posts_count :integer          default(0), not null
 #  last_active_at      :datetime
+#  section_id          :integer
 #
 # Indexes
 #
 #  index_conversations_on_author_id     (author_id)
 #  index_conversations_on_locked_by_id  (locked_by_id)
+#  index_conversations_on_section_id    (section_id)
 #
 
 class Conversation < ActiveRecord::Base
   belongs_to :author, class_name: 'User'
   belongs_to :locked_by, class_name: 'User'
+
+  belongs_to :section, inverse_of: :conversations,
+                       counter_cache: :conversations_count
 
   has_many :posts, inverse_of: :conversation
 

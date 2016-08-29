@@ -21,6 +21,7 @@ class ConversationSerializer < ActiveModel::Serializer
 
   belongs_to :author, serializer: UserSerializer
   belongs_to :locked_by, serializer: UserSerializer, if: :can_view_locking_user?
+  belongs_to :section
 
   has_one :first_post, serializer: PostSerializer, if: :include_first_post?
 

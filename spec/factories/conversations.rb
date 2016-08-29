@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :conversation do
     association :author, factory: :user, strategy: :build
+    section
 
     trait :with_posts do
       post_count { Faker::Number.between(1, 15) }
