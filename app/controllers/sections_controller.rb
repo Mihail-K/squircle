@@ -20,7 +20,9 @@ class SectionsController < ApiController
   end
 
   def create
-    @section = Section.new section_params
+    @section = Section.new section_params do |section|
+      section.creator = current_user
+    end
 
     if @section.save
       render json: @section, status: :created
