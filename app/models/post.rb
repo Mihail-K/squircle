@@ -78,7 +78,8 @@ class Post < ActiveRecord::Base
   }
 
   scope :visible, -> {
-    joins(:conversation).where deleted: false, conversations: { deleted: false }
+    where(deleted: false).joins(:conversation)
+                         .merge(Conversation.visible)
   }
 
   def editable_by?(user)

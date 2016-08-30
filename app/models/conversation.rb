@@ -58,10 +58,14 @@ class Conversation < ActiveRecord::Base
 
   after_create :set_visible_posts_count
 
-  scope :locked,   -> { where locked: true }
-  scope :unlocked, -> { where locked: false }
-  scope :visible,  -> { where deleted: false }
-  scope :deleted,  -> { where deleted: true }
+  scope :locked, -> {
+    where(locked: true)
+  }
+
+  scope :visible, -> {
+    where(deleted: false).joins(:section)
+                         .merge(Section.visible)
+  }
 
   scope :recently_active, -> {
     order(last_active_at: :desc).where Conversation.arel_table[:last_active_at]

@@ -3,13 +3,6 @@ class ConversationsController < ApiController
 
   before_action :doorkeeper_authorize!, except: %i(index show)
 
-  before_action :set_author, except: :create, if: -> {
-    params.key? :user_id
-  }
-  before_action :set_character, except: :create, if: -> {
-    params.key? :character_id
-  }
-
   before_action :set_conversations, except: :create
   before_action :set_conversation, except: %i(index create)
 
@@ -47,11 +40,10 @@ class ConversationsController < ApiController
   end
 
   def update
-    if conversation_params[:locked].present?
-      @conversation.locked_by = current_user
-    end
+    @conversation.attributes = conversation_params
+    @conversation.locked_by  = current_user if @conversation.locked_changed?(to: true)
 
-    if @conversation.update conversation_params
+    if @conversation.save
       render json: @conversation
     else
       errors @conversation
@@ -59,7 +51,7 @@ class ConversationsController < ApiController
   end
 
   def destroy
-    if @conversation.update deleted: true
+    if @conversation.update(deleted: true)
       head :no_content
     else
       errors @conversation
@@ -72,18 +64,11 @@ private
     params.require(:conversation).permit *policy_params
   end
 
-  def set_author
-    @author = policy_scope(User).where id: params[:author_id]
-  end
-
-  def set_character
-    @character = policy_scope(Character).where id: params[:character_id]
-  end
-
   def set_conversations
-    @conversations = policy_scope(Conversation).includes(:author)
-    @conversations = @conversations.where(author: @author) unless @author.nil?
-    @conversations = @conversations.where(character: @character) unless @character.nil?
+    @conversations = policy_scope(Conversation).includes(:author, :section)
+    @conversations = @conversations.where(author: params[:author_id]) if params.key?(:author_id)
+    @conversations = @conversations.where(character: params[:character_id]) if params.key?(:character_id)
+    @conversations = @conversations.where(section: params[:section_id]) if params.key?(:section_id)
     @conversations = @conversations.recently_active if params.key?(:recently_active)
   end
 
@@ -113,6 +98,6 @@ private
   end
 
   def increment_views_count
-    @conversation.increment! :views_count
+    @conversation.increment!(:views_count)
   end
 end

@@ -35,10 +35,10 @@ class User < ActiveRecord::Base
   has_many :previous_bans, -> { inactive }, class_name: 'Ban'
   has_many :issued_bans, foreign_key: :creator_id, class_name: 'Ban'
 
-  has_many :characters, -> { visible }, inverse_of: :user
-  has_many :created_characters, -> { visible }, foreign_key: :creator_id, class_name: 'Character'
+  has_many :characters, inverse_of: :user
+  has_many :created_characters, foreign_key: :creator_id, class_name: 'Character'
 
-  has_many :posts, -> { visible }, foreign_key: :author_id, inverse_of: :author
+  has_many :posts, foreign_key: :author_id, inverse_of: :author
 
   has_secure_token :email_token
   has_secure_password

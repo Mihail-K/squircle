@@ -53,6 +53,7 @@ private
 
   def set_sections
     @sections = policy_scope(Section)
+    @sections = @sections.includes(:creator) if admin?
   end
 
   def set_section
