@@ -3,16 +3,6 @@ class PostsController < ApiController
 
   before_action :doorkeeper_authorize!, except: %i(index show)
 
-  before_action :set_author, except: :create, if: -> {
-    params.key?(:user_id) || params.key?(:author_id)
-  }
-  before_action :set_character, except: :create, if: -> {
-    params.key? :character_id
-  }
-  before_action :set_conversation, except: :create, if: -> {
-    params.key? :conversation_id
-  }
-
   before_action :set_posts, except: :create
   before_action :set_post, except: %i(index create)
   before_action :apply_pagination, only: :index
@@ -66,23 +56,11 @@ private
     params.require(:post).permit *policy_params
   end
 
-  def set_author
-    @author = policy_scope(User).where(id: params[:user_id] || params[:author_id])
-  end
-
-  def set_character
-    @character = policy_scope(Character).where(id: params[:character_id])
-  end
-
-  def set_conversation
-    @conversation = policy_scope(Conversation).where(id: params[:conversation_id])
-  end
-
   def set_posts
     @posts = policy_scope(Post).includes(:author, :editor, :character, :conversation)
-    @posts = @posts.where(author: @author) unless @author.nil?
-    @posts = @posts.where(character: @character) unless @character.nil?
-    @posts = @posts.where(conversation: @conversation) unless @conversation.nil?
+    @posts = @posts.where(author: params[:user_id] || params[:author_id]) if params.key?(:user_id) || params.key?(:author_id)
+    @posts = @posts.where(character: params[:character_id]) if params.key?(:character_id)
+    @posts = @posts.where(conversation: params[:conversation_id]) if params.key?(:conversation_id)
     @posts = @posts.order(created_at: :asc)
   end
 
@@ -95,7 +73,9 @@ private
   end
 
   def check_flood_limit
-    if Post.where(author_id: current_user).where('created_at > ?', 20.seconds.ago).exists?
+    if Post.where(author_id: current_user)
+           .where(Post.arel_table[:created_at].gteq(20.seconds.ago))
+           .exists?
       @post = Post.new
       @post.errors.add :base, 'you can only post once every 20 seconds'
       errors @post

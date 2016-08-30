@@ -69,6 +69,7 @@ private
     @conversations = @conversations.where(author: params[:author_id]) if params.key?(:author_id)
     @conversations = @conversations.where(character: params[:character_id]) if params.key?(:character_id)
     @conversations = @conversations.where(section: params[:section_id]) if params.key?(:section_id)
+    @conversations = @conversations.order(last_active_at: :desc)
     @conversations = @conversations.recently_active if params.key?(:recently_active)
   end
 
