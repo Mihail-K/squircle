@@ -24,6 +24,7 @@ class Section < ActiveRecord::Base
   has_many :conversations, inverse_of: :section
 
   validates :title, presence: true
+  validates :description, length: { in: 5..1000 }
   validates :creator, presence: true
 
   scope :visible, -> { where(deleted: false) }

@@ -10,8 +10,8 @@ class SectionsController < ApiController
   before_action { policy!(@section || Section) }
 
   def index
-    render json: @sections
-           each_serializer: SectionSerializer
+    render json: @sections,
+           each_serializer: SectionSerializer,
            meta: meta_for(@sections)
   end
 
