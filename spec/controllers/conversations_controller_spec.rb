@@ -9,13 +9,13 @@ RSpec.describe ConversationsController, type: :controller do
 
   describe '#GET index' do
     let! :conversations do
-      create_list :conversation, Faker::Number.between(1, 5), author: create(:user)
+      create_list :conversation, 3, author: create(:user)
     end
 
     it 'returns a list of conversations' do
       get :index, format: :json
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(json).to have_key :meta
       expect(json).to have_key :conversations
 
@@ -24,45 +24,53 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'only returns visible conversations' do
-      conversations.first.update deleted: true
+      conversations.sample.update deleted: true
 
       get :index, format: :json
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(json[:meta][:total]).to eq(conversations.count - 1)
     end
 
     it 'returns all conversations for admin users' do
-      conversations.first.update deleted: true
+      conversations.sample.update deleted: true
       active_user.update admin: true
 
       get :index, format: :json, params: { access_token: token.token }
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(json[:meta][:total]).to eq conversations.count
     end
   end
 
   describe '#POST create' do
-    it 'requires an authenticated user' do
-      post :create, format: :json
+    let :section do
+      create :section
+    end
 
-      expect(response.status).to eq 401
+    let :conversation_attributes do
+      {
+        section_id: section.id,
+        posts_attributes: [
+          title: Faker::Book.title,
+          body: Faker::Hipster.paragraph
+        ]
+      }
+    end
+
+    it 'requires an authenticated user' do
+      post :create, format: :json, params: { conversation: conversation_attributes }
+
+      expect(response).to have_http_status :unauthorized
       expect(Conversation.count).to eq 0
     end
 
     it 'creates a new conversation' do
       post :create, format: :json, params: {
-        access_token: token.token,
-        conversation: {
-          posts_attributes: [
-            title: Faker::Book.title,
-            body: Faker::Hipster.paragraph
-          ]
-        }
+        access_token: token.token, conversation: conversation_attributes
       }
 
-      expect(response.status).to eq 201
+      expect(response).to have_http_status :created
       expect(Conversation.count).to eq 1
       expect(Post.count).to eq 1
     end
@@ -71,31 +79,21 @@ RSpec.describe ConversationsController, type: :controller do
       active_user.update banned: true
 
       post :create, format: :json, params: {
-        access_token: token.token,
-        conversation: {
-          posts_attributes: [
-            title: Faker::Book.title,
-            body: Faker::Hipster.paragraph
-          ]
-        }
+        access_token: token.token, conversation: conversation_attributes
       }
 
-      expect(response.status).to eq 403
+      expect(response).to have_http_status :forbidden
       expect(Conversation.count).to eq 0
     end
 
     it 'returns errors if the conversation is invalid' do
+      conversation_attributes[:posts_attributes].first[:body] = nil
+
       post :create, format: :json, params: {
-        access_token: token.token,
-        conversation: {
-          posts_attributes: [
-            title: Faker::Book.title,
-            body:  nil
-          ]
-        }
+        access_token: token.token, conversation: conversation_attributes
       }
 
-      expect(response.status).to eq 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(json).to have_key :errors
       expect(json[:errors]).to have_key 'posts.body'
 
@@ -114,7 +112,7 @@ RSpec.describe ConversationsController, type: :controller do
         id: conversation.id, conversation: { locked: true }
       }
 
-      expect(response.status).to eq 401
+      expect(response).to have_http_status :unauthorized
       expect(conversation.reload.locked?).to eq false
     end
 
@@ -123,7 +121,7 @@ RSpec.describe ConversationsController, type: :controller do
         access_token: token.token, id: conversation.id, conversation: { locked: true }
       }
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(conversation.reload.locked?).to eq false
     end
 
@@ -134,7 +132,7 @@ RSpec.describe ConversationsController, type: :controller do
         access_token: token.token, id: conversation.id
       }
 
-      expect(response.status).to eq 403
+      expect(response).to have_http_status :forbidden
       expect(conversation.reload.deleted?).to eq false
     end
 
@@ -145,7 +143,7 @@ RSpec.describe ConversationsController, type: :controller do
         access_token: token.token, id: conversation.id, conversation: { locked: true }
       }
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(json).to have_key :conversation
 
       expect(conversation.reload.locked?).to eq true
@@ -160,7 +158,7 @@ RSpec.describe ConversationsController, type: :controller do
     it 'requires an authenticated user' do
       delete :destroy, format: :json, params: { id: conversation.id }
 
-      expect(response.status).to eq 401
+      expect(response).to have_http_status :unauthorized
       expect(conversation.reload.deleted?).to eq false
     end
 
@@ -169,7 +167,7 @@ RSpec.describe ConversationsController, type: :controller do
         access_token: token.token, id: conversation.id
       }
 
-      expect(response.status).to eq 403
+      expect(response).to have_http_status :forbidden
       expect(conversation.reload.deleted?).to eq false
     end
 
@@ -180,7 +178,7 @@ RSpec.describe ConversationsController, type: :controller do
         access_token: token.token, id: conversation.id
       }
 
-      expect(response.status).to eq 204
+      expect(response).to have_http_status :no_content
       expect(conversation.reload.deleted?).to eq true
     end
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160831003437) do
+ActiveRecord::Schema.define(version: 20160831005051) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                     null: false
@@ -54,7 +54,7 @@ ActiveRecord::Schema.define(version: 20160831003437) do
     t.integer  "locked_by_id"
     t.integer  "visible_posts_count", default: 0,     null: false
     t.datetime "last_active_at"
-    t.integer  "section_id"
+    t.integer  "section_id",                          null: false
     t.index ["author_id"], name: "index_conversations_on_author_id"
     t.index ["locked_by_id"], name: "index_conversations_on_locked_by_id"
     t.index ["section_id"], name: "index_conversations_on_section_id"

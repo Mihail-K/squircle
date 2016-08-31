@@ -26,6 +26,7 @@ class ConversationPolicy < Political::Policy
   class Parameters < Political::Parameters
     def permitted
       permitted  = [ ]
+      permitted << :section_id if action?('create') || user.try(:admin?)
       permitted << { posts_attributes: %i(character_id title body) } if action?('create')
       permitted += %i(deleted locked) if user.try(:admin?)
       permitted

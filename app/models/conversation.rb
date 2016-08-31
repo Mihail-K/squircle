@@ -15,7 +15,7 @@
 #  locked_by_id        :integer
 #  visible_posts_count :integer          default(0), not null
 #  last_active_at      :datetime
-#  section_id          :integer
+#  section_id          :integer          not null
 #
 # Indexes
 #
@@ -27,18 +27,12 @@
 class Conversation < ActiveRecord::Base
   belongs_to :author, class_name: 'User'
   belongs_to :locked_by, class_name: 'User'
-
-  belongs_to :section, inverse_of: :conversations,
-                       counter_cache: :conversations_count
+  belongs_to :section, inverse_of: :conversations, counter_cache: :conversations_count
 
   has_many :posts, inverse_of: :conversation
 
-  has_many :post_authors, -> { distinct }, through: :posts,
-                                           source: :author,
-                                           class_name: 'User'
-  has_many :post_characters, -> { distinct }, through: :posts,
-                                              source: :character,
-                                              class_name: 'Character'
+  has_many :post_authors, -> { distinct }, through: :posts, source: :author, class_name: 'User'
+  has_many :post_characters, -> { distinct }, through: :posts, source: :character, class_name: 'Character'
 
   has_one :first_post, -> { first_posts }, class_name: 'Post'
   has_one :last_post, -> { last_posts }, class_name: 'Post'
@@ -48,6 +42,7 @@ class Conversation < ActiveRecord::Base
   validates :title, presence: true
   validates :author, presence: true
   validates :locked_by, presence: true, if: :locked?
+  validates :section, presence: true
 
   validate :locking_user_is_admin, if: -> { locked_changed? to: true }
 
