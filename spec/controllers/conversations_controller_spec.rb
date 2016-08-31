@@ -51,54 +51,52 @@ RSpec.describe ConversationsController, type: :controller do
     let :conversation_attributes do
       {
         section_id: section.id,
-        posts_attributes: [
-          title: Faker::Book.title,
-          body: Faker::Hipster.paragraph
-        ]
+        posts_attributes: [ FactoryGirl.attributes_for(:post).slice(:title, :body) ]
       }
     end
 
     it 'requires an authenticated user' do
-      post :create, format: :json, params: { conversation: conversation_attributes }
+      expect do
+        post :create, format: :json, params: { conversation: conversation_attributes }
+      end.not_to change { Conversation.count }
 
       expect(response).to have_http_status :unauthorized
-      expect(Conversation.count).to eq 0
     end
 
     it 'creates a new conversation' do
-      post :create, format: :json, params: {
-        access_token: token.token, conversation: conversation_attributes
-      }
+      expect do
+        post :create, format: :json, params: {
+          access_token: token.token, conversation: conversation_attributes
+        }
+      end.to change { Conversation.count }.by(1)
 
       expect(response).to have_http_status :created
-      expect(Conversation.count).to eq 1
-      expect(Post.count).to eq 1
     end
 
     it 'does not allow banned users to create conversations' do
       active_user.update banned: true
 
-      post :create, format: :json, params: {
-        access_token: token.token, conversation: conversation_attributes
-      }
+      expect do
+        post :create, format: :json, params: {
+          access_token: token.token, conversation: conversation_attributes
+        }
+      end.not_to change { Conversation.count }
 
       expect(response).to have_http_status :forbidden
-      expect(Conversation.count).to eq 0
     end
 
     it 'returns errors if the conversation is invalid' do
       conversation_attributes[:posts_attributes].first[:body] = nil
 
-      post :create, format: :json, params: {
-        access_token: token.token, conversation: conversation_attributes
-      }
+      expect do
+        post :create, format: :json, params: {
+          access_token: token.token, conversation: conversation_attributes
+        }
+      end.not_to change { Conversation.count }
 
       expect(response).to have_http_status :unprocessable_entity
       expect(json).to have_key :errors
       expect(json[:errors]).to have_key 'posts.body'
-
-      expect(Conversation.count).to eq 0
-      expect(Post.count).to eq 0
     end
   end
 
@@ -108,45 +106,36 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'requires an authenticated user' do
-      patch :update, format: :json, params: {
-        id: conversation.id, conversation: { locked: true }
-      }
+      expect do
+        patch :update, format: :json, params: {
+          id: conversation.id, conversation: { locked: true }
+        }
+      end.not_to change { conversation.reload.locked? }
 
       expect(response).to have_http_status :unauthorized
-      expect(conversation.reload.locked?).to eq false
     end
 
     it 'only allows admins to mark conversations as locked' do
-      patch :update, format: :json, params: {
-        access_token: token.token, id: conversation.id, conversation: { locked: true }
-      }
+      expect do
+        patch :update, format: :json, params: {
+          access_token: token.token, id: conversation.id, conversation: { locked: true }
+        }
+      end.not_to change { conversation.reload.locked? }
 
       expect(response).to have_http_status :ok
-      expect(conversation.reload.locked?).to eq false
-    end
-
-    it 'only allows the author to update a conversation' do
-      conversation.update author: create(:user)
-
-      delete :destroy, format: :json, params: {
-        access_token: token.token, id: conversation.id
-      }
-
-      expect(response).to have_http_status :forbidden
-      expect(conversation.reload.deleted?).to eq false
     end
 
     it 'updates the locked state of a conversation' do
       active_user.update admin: true
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: conversation.id, conversation: { locked: true }
-      }
+      expect do
+        patch :update, format: :json, params: {
+          access_token: token.token, id: conversation.id, conversation: { locked: true }
+        }
+      end.to change { conversation.reload.locked? }.from(false).to(true)
 
       expect(response).to have_http_status :ok
       expect(json).to have_key :conversation
-
-      expect(conversation.reload.locked?).to eq true
     end
   end
 
@@ -156,30 +145,29 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'requires an authenticated user' do
-      delete :destroy, format: :json, params: { id: conversation.id }
+      expect do
+        delete :destroy, format: :json, params: { id: conversation.id }
+      end.not_to change { conversation.reload.deleted? }
 
       expect(response).to have_http_status :unauthorized
-      expect(conversation.reload.deleted?).to eq false
     end
 
     it 'only allows admins to mark conversations as deleted' do
-      delete :destroy, format: :json, params: {
-        access_token: token.token, id: conversation.id
-      }
+      expect do
+        delete :destroy, format: :json, params: { access_token: token.token, id: conversation.id }
+      end.not_to change { conversation.reload.deleted? }
 
       expect(response).to have_http_status :forbidden
-      expect(conversation.reload.deleted?).to eq false
     end
 
-    it 'marks a conversation as deleted' do
+    it 'marks a conversation as deleted when called by an admin user' do
       active_user.update admin: true
 
-      delete :destroy, format: :json, params: {
-        access_token: token.token, id: conversation.id
-      }
+      expect do
+        delete :destroy, format: :json, params: { access_token: token.token, id: conversation.id }
+      end.to change { conversation.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content
-      expect(conversation.reload.deleted?).to eq true
     end
   end
 end
