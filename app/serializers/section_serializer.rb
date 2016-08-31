@@ -10,9 +10,15 @@ class SectionSerializer < ActiveModel::Serializer
   #   object.logo.url
   # end
   attribute :conversations_count
+  attribute :posts_count, if: :can_view_deleted_posts?
+  attribute :visible_posts_count
   attribute :deleted
 
   belongs_to :creator, if: :can_view_creator?
+
+  def can_view_deleted_posts?
+    current_user.try(:admin?)
+  end
 
   def can_view_creator?
     current_user.try(:admin?)
