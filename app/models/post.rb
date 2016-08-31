@@ -27,15 +27,13 @@
 class Post < ActiveRecord::Base
   include Formattable
 
-  belongs_to :author, class_name: 'User',
-                      counter_cache: :posts_count,
-                      inverse_of: :posts
+  belongs_to :author, class_name: 'User', counter_cache: :posts_count, inverse_of: :posts
   belongs_to :editor, class_name: 'User'
-  belongs_to :character, counter_cache: :posts_count,
-                         inverse_of: :posts
+  belongs_to :character, counter_cache: :posts_count, inverse_of: :posts
 
-  belongs_to :conversation, counter_cache: :posts_count,
-                            inverse_of: :posts
+  belongs_to :conversation, counter_cache: :posts_count, inverse_of: :posts
+
+  has_one :section, through: :conversation
 
   delegate :locked?, to: :conversation, allow_nil: true
 
@@ -92,6 +90,8 @@ private
   def update_visible_posts_count
     author.update_columns visible_posts_count: author.posts.visible.count
     conversation.update_columns visible_posts_count: conversation.posts.visible.count
+    section.update_columns posts_count: section.posts.count,
+                           visible_posts_count: section.posts.visible.count if section.present?
   end
 
   def update_conversation_activity
