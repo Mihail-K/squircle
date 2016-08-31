@@ -65,9 +65,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'creates a new conversation' do
       expect do
-        post :create, format: :json, params: {
-          access_token: token.token, conversation: conversation_attributes
-        }
+        post :create, format: :json, params: { conversation: conversation_attributes }.merge(session)
       end.to change { Conversation.count }.by(1)
 
       expect(response).to have_http_status :created
@@ -77,9 +75,7 @@ RSpec.describe ConversationsController, type: :controller do
       active_user.update banned: true
 
       expect do
-        post :create, format: :json, params: {
-          access_token: token.token, conversation: conversation_attributes
-        }
+        post :create, format: :json, params: { conversation: conversation_attributes }.merge(session)
       end.not_to change { Conversation.count }
 
       expect(response).to have_http_status :forbidden
@@ -89,9 +85,7 @@ RSpec.describe ConversationsController, type: :controller do
       conversation_attributes[:posts_attributes].first[:body] = nil
 
       expect do
-        post :create, format: :json, params: {
-          access_token: token.token, conversation: conversation_attributes
-        }
+        post :create, format: :json, params: { conversation: conversation_attributes }.merge(session)
       end.not_to change { Conversation.count }
 
       expect(response).to have_http_status :unprocessable_entity
@@ -118,8 +112,8 @@ RSpec.describe ConversationsController, type: :controller do
     it 'only allows admins to mark conversations as locked' do
       expect do
         patch :update, format: :json, params: {
-          access_token: token.token, id: conversation.id, conversation: { locked: true }
-        }
+          id: conversation.id, conversation: { locked: true }
+        }.merge(session)
       end.not_to change { conversation.reload.locked? }
 
       expect(response).to have_http_status :ok
@@ -130,8 +124,8 @@ RSpec.describe ConversationsController, type: :controller do
 
       expect do
         patch :update, format: :json, params: {
-          access_token: token.token, id: conversation.id, conversation: { locked: true }
-        }
+          id: conversation.id, conversation: { locked: true }
+        }.merge(session)
       end.to change { conversation.reload.locked? }.from(false).to(true)
 
       expect(response).to have_http_status :ok
@@ -154,7 +148,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'only allows admins to mark conversations as deleted' do
       expect do
-        delete :destroy, format: :json, params: { access_token: token.token, id: conversation.id }
+        delete :destroy, format: :json, params: { id: conversation.id }.merge(session)
       end.not_to change { conversation.reload.deleted? }
 
       expect(response).to have_http_status :forbidden
@@ -164,7 +158,7 @@ RSpec.describe ConversationsController, type: :controller do
       active_user.update admin: true
 
       expect do
-        delete :destroy, format: :json, params: { access_token: token.token, id: conversation.id }
+        delete :destroy, format: :json, params: { id: conversation.id }.merge(session)
       end.to change { conversation.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content
