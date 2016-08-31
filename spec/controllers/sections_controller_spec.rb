@@ -9,13 +9,13 @@ RSpec.describe SectionsController, type: :controller do
 
   describe '#GET index' do
     let! :sections do
-      create_list :section, Faker::Number.between(1, 3)
+      create_list :section, 3
     end
 
     it 'returns a list of sections' do
       get :index, format: :json
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(json).to have_key :sections
       expect(json).to have_key :meta
 
@@ -27,7 +27,7 @@ RSpec.describe SectionsController, type: :controller do
 
       get :index, format: :json
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(json[:meta][:total]).to eq sections.count - 1
     end
 
@@ -37,7 +37,7 @@ RSpec.describe SectionsController, type: :controller do
 
       get :index, format: :json, params: { access_token: token.token }
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(json[:meta][:total]).to eq sections.count
     end
   end
@@ -53,14 +53,14 @@ RSpec.describe SectionsController, type: :controller do
     it 'requires an authenticated user' do
       post :create, format: :json, params: { section: section_attributes }
 
-      expect(response.status).to eq 401
+      expect(response).to have_http_status :unauthorized
       expect(Section.count).to eq 0
     end
 
     it 'only allows admins to create sections' do
       post :create, format: :json, params: { access_token: token.token, section: section_attributes }
 
-      expect(response.status).to eq 403
+      expect(response).to have_http_status :forbidden
       expect(Section.count).to eq 0
     end
 
@@ -69,7 +69,7 @@ RSpec.describe SectionsController, type: :controller do
 
       post :create, format: :json, params: { access_token: token.token, section: section_attributes }
 
-      expect(response.status).to eq 201
+      expect(response).to have_http_status :created
       expect(json).to have_key :section
       expect(Section.count).to eq 1
     end
@@ -81,10 +81,64 @@ RSpec.describe SectionsController, type: :controller do
         access_token: token.token, section: section_attributes.merge(title: nil)
       }
 
-      expect(response.status).to eq 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(json).to have_key :errors
       expect(json[:errors]).to have_key :title
       expect(Section.count).to eq 0
+    end
+  end
+
+  describe '#PATCH update' do
+    let :section do
+      create :section
+    end
+
+    let :section_attributes do
+      { title: Faker::Book.title }
+    end
+
+    it 'requires an authenticated user' do
+      old_attributes = section.attributes
+
+      patch :update, format: :json, params: { id: section.id, section: section_attributes }
+
+      expect(response).to have_http_status :unauthorized
+      expect(section.reload.attributes).to eq old_attributes
+    end
+
+    it 'only allows admins to edit sections' do
+      old_attributes = section.attributes
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: section.id, section: section_attributes
+      }
+
+      expect(response).to have_http_status :forbidden
+      expect(section.reload.attributes).to eq old_attributes
+    end
+
+    it 'edits a section when called by an admin' do
+      active_user.update admin: true
+      old_attributes = section.attributes
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: section.id, section: section_attributes
+      }
+
+      expect(response).to have_http_status :ok
+      expect(section.reload.attributes).not_to eq old_attributes
+    end
+
+    it 'returns errors when the section is invalid' do
+      active_user.update admin: true
+      old_attributes = section.attributes
+
+      patch :update, format: :json, params: {
+        access_token: token.token, id: section.id, section: section_attributes.merge(title: nil)
+      }
+
+      expect(response).to have_http_status :unprocessable_entity
+      expect(section.reload.attributes).to eq old_attributes
     end
   end
 end

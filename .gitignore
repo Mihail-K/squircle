@@ -16,6 +16,7 @@
 !/log/.keep
 /tmp
 /coverage
+/doc
 
 # Ignore uploaded files
 /public/uploads
