@@ -3,10 +3,6 @@ require 'rails_helper'
 RSpec.describe ConversationsController, type: :controller do
   include_context 'authentication'
 
-  let :json do
-    JSON.parse(response.body).with_indifferent_access
-  end
-
   describe '#GET index' do
     let! :conversations do
       create_list :conversation, 3, author: create(:user)
