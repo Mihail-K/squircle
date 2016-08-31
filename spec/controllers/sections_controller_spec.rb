@@ -141,4 +141,33 @@ RSpec.describe SectionsController, type: :controller do
       expect(section.reload.attributes).to eq old_attributes
     end
   end
+
+  describe '#DELETE destroy' do
+    let :section do
+      create :section
+    end
+
+    it 'requires an authenticated user' do
+      delete :destroy, format: :json, params: { id: section.id }
+
+      expect(response).to have_http_status :unauthorized
+      expect(section.reload.deleted?).to be false
+    end
+
+    it 'only allows admins to delete sections' do
+      delete :destroy, format: :json, params: { access_token: token.token, id: section.id }
+
+      expect(response).to have_http_status :forbidden
+      expect(section.reload.deleted?).to be false
+    end
+
+    it 'marks a section as deleted when called by an admin' do
+      active_user.update admin: true
+
+      delete :destroy, format: :json, params: { access_token: token.token, id: section.id }
+
+      expect(response).to have_http_status :no_content
+      expect(section.reload.deleted?).to be true
+    end
+  end
 end
