@@ -26,6 +26,7 @@ class ConversationSerializer < ActiveModel::Serializer
   belongs_to :section
 
   has_one :first_post, serializer: PostSerializer, if: :include_first_post?
+  has_one :last_post, serializer: PostSerializer, if: :include_last_post?
 
   def can_view_locking_user?
     object.locked_by_id == current_user.try(:id) ||
@@ -40,6 +41,10 @@ class ConversationSerializer < ActiveModel::Serializer
     instance_options[:first_posts].is_a?(Hash)
   end
 
+  def include_last_post?
+    instance_options[:last_posts].is_a?(Hash)
+  end
+
   def participated
     instance_options[:participated][object.id].present? &&
     instance_options[:participated][object.id] > 0
@@ -47,5 +52,9 @@ class ConversationSerializer < ActiveModel::Serializer
 
   def first_post
     instance_options[:first_posts][object.id]
+  end
+
+  def last_post
+    instance_options[:last_posts][object.id]
   end
 end

@@ -52,27 +52,25 @@ class Post < ActiveRecord::Base
   after_destroy :update_conversation_activity
 
   scope :first_posts, -> {
-    where id: Post.group(Post.arel_table[:conversation_id])
-                  .having(
-                    Post.arel_table[:created_at]
-                        .eq(Post.arel_table[:created_at].minimum)
-                        .and(
-                          Post.arel_table[:id]
-                              .eq(Post.arel_table[:id].minimum)
-                        )
-                  )
+    group(:conversation_id).having(
+                             Post.arel_table[:created_at]
+                                 .eq(Post.arel_table[:created_at].minimum)
+                           )
+                           .having(
+                             Post.arel_table[:id]
+                                 .eq(Post.arel_table[:id].minimum)
+                           )
   }
 
   scope :last_posts, -> {
-    where id: Post.group(Post.arel_table[:conversation_id])
-                  .having(
-                    Post.arel_table[:created_at]
-                        .eq(Post.arel_table[:created_at].maximum)
-                        .and(
-                          Post.arel_table[:id]
-                              .eq(Post.arel_table[:id].maximum)
-                        )
-                  )
+    group(:conversation_id).having(
+                             Post.arel_table[:created_at]
+                                 .eq(Post.arel_table[:created_at].maximum)
+                           )
+                           .having(
+                             Post.arel_table[:id]
+                                 .eq(Post.arel_table[:id].maximum)
+                           )
   }
 
   scope :visible, -> {

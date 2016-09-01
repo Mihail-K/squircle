@@ -7,7 +7,7 @@ class ConversationsController < ApiController
   before_action :set_conversation, except: %i(index create)
 
   before_action :apply_pagination, only: :index
-  before_action :load_first_posts, only: :index
+  before_action :load_first_posts, :load_last_posts, only: :index
   before_action :load_participated, only: :index, if: -> { current_user.present? }
 
   before_action { policy!(@conversation || Conversation) }
@@ -18,6 +18,7 @@ class ConversationsController < ApiController
     render json: @conversations,
            each_serializer: ConversationSerializer,
            first_posts: @first_posts,
+           last_posts: @last_posts,
            participated: @participated,
            meta: meta_for(@conversations)
   end
@@ -83,6 +84,14 @@ private
 
     # Re-map the first posts to a Hash keyed by the posts' conversation ids.
     @first_posts = @first_posts.map { |post| [ post.conversation_id, post ] }.to_h
+  end
+
+  def load_last_posts
+    # Load a list of last posts for the list of conversations.
+    @last_posts = policy_scope(Post).last_posts.where(conversation: @conversations)
+
+    # Re-map the last posts to a Hash keyed by the posts' conversation ids.
+    @last_posts = @last_posts.map { |post| [ post.conversation_id, post ] }.to_h
   end
 
   def load_participated
