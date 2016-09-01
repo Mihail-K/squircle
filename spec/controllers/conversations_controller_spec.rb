@@ -5,37 +5,76 @@ RSpec.describe ConversationsController, type: :controller do
 
   describe '#GET index' do
     let! :conversations do
-      create_list :conversation, 3, author: create(:user)
+      create_list :conversation, 5, author: active_user
     end
 
     it 'returns a list of conversations' do
       get :index, format: :json
 
       expect(response).to have_http_status :ok
-      expect(json).to have_key :meta
-      expect(json).to have_key :conversations
-
+      expect(response).to match_response_schema 'conversations'
       expect(json[:conversations].count).to eq conversations.count
-      expect(json[:meta][:total]).to eq conversations.count
     end
 
     it 'only returns visible conversations' do
-      conversations.sample.update deleted: true
+      deleted_conversations = conversations.sample(3).each do |conversation|
+        conversation.update deleted: true
+      end
 
       get :index, format: :json
 
       expect(response).to have_http_status :ok
-      expect(json[:meta][:total]).to eq(conversations.count - 1)
+      expect(json[:conversations].count).to eq conversations.count - deleted_conversations.count
     end
 
     it 'returns all conversations for admin users' do
-      conversations.sample.update deleted: true
       active_user.update admin: true
+      deleted_conversations = conversations.sample(3).each do |conversation|
+        conversation.update deleted: true
+      end
 
-      get :index, format: :json, params: { access_token: token.token }
+      get :index, format: :json, params: session
 
       expect(response).to have_http_status :ok
-      expect(json[:meta][:total]).to eq conversations.count
+      expect(json[:conversations].count).to eq conversations.count
+    end
+  end
+
+  describe '#GET show' do
+    let :conversation do
+      create :conversation
+    end
+
+    it 'returns the requested conversation' do
+      get :show, format: :json, params: { id: conversation.id }
+
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'conversation'
+    end
+
+    it 'returns 404 for conversations that are deleted' do
+      conversation.update deleted: true
+
+      get :show, format: :json, params: { id: conversation.id }
+
+      expect(response).to have_http_status :not_found
+    end
+
+    it 'allows admins to view deleted conversations' do
+      active_user.update admin: true
+      conversation.update deleted: true
+
+      get :show, format: :json, params: { id: conversation.id }.merge(session)
+
+      expect(response).to have_http_status :ok
+    end
+
+    it 'returns 404 for conversations in a deleted section' do
+      conversation.section.update deleted: true
+
+      get :show, format: :json, params: { id: conversation.id }
+
+      expect(response).to have_http_status :not_found
     end
   end
 
@@ -65,6 +104,7 @@ RSpec.describe ConversationsController, type: :controller do
       end.to change { Conversation.count }.by(1)
 
       expect(response).to have_http_status :created
+      expect(response).to match_response_schema 'conversation'
     end
 
     it 'does not allow banned users to create conversations' do

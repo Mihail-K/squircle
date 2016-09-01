@@ -4,7 +4,7 @@
     "posts": {
       "type": "array",
       "items": {
-        "$ref": "partials/post.json#/definitions/post"
+        "$ref": "post.json#/definitions/post"
       }
     },
     "meta": {

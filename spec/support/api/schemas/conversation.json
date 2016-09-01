@@ -1,18 +1,18 @@
 {
   "definitions": {
-    "post": {
+    "conversation": {
       "type": "object",
       "allOf": [
         {
-          "$ref": "partials/post.json#/definitions/post"
+          "$ref": "partials/conversation.json#/definitions/conversation"
         },
         {
           "properties": {
             "author": {
               "$ref": "partials/user.json#/definitions/user"
             },
-            "editor": {
-              "anyOf": [
+            "locked_by": {
+              "oneOf": [
                 {
                   "type": "null"
                 },
@@ -20,15 +20,10 @@
                   "$ref": "partials/user.json#/definitions/user"
                 }
               ]
-            },
-            "conversation": {
-              "$ref": "partials/conversation.json#/definitions/conversation"
             }
           },
           "required": [
-            "author",
-            "editor",
-            "conversation"
+            "author"
           ]
         }
       ]
@@ -36,11 +31,11 @@
   },
   "type": "object",
   "properties": {
-    "post": {
-      "$ref": "#/definitions/post"
+    "conversation": {
+      "$ref": "#/definitions/conversation"
     }
   },
   "required": [
-    "post"
+    "conversation"
   ]
 }

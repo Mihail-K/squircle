@@ -8,10 +8,10 @@ RSpec::Matchers.define :match_response_schema do |schema|
   end
 
   failure_message do |actual|
-    "expected #{actual} to match response schema #{schema}\n" + @result.join('\n')
+    "expected #{actual} to match response schema #{schema}\n." + @result.join('. ')
   end
 
   failure_message_when_negated do |actual|
-    "expected #{actual} not to match response schema #{schema}\n" + @result.join('\n')
+    "expected #{actual} not to match response schema #{schema}\n." + @result.join('. ')
   end
 end
