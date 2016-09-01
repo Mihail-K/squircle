@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "required": [
+    "user"
+  ],
+  "properties": {
+    "user": {
+      "$ref": "partials/user.json#/definitions/user"
+    }
+  }
+}

@@ -36,6 +36,7 @@ group :development do
 end
 
 group :test do
+  gem 'json-schema'
   gem 'resque_spec'
   gem 'simplecov', require: false
 end

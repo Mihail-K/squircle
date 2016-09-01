@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "required": [
+    "user"
+  ],
+  "properties": {
+    "user": {
+      "allOf": [
+        {
+          "$ref": "partials/user.json#/definitions/user"
+        },
+        {
+          "$ref": "partials/user-private.json#/definitions/user"
+        }
+      ]
+    }
+  }
+}

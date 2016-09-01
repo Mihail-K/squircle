@@ -21,6 +21,7 @@ require 'rspec/rails'
 require 'faker'
 require 'factory_girl_rails'
 
+require 'support/api_schema_matcher'
 require 'support/factory_girl'
 require 'support/authentication'
 require 'support/json'
@@ -75,4 +76,6 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  config.include Rails.application.routes.url_helpers
 end

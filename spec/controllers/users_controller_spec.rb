@@ -3,202 +3,239 @@ require 'rails_helper'
 RSpec.describe UsersController, type: :controller do
   include_context 'authentication'
 
-  let :json do
-    JSON.parse(response.body).with_indifferent_access
-  end
-
   describe 'GET #me' do
     it 'requires an authenticated user' do
       get :me, format: :json
 
-      expect(response.status).to eq 401
+      expect(response).to have_http_status :unauthorized
     end
 
     it 'returns the current user' do
       get :me, format: :json, params: { access_token: token.token }
 
-      expect(response.status).to eq 200
-      expect(json).to have_key :user
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'user-full'
 
       expect(json[:user][:id]).to eq active_user.id
     end
   end
 
   describe 'GET #index' do
-    let :users do
-      json[:users]
-    end
-
-    let! :deleted_user do
-      create :user, deleted: true
+    let! :users do
+      create_list(:user, 4) + [ active_user ]
     end
 
     it 'responds with 200' do
       get :index, format: :json
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'users'
     end
 
     it 'returns only visible users' do
+      users.sample.update deleted: true
+
       get :index, format: :json
 
-      expect(response.status).to eq 200
-      expect(json).to have_key :users
-      expect(users.count).to eq 1
-      expect(users.first).to have_key :id
-      expect(users.first[:id]).to eq active_user.id
+      expect(response).to have_http_status :ok
+      expect(json[:users].count).to eq users.count - 1
     end
 
-    it 'returns all visible for authenticated admins' do
+    it 'returns all users when an admin is authenticated' do
       active_user.update admin: true
-      get :index, format: :json, params: { access_token: token.token }
+      users.sample.update deleted: true
 
-      expect(response.status).to eq 200
-      expect(users.count).to eq 2
-      expect(users.map { |user| user[:id] }).to contain_exactly active_user.id, deleted_user.id
+      get :index, format: :json, params: session
+
+      expect(response).to have_http_status :ok
+      expect(json[:users].count).to eq users.count
     end
 
-    it %(doesn't return personal fields in the JSON) do
-      get :index, format: :json
-
-      expect(response.status).to eq 200
-      expect(users.count).to eq 1
-      users.each do |user|
-        %i(password_digest email email_confirmed_at first_name last_name date_of_birth).each do |field|
-          expect(user).not_to have_key field
-        end
+    it 'returns a list of recently active users' do
+      recently_active = users.sample(3).each do |user|
+        create :post, author: user
       end
+
+      get :index, format: :json, params: { recently_active: true }
+
+      expect(response).to have_http_status :ok
+      expect(json[:users].count).to eq recently_active.count
+      expect(json[:users].map { |user| user[:id] }).to contain_exactly *recently_active.map(&:id)
     end
 
-    it 'returns personal fields for the authenticated user only' do
-      create :user # Create a second user (which is not authenticated)
-      get :index, format: :json, params: { access_token: token.token }
-
-      expect(response.status).to eq 200
-      expect(users.count).to eq 2
-      users.each do |user|
-        expect(user).not_to have_key :password_digest
-        %i(email email_confirmed_at first_name last_name date_of_birth).each do |field|
-          expect(user.key?(field)).to eq(user[:id] == active_user.id)
-        end
+    it 'returns a list of the most active users' do
+      most_active = users.sample(3).each_with_index do |user, index|
+        create_list :post, 3 - index, author: user
       end
+
+      get :index, format: :json, params: { most_active: true }
+
+      expect(response).to have_http_status :ok
+      expect(json[:users].count).to eq most_active.count
+      expect(json[:users].map { |user| user[:id] }).to eq most_active.map(&:id)
+    end
+  end
+
+  describe '#GET show' do
+    let :user do
+      create :user
     end
 
-    it 'always returns personal fields for authenticated administrators' do
+    it 'returns the requested user' do
+      get :show, format: :json, params: { id: user.id }
+
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'user'
+      expect(response).not_to match_response_schema 'user-full'
+    end
+
+    it 'returns private fields when returning the authenticated user' do
+      get :show, format: :json, params: { id: active_user.id }.merge(session)
+
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'user-full'
+    end
+
+    it 'returns private fields for all users when called by an admin' do
       active_user.update admin: true
-      create :user # Create a second user (which is not authenticated)
-      get :index, format: :json, params: { access_token: token.token }
 
-      expect(response.status).to eq 200
-      expect(users.count).to eq 3
-      users.each do |user|
-        expect(user).not_to have_key :password_digest
-        %i(email email_confirmed_at first_name last_name date_of_birth).each do |field|
-          expect(user).to have_key field
-        end
-      end
+      get :show, format: :json, params: { id: user.id }.merge(session)
+
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'user-full'
+    end
+
+    it 'returns 404 when the user is not found' do
+      get :show, format: :json, params: { id: user.id + 1 }
+
+      expect(response).to have_http_status :not_found
     end
   end
 
   describe '#POST create' do
-    let :user_attributes do
-      {
-        email: Faker::Internet.email,
-        date_of_birth: Faker::Date.between(50.years.ago, 13.years.ago),
-
-        display_name: Faker::Internet.user_name,
-        first_name: Faker::Name.first_name,
-        last_name: Faker::Name.last_name,
-
-        password: '12345678',
-        password_confirmation: '12345678'
-      }
-    end
-
     it 'creates a new user' do
-      old_count = User.count
+      expect do
+        post :create, format: :json, params: { user: attributes_for(:user) }
+      end.to change { User.count }.by(1)
 
-      post :create, format: :json, params: { user: user_attributes }
-
-      expect(response.status).to eq 201
-      expect(json).to have_key :user
-
-      expect(User.count).to be > old_count
+      expect(response).to have_http_status :created
+      expect(response).to match_response_schema 'user'
     end
 
     it %q(doesn't allow authenticated users to create new users) do
-      old_count = User.count
+      expect do
+        post :create, format: :json, params: { user: attributes_for(:user) }.merge(session)
+      end.not_to change { User.count }
 
-      post :create, format: :json, params: {
-        access_token: token.token, user: user_attributes
-      }
+      expect(response).to have_http_status :forbidden
+    end
 
-      expect(response.status).to eq 403
-      expect(User.count).to eq old_count
+    it 'allows admins to create new users' do
+      active_user.update admin: true
+
+      expect do
+        post :create, format: :json, params: { user: attributes_for(:user) }.merge(session)
+      end.to change { User.count }.by(1)
+
+      expect(response).to have_http_status :created
+      expect(response).to match_response_schema 'user-full'
     end
 
     it 'returns errors when the user is invalid' do
-      old_count = User.count
+      expect do
+        post :create, format: :json, params: { user: attributes_for(:user, email: nil) }
+      end.not_to change { User.count }
 
-      post :create, format: :json, params: { user: user_attributes.merge(email: nil) }
-
-      expect(response.status).to eq 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(json).to have_key :errors
       expect(json[:errors]).to have_key :email
-
-      expect(User.count).to eq old_count
     end
   end
 
   describe '#PATCH update' do
-    it 'requires an authenticated user' do
-      old_email = active_user.email
-
-      patch :update, format: :json, params: {
-        id: active_user.id, user: { email: Faker::Internet.email }
-      }
-
-      expect(response.status).to eq 401
-      expect(active_user.reload.email).to eq old_email
+    let :user do
+      create :user
     end
 
-    it 'updates the user' do
-      old_email = active_user.email
+    it 'requires an authenticated user' do
+      expect do
+        patch :update, format: :json, params: {
+          id: active_user.id, user: { email: Faker::Internet.email }
+        }
+      end.not_to change { active_user.reload.email }
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: active_user.id, user: { email: Faker::Internet.email }
-      }
+      expect(response).to have_http_status :unauthorized
+    end
 
-      expect(response.status).to eq 200
-      expect(json).to have_key :user
+    it 'updates the user when authenticated' do
+      expect do
+        patch :update, format: :json, params: {
+          id: active_user.id, user: { email: Faker::Internet.email }
+        }.merge(session)
+      end.to change { active_user.reload.email }
 
-      expect(active_user.reload.email).not_to eq old_email
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'user-full'
     end
 
     it %q(does not allow users to update other users' attributes) do
-      user = create(:user)
-      old_email = user.email
+      expect do
+        patch :update, format: :json, params: {
+          id: user.id, user: { email: Faker::Internet.email }
+        }.merge(session)
+      end.not_to change { user.reload.email }
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: user.id, user: { email: Faker::Internet.email }
-      }
-
-      expect(response.status).to eq 403
-      expect(user.reload.email).to eq old_email
+      expect(response).to have_http_status :forbidden
     end
 
     it 'returns errors if the user is invalid' do
-      old_email = active_user.email
+      expect do
+        patch :update, format: :json, params: { id: active_user.id, user: { email: nil } }.merge(session)
+      end.not_to change { active_user.reload.email }
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: active_user.id, user: { email: nil }
-      }
-
-      expect(response.status).to eq 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(json).to have_key :errors
       expect(json[:errors]).to have_key :email
+    end
+  end
 
-      expect(active_user.reload.email).to eq old_email
+  describe '#DELETE destroy' do
+    let :user do
+      create :user
+    end
+
+    it 'requires an authenticated user' do
+      expect do
+        delete :destroy, format: :json, params: { id: user.id }
+      end.not_to change { user.reload.deleted? }
+
+      expect(response).to have_http_status :unauthorized
+    end
+
+    it 'prevents users from deleting other user accounts' do
+      expect do
+        delete :destroy, format: :json, params: { id: user.id }.merge(session)
+      end.not_to change { user.reload.deleted? }
+
+      expect(response).to have_http_status :forbidden
+    end
+
+    it 'marks the authenticated user as deleted' do
+      expect do
+        delete :destroy, format: :json, params: { id: active_user.id }.merge(session)
+      end.to change { active_user.reload.deleted? }.from(false).to(true)
+
+      expect(response).to have_http_status :no_content
+    end
+
+    it 'allows admins to delete any user account' do
+      active_user.update admin: true
+
+      expect do
+        delete :destroy, format: :json, params: { id: user.id }.merge(session)
+      end.to change { user.reload.deleted? }.from(false).to(true)
+
+      expect(response).to have_http_status :no_content
     end
   end
 end

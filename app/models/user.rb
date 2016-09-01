@@ -96,6 +96,10 @@ class User < ActiveRecord::Base
   scope :recently_active, -> {
     where User.arel_table[:last_active_at]
               .gteq(5.minutes.ago)
+              .and(
+                User.arel_table[:visible_posts_count]
+                    .gt(0)
+              )
   }
 
   scope :visible, -> {
