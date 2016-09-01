@@ -20,11 +20,15 @@
                   "$ref": "partials/user.json#/definitions/user"
                 }
               ]
+            },
+            "conversation": {
+              "$ref": "partials/conversation.json#/definitions/conversation"
             }
           },
           "required": [
             "author",
-            "editor"
+            "editor",
+            "conversation"
           ]
         }
       ]

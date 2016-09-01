@@ -3,6 +3,7 @@ class ConversationSerializer < ActiveModel::Serializer
 
   attribute :id
   attribute :author_id
+  attribute :section_id
   attribute :locked_by_id, if: :can_view_locking_user?
 
   attribute :title
@@ -16,6 +17,7 @@ class ConversationSerializer < ActiveModel::Serializer
   attribute :last_active_at
   attribute :participated, if: :include_participation?
 
+  attribute :deleted
   attribute :locked
   attribute :locked_on
 
