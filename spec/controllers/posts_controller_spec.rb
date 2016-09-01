@@ -9,62 +9,85 @@ RSpec.describe PostsController, type: :controller do
 
   describe '#GET index' do
     let! :posts do
-      create_list :post, Faker::Number.between(1, 5)
+      create_list :post, 5
     end
 
     it 'returns a list of posts' do
       get :index, format: :json
 
-      expect(response.status).to eq 200
-      expect(json).to have_key :posts
-      expect(json).to have_key :meta
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'posts'
 
-      expect(json[:meta][:page]).to eq 1
-      expect(json[:meta][:per]).to eq 10
-      expect(json[:meta][:total]).to eq posts.length
+      expect(json[:posts].count).to eq posts.count
     end
 
-    it 'returns a list of only visible posts' do
-      # Mark some number of posts as deleted.
-      post_ids  = posts.select { Faker::Boolean.boolean }.map(&:id)
-      post_ids += posts.first(3).map(&:id) if post_ids.empty?
-      Post.where(id: post_ids).update_all deleted: true
+    it 'returns only visible posts' do
+      deleted_posts = posts.sample(3).each do |post|
+        post.update deleted: true
+      end
 
       get :index, format: :json
 
-      expect(response.status).to eq 200
-      expect(json).to have_key :meta
-
-      expect(json[:meta][:total]).to be < posts.length
+      expect(response).to have_http_status :ok
+      expect(json[:posts].count).to eq posts.count - deleted_posts.count
     end
 
-    it 'returns all posts for authenticated admins' do
-      # Mark all of the posts as deleted.
-      Post.where(id: posts.map(&:id)).update_all deleted: true
+    it 'includes deleted posts when called by an admin' do
+      active_user.update admin: true
+      posts.sample(3).each do |post|
+        post.update deleted: true
+      end
+
+      get :index, format: :json, params: session
+
+      expect(response).to have_http_status :ok
+      expect(json[:posts].count).to eq posts.count
+    end
+  end
+
+  describe '#GET show' do
+    let :post do
+      create :post
+    end
+
+    it 'returns the requested post' do
+      get :show, format: :json, params: { id: post.id }
+
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'post'
+    end
+
+    it 'returns 404 for posts that are deleted' do
+      post.update deleted: true
+
+      get :show, format: :json, params: { id: post.id }
+
+      expect(response).to have_http_status :not_found
+    end
+
+    it 'allows admins to view deleted posts' do
+      post.update deleted: true
       active_user.update admin: true
 
-      get :index, format: :json, params: { access_token: token.token }
+      get :show, format: :json, params: { id: post.id }.merge(session)
 
-      expect(response.status).to eq 200
-      expect(json[:meta][:total]).to eq posts.count
+      expect(response).to have_http_status :ok
     end
 
-    it 'accepts an author_id as a parameter' do
-      author = posts.sample.author
+    it 'returns 404 for posts in a deleted conversation' do
+      post.conversation.update deleted: true
 
-      get :index, format: :json, params: { author_id: author.id }
+      get :show, format: :json, params: { id: post.id }
 
-      expect(response.status).to eq 200
-      expect(json[:meta][:total]).to eq author.posts_count
+      expect(response).to have_http_status :not_found
     end
 
-    it 'accepts a conversation_id as a parameter' do
-      conversation = posts.sample.conversation
+    it 'returns 404 for posts in a deleted section' do
+      post.conversation.section.update deleted: true
 
-      get :index, format: :json, params: { conversation_id: conversation.id }
+      get :show, format: :json, params: { id: post.id }
 
-      expect(response.status).to eq 200
-      expect(json[:meta][:total]).to eq conversation.posts_count
+      expect(response).to have_http_status :not_found
     end
   end
 
@@ -73,242 +96,244 @@ RSpec.describe PostsController, type: :controller do
       create :conversation
     end
 
-    let :post_body do
-      build(:post, conversation: conversation).as_json(
-        only: %i(conversation_id title body)
-      )
+    it 'requires an authenticated user' do
+      expect do
+        post :create, format: :json, params: {
+          post: attributes_for(:post, conversation_id: conversation.id)
+        }
+      end.not_to change { Post.count }
+
+      expect(response).to have_http_status :unauthorized
     end
 
     it 'creates a new post on a conversation' do
-      posts_count = conversation.posts.count
+      expect do
+        post :create, format: :json, params: {
+          post: attributes_for(:post, conversation_id: conversation.id)
+        }.merge(session)
+      end.to change { Post.count }.by(1)
 
-      post :create, format: :json, params: { access_token: token.token, post: post_body }
-
-      expect(response.status).to eq 201
-      expect(json).to have_key :post
-
-      expect(conversation.posts.count).to be > posts_count
-    end
-
-    it 'requires an authenticated user' do
-      post :create, format: :json, params: { post: post_body }
-
-      expect(response.status).to eq 401
+      expect(response).to have_http_status :created
+      expect(response).to match_response_schema 'post'
     end
 
     it 'does not allow banned users to create posts' do
       active_user.update banned: true
 
-      post :create, format: :json, params: { access_token: token.token, post: post_body }
+      expect do
+        post :create, format: :json, params: {
+          post: attributes_for(:post, conversation_id: conversation.id)
+        }.merge(session)
+      end.not_to change { Post.count }
 
-      expect(response.status).to eq 403
+      expect(response).to have_http_status :forbidden
     end
 
     it 'does not allow posting in conversations that do not exist' do
-      post :create, format: :json, params: {
-        access_token: token.token, post: post_body.merge(conversation_id: 1000)
-      }
+      expect do
+        post :create, format: :json, params: {
+          post: attributes_for(:post, conversation_id: conversation.id + 1)
+        }.merge(session)
+      end.not_to change { Post.count }
 
-      expect(response.status).to eq 422
+      expect(response).to have_http_status :unprocessable_entity
+      expect(json).to have_key :errors
+      expect(json[:errors]).to have_key :conversation
     end
 
     it 'does not allow posting in locked conversations' do
       conversation.update locked: true, locked_by: create(:user, admin: true)
 
-      post :create, format: :json, params: { access_token: token.token, post: post_body }
+      expect do
+        post :create, format: :json, params: {
+          post: attributes_for(:post, conversation_id: conversation.id)
+        }.merge(session)
+      end.not_to change { Post.count }
 
-      expect(response.status).to eq 403
+      expect(response).to have_http_status :forbidden
     end
   end
 
   describe '#PATCH update' do
-    let! :post do
+    let :post do
       create :post, author: active_user
     end
 
-    it 'updates the body of a post' do
-      old_body = post.body
-      patch :update, format: :json, params: {
-        access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
-      }
+    it 'requires an authenticated user' do
+      expect do
+        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }
+      end.not_to change { post.reload.attributes }
 
-      expect(response.status).to eq 200
-      expect(json).to have_key :post
-
-      expect(post.reload.body).not_to eq old_body
+      expect(response).to have_http_status :unauthorized
     end
 
-    it 'updates the title of a post' do
-      old_title = post.title
+    it 'updates the attributes of a post' do
+      expect do
+        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }.merge(session)
+      end.to change { post.reload.attributes }
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: post.id, post: { title: Faker::Book.title }
-      }
-
-      expect(response.status).to eq 200
-      expect(post.reload.title).not_to eq old_title
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'post'
     end
 
     it 'sets the editor when a post is modified' do
-      expect(post.editor).to be nil
+      expect do
+        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }.merge(session)
+      end.to change { post.reload.editor }.from(nil).to(active_user)
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
-      }
-
-      expect(response.status).to eq 200
-      expect(post.reload.editor).to eq active_user
+      expect(response).to have_http_status :ok
     end
 
-    it 'requires an authenticated user' do
-      old_body = post.body
+    it 'does not allow editing posts not owned by the user' do
+      post.update author: create(:user)
 
-      patch :update, format: :json, params: {
-        id: post.id, post: { body: Faker::Hipster.paragraph }
-      }
+      expect do
+        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }.merge(session)
+      end.not_to change { post.reload.attributes }
 
-      expect(response.status).to eq 401
-      expect(post.reload.editor).to be nil
-      expect(post.body).to eq old_body
+      expect(response).to have_http_status :forbidden
     end
 
-    it %(does not allow user's to edit other user's posts) do
-      old_body = post.body
-      post.update author: build(:user)
-
-      patch :update, format: :json, params: {
-        access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
-      }
-
-      expect(response.status).to eq 403
-      expect(post.reload.editor).to be nil
-      expect(post.body).to eq old_body
-    end
-
-    it %(allows admin users to edit other user's posts) do
-      old_body = post.body
+    it 'allows admins to edit posts owned by other users' do
       active_user.update admin: true
-      post.update author: build(:user)
+      post.update author: create(:user)
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
-      }
+      expect do
+        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }.merge(session)
+      end.to change { post.reload.attributes }
 
-      expect(response.status).to eq 200
-      expect(post.reload.editor).to eq active_user
-      expect(post.body).not_to eq old_body
+      expect(response).to have_http_status :ok
+      expect(post.editor).to eq active_user
     end
 
-    it 'cannot update the deleted state of a post' do
-      patch :update, format: :json, params: {
-        access_token: token.token, id: post.id, post: { deleted: true }
-      }
+    it 'prevents users from editing the deleted state of a post' do
+      expect do
+        patch :update, format: :json, params: { id: post.id, post: { deleted: true } }.merge(session)
+      end.not_to change { post.reload.deleted? }
 
-      expect(response.status).to eq 200
-      expect(post.reload.deleted?).to eq false
+      expect(response).to have_http_status :ok
     end
 
-    it 'updates the deleted state of a post for admin users' do
+    it 'allows admins to edit the deleted state of a post' do
       active_user.update admin: true
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: post.id, post: { deleted: true }
-      }
+      expect do
+        patch :update, format: :json, params: { id: post.id, post: { deleted: true } }.merge(session)
+      end.to change { post.reload.deleted? }.from(false).to(true)
 
-      expect(response.status).to eq 200
-      expect(post.reload.deleted?).to eq true
+      expect(response).to have_http_status :ok
     end
 
-    it 'cannot update the editor of a post' do
-      expect(post.editor).to be nil
+    it 'prevents users from changing the editor of a post' do
+      expect do
+        patch :update, format: :json, params: { id: post.id, post: { editor_id: nil } }.merge(session)
+      end.to change { post.reload.editor }.from(nil).to(active_user)
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: post.id, post: { editor_id: active_user.id }
-      }
-
-      expect(response.status).to eq 200
-      expect(post.reload.editor).to eq active_user
+      expect(response).to have_http_status :ok
     end
 
-    it 'updates the editor of a post for admin users' do
-      expect(post.editor).to be nil
+    it 'allows admins to change the editor of a post' do
       active_user.update admin: true
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: post.id, post: { editor_id: nil }
-      }
+      expect do
+        patch :update, format: :json, params: { id: post.id, post: { editor_id: nil } }.merge(session)
+      end.not_to change { post.reload.editor }
 
-      expect(response.status).to eq 200
-      expect(post.reload.editor).to be nil
+      expect(response).to have_http_status :ok
     end
 
-    it 'cannot change deleted posts' do
-      old_body = post.body
+    it 'returns 404 when editing deleted posts' do
       post.update deleted: true
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: post.id, post: { body: Faker::Hipster.paragraph }
-      }
+      expect do
+        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }.merge(session)
+      end.not_to change { post.reload.attributes }
 
-      expect(response.status).to eq 404
-      expect(post.reload.body).to eq old_body
+      expect(response).to have_http_status :not_found
     end
 
     it 'returns errors if the post is invalid' do
-      old_body = post.body
+      expect do
+        patch :update, format: :json, params: { id: post.id, post: { body: nil } }.merge(session)
+      end.not_to change { post.reload.body }
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: post.id, post: { body: nil }
-      }
-
-      expect(response.status).to eq 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(json).to have_key :errors
       expect(json[:errors]).to have_key :body
-
-      expect(post.reload.body).to eq old_body
     end
   end
 
   describe '#DELETE destroy' do
-    let! :post do
+    let :post do
       create :post, author: active_user
     end
 
-    it 'marks a post as deleted' do
-      delete :destroy, format: :json, params: {
-        access_token: token.token, id: post.id
-      }
-
-      expect(response.status).to eq 204
-      expect(post.reload.deleted?).to be true
-    end
-
     it 'requires an authenticated user' do
-      delete :destroy, format: :json, params: { id: post.id }
+      expect do
+        delete :destroy, format: :json, params: { id: post.id }
+      end.not_to change { post.reload.deleted? }
 
-      expect(response.status).to eq 401
-      expect(post.reload.deleted?).to be false
+      expect(response).to have_http_status :unauthorized
     end
 
-    it %(does not allow users to delete other user's posts) do
-      post.update author: build(:user)
-      delete :destroy, format: :json, params: {
-        access_token: token.token, id: post.id
-      }
+    it 'marks a post as deleted' do
+      expect do
+        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+      end.to change { post.reload.deleted? }.from(false).to(true)
 
-      expect(response.status).to eq 403
-      expect(post.reload.deleted?).to be false
+      expect(response).to have_http_status :no_content
     end
 
-    it %(allows admin users to delete other user's posts) do
-      post.update author: build(:user)
+    it 'prevents users from deleting posts they do not own' do
+      post.update author: create(:user)
+
+      expect do
+        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+      end.not_to change { post.reload.deleted? }
+
+      expect(response).to have_http_status :forbidden
+    end
+
+    it 'allows admins to delete posts owned by other users' do
       active_user.update admin: true
-      delete :destroy, format: :json, params: {
-        access_token: token.token, id: post.id
-      }
+      post.update author: create(:user)
 
-      expect(response.status).to eq 204
-      expect(post.reload.deleted?).to be true
+      expect do
+        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+      end.to change { post.reload.deleted? }.from(false).to(true)
+
+      expect(response).to have_http_status :no_content
+    end
+
+    it 'prevents users from deleting posts in locked conversations' do
+      post.conversation.update locked: true, locked_by: create(:user, admin: true)
+
+      expect do
+        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+      end.not_to change { post.reload.deleted? }
+
+      expect(response).to have_http_status :forbidden
+    end
+
+    it 'allows admins to delete posts in locked conversations' do
+      active_user.update admin: true
+      post.conversation.update locked: true, locked_by: create(:user, admin: true)
+
+      expect do
+        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+      end.to change { post.reload.deleted? }.from(false).to(true)
+
+      expect(response).to have_http_status :no_content
+    end
+
+    it 'returns 404 when trying to delete a post which is already marked as deleted' do
+      post.update deleted: true
+
+      expect do
+        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+      end.not_to change { post.reload.deleted? }
+
+      expect(response).to have_http_status :not_found
     end
   end
 end

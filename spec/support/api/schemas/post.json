@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "properties": {
+    "post": {
+      "allOf": [
+        {
+          "$ref": "partials/post.json#/definitions/post"
+        },
+        {
+          "properties": {
+            "author": {
+              "$ref": "partials/user.json#/definitions/user"
+            },
+            "editor": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "partials/user.json#/definitions/user"
+                }
+              ]
+            }
+          },
+          "required": [
+            "author",
+            "editor"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "post"
+  ]
+}

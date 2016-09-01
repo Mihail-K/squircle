@@ -1,10 +1,10 @@
 {
   "type": "object",
   "properties": {
-    "users": {
+    "posts": {
       "type": "array",
       "items": {
-        "$ref": "partials/user.json#/definitions/user"
+        "$ref": "partials/post.json#/definitions/post"
       }
     },
     "meta": {
@@ -12,7 +12,7 @@
     }
   },
   "required": [
-    "users",
+    "posts",
     "meta"
   ],
   "additionalProperties": false

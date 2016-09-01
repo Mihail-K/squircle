@@ -1,0 +1,49 @@
+{
+  "definitions": {
+    "post": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "author_id": { "type": "integer" },
+        "editor_id": {
+          "anyOf": [
+            { "type": "null" },
+            { "type": "integer" }
+          ]
+        },
+        "character_id": {
+          "anyOf": [
+            { "type": "null" },
+            { "type": "integer" }
+          ]
+        },
+        "conversation_id": { "type": "integer" },
+        "title": {
+          "anyOf": [
+            { "type": "null" },
+            { "type": "string" }
+          ]
+        },
+        "body": { "type": "string" },
+        "formatted_body": { "type": "string" },
+        "editable": { "type": "boolean" },
+        "deleted": { "type": "boolean" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "author_id",
+        "editor_id",
+        "character_id",
+        "conversation_id",
+        "title",
+        "body",
+        "formatted_body",
+        "deleted",
+        "created_at",
+        "updated_at"
+      ]
+    }
+  }
+}
