@@ -3,33 +3,65 @@
     "post": {
       "type": "object",
       "properties": {
-        "id": { "type": "integer" },
-        "author_id": { "type": "integer" },
+        "id": {
+          "type": "integer"
+        },
+        "author_id": {
+          "type": "integer"
+        },
         "editor_id": {
           "anyOf": [
-            { "type": "null" },
-            { "type": "integer" }
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer"
+            }
           ]
         },
         "character_id": {
           "anyOf": [
-            { "type": "null" },
-            { "type": "integer" }
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer"
+            }
           ]
         },
-        "conversation_id": { "type": "integer" },
+        "conversation_id": {
+          "type": "integer"
+        },
         "title": {
           "anyOf": [
-            { "type": "null" },
-            { "type": "string" }
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
           ]
         },
-        "body": { "type": "string" },
-        "formatted_body": { "type": "string" },
-        "editable": { "type": "boolean" },
-        "deleted": { "type": "boolean" },
-        "created_at": { "type": "string", "format": "date-time" },
-        "updated_at": { "type": "string", "format": "date-time" }
+        "body": {
+          "type": "string"
+        },
+        "formatted_body": {
+          "type": "string"
+        },
+        "editable": {
+          "type": "boolean"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
       "required": [
         "id",

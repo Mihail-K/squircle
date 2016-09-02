@@ -1,0 +1,13 @@
+---
+type: object
+properties:
+  posts:
+    type: array
+    items:
+      $ref: post.json#/definitions/post
+  meta:
+    $ref: partials/meta.json#/definitions/meta
+required:
+- posts
+- meta
+additionalProperties: false

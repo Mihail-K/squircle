@@ -41,6 +41,13 @@ require 'support/json'
 #
 # Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
+# Generate JSON versions of YAML JSON-Schema files.
+
+Dir[Rails.root.join('spec/support/api/schemas/**/*.yml')].each do |file_name|
+  json_name = File.join(File.dirname(file_name), File.basename(file_name, '.yml')) + '.json'
+  File.write(json_name, JSON.pretty_generate(YAML.load_file(file_name)) + "\n")
+end
+
 # Checks for pending migration and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!

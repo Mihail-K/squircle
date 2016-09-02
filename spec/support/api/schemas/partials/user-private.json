@@ -3,26 +3,44 @@
     "user": {
       "type": "object",
       "properties": {
-        "email": { "type": "string" },
+        "email": {
+          "type": "string"
+        },
         "email_confirmed_at": {
           "anyOf": [
-            { "type": "null" },
-            { "type": "string", "format": "date-time" }
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
           ]
         },
         "first_name": {
           "anyOf": [
-            { "type": "null" },
-            { "type": "string" }
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
           ]
         },
         "last_name": {
           "anyOf": [
-            { "type": "null" },
-            { "type": "string" }
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
           ]
         },
-        "date_of_birth": { "type": "string", "format": "date" }
+        "date_of_birth": {
+          "type": "string",
+          "format": "date"
+        }
       },
       "required": [
         "email",

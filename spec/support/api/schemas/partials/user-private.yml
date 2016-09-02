@@ -1,0 +1,29 @@
+---
+definitions:
+  user:
+    type: object
+    properties:
+      email:
+        type: string
+      email_confirmed_at:
+        anyOf:
+        - type: 'null'
+        - type: string
+          format: date-time
+      first_name:
+        anyOf:
+        - type: 'null'
+        - type: string
+      last_name:
+        anyOf:
+        - type: 'null'
+        - type: string
+      date_of_birth:
+        type: string
+        format: date
+    required:
+    - email
+    - email_confirmed_at
+    - first_name
+    - last_name
+    - date_of_birth

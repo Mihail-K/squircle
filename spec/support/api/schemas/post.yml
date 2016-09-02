@@ -1,0 +1,25 @@
+---
+definitions:
+  post:
+    type: object
+    allOf:
+    - $ref: partials/post.json#/definitions/post
+    - properties:
+        author:
+          $ref: partials/user.json#/definitions/user
+        editor:
+          anyOf:
+          - type: 'null'
+          - $ref: partials/user.json#/definitions/user
+        conversation:
+          $ref: partials/conversation.json#/definitions/conversation
+      required:
+      - author
+      - editor
+      - conversation
+type: object
+properties:
+  post:
+    $ref: "#/definitions/post"
+required:
+- post

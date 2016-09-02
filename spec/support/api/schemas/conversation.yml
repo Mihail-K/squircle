@@ -1,0 +1,24 @@
+---
+definitions:
+  conversation:
+    type: object
+    allOf:
+    - $ref: partials/conversation.json#/definitions/conversation
+    - properties:
+        author:
+          $ref: partials/user.json#/definitions/user
+        section:
+          $ref: partials/section.json#/definitions/section
+        locked_by:
+          oneOf:
+          - type: 'null'
+          - $ref: partials/user.json#/definitions/user
+      required:
+      - author
+      - section
+type: object
+properties:
+  conversation:
+    $ref: "#/definitions/conversation"
+required:
+- conversation

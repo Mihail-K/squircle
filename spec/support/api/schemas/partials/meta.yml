@@ -1,0 +1,31 @@
+---
+definitions:
+  meta:
+    type: object
+    properties:
+      page:
+        type: integer
+      next:
+        anyOf:
+        - type: 'null'
+        - type: integer
+      prev:
+        anyOf:
+        - type: 'null'
+        - type: integer
+      size:
+        type: integer
+      per:
+        type: integer
+      total:
+        type: integer
+      pages:
+        type: integer
+    required:
+    - page
+    - next
+    - prev
+    - size
+    - per
+    - total
+    - pages
