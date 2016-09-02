@@ -6,16 +6,16 @@ class CharacterPolicy < Political::Policy
   end
 
   def show?
-    scope.apply.exists? id: character.id
+    scope.apply.exists?(id: character.id)
   end
 
   def create?
-    user.present? && (user.admin? || !user.banned?)
+    current_user.present? && (current_user.admin? || !current_user.banned?)
   end
 
   def update?
-    return true if user.try(:admin?)
-    user.present? && !user.banned? && character.user_id == user.id
+    return true if current_user.try(:admin?)
+    current_user.present? && !current_user.banned? && character.user_id == current_user.id
   end
 
   def destroy?
@@ -25,14 +25,14 @@ class CharacterPolicy < Political::Policy
   class Parameters < Political::Parameters
     def permitted
       permitted  = %i(name title description avatar)
-      permitted << :user_id if user.try(:admin?)
+      permitted << :user_id if current_user.try(:admin?)
       permitted
     end
   end
 
   class Scope < Political::Scope
     def apply
-      if user.try(:admin?)
+      if current_user.try(:admin?)
         scope.all
       else
         scope.visible

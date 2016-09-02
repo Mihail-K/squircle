@@ -10,32 +10,32 @@ class PostPolicy < Political::Policy
   end
 
   def create?
-    return true if user.try(:admin?)
-    user.present? && !user.banned? && !locked?
+    return true if current_user.try(:admin?)
+    current_user.present? && !current_user.banned? && !locked?
   end
 
   def update?
-    return true if user.try(:admin?)
-    user.present? && author? && !user.banned? && !locked?
+    return true if current_user.try(:admin?)
+    current_user.present? && author? && !current_user.banned? && !locked?
   end
 
   def destroy?
-    return true if user.try(:admin?)
-    user.present? && author? && !user.banned? && !locked?
+    return true if current_user.try(:admin?)
+    current_user.present? && author? && !current_user.banned? && !locked?
   end
 
   class Parameters < Political::Policy::Parameters
     def permitted
       permitted  = %i(character_id title body)
       permitted += %i(conversation_id)   if action?('create')
-      permitted += %i(deleted editor_id) if user.try(:admin?)
+      permitted += %i(deleted editor_id) if current_user.try(:admin?)
       permitted
     end
   end
 
   class Scope < Political::Policy::Scope
     def apply
-      if user.try(:admin?)
+      if current_user.try(:admin?)
         scope.all
       else
         scope.visible
@@ -46,7 +46,7 @@ class PostPolicy < Political::Policy
 private
 
   def author?
-    post.author_id == user.id
+    post.author_id == current_user.id
   end
 
   def locked?

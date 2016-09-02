@@ -10,15 +10,15 @@ class SectionPolicy < Political::Policy
   end
 
   def create?
-    user.try(:admin?)
+    current_user.try(:admin?)
   end
 
   def update?
-    user.try(:admin?)
+    current_user.try(:admin?)
   end
 
   def destroy?
-    user.try(:admin?)
+    current_user.try(:admin?)
   end
 
   class Parameters < Political::Parameters
@@ -29,7 +29,7 @@ class SectionPolicy < Political::Policy
 
   class Scope < Political::Scope
     def apply
-      if user.try(:admin?)
+      if current_user.try(:admin?)
         scope.all
       else
         scope.visible

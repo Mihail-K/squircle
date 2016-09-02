@@ -1,6 +1,8 @@
 class UserPolicy < Political::Policy
+  alias_method :user, :record
+
   def me?
-    user.present?
+    current_user.present?
   end
 
   def index?
@@ -8,32 +10,32 @@ class UserPolicy < Political::Policy
   end
 
   def show?
-    scope.apply.exists? id: record.id
+    scope.apply.exists?(id: user.id)
   end
 
   def create?
-    user.nil? || user.admin?
+    current_user.nil? || current_user.admin?
   end
 
   def update?
-    user.try(:admin?) || user.try(:id) == record.id
+    current_user.try(:admin?) || current_user.try(:id) == record.id
   end
 
   def destroy?
-    user.try(:admin?) || user.try(:id) == record.id
+    current_user.try(:admin?) || current_user.try(:id) == record.id
   end
 
   class Parameters < Political::Parameters
     def permitted
       permitted  = %i(email date_of_birth display_name first_name last_name password password_confirmation avatar)
-      permitted += %i(deleted admin) if user.try(:admin?)
+      permitted += %i(deleted admin) if current_user.try(:admin?)
       permitted
     end
   end
 
   class Scope < Political::Scope
     def apply
-      if user.try(:admin?)
+      if current_user.try(:admin?)
         scope.all
       else
         scope.visible

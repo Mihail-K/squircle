@@ -6,11 +6,11 @@ class BanPolicy < Political::Policy
   end
 
   def show?
-    scope.apply.exists? id: ban.id
+    scope.apply.exists?(id: ban.id)
   end
 
   def create?
-    user.try(:admin?)
+    current_user.try(:admin?)
   end
 
   def update?
@@ -32,12 +32,12 @@ class BanPolicy < Political::Policy
 
   class Scope < Political::Scope
     def apply
-      if user.nil?
+      if current_user.nil?
         scope.none
-      elsif user.admin?
+      elsif current_user.admin?
         scope.all
       else
-        scope.where(user_id: user)
+        scope.where(user: current_user)
       end
     end
   end
