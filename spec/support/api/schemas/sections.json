@@ -1,0 +1,23 @@
+{
+  "definitions": {
+    "sections": {
+      "type": "array",
+      "items": {
+        "$ref": "section.json#/definitions/section"
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "sections": {
+      "$ref": "#/definitions/sections"
+    },
+    "meta": {
+      "$ref": "partials/meta.json#/definitions/meta"
+    }
+  },
+  "required": [
+    "sections",
+    "meta"
+  ]
+}

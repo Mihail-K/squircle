@@ -11,6 +11,9 @@
             "author": {
               "$ref": "partials/user.json#/definitions/user"
             },
+            "section": {
+              "$ref": "partials/section.json#/definitions/section"
+            },
             "locked_by": {
               "oneOf": [
                 {
@@ -23,7 +26,8 @@
             }
           },
           "required": [
-            "author"
+            "author",
+            "section"
           ]
         }
       ]

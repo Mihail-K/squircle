@@ -3,10 +3,6 @@ require 'rails_helper'
 RSpec.describe SectionsController, type: :controller do
   include_context 'authentication'
 
-  let :json do
-    JSON.parse(response.body).with_indifferent_access
-  end
-
   describe '#GET index' do
     let! :sections do
       create_list :section, 3
@@ -16,10 +12,9 @@ RSpec.describe SectionsController, type: :controller do
       get :index, format: :json
 
       expect(response).to have_http_status :ok
-      expect(json).to have_key :sections
-      expect(json).to have_key :meta
+      expect(response).to match_response_schema 'sections'
 
-      expect(json[:meta][:total]).to eq sections.count
+      expect(json[:sections].count).to eq sections.count
     end
 
     it 'does not return sections that are not visible' do
@@ -28,7 +23,7 @@ RSpec.describe SectionsController, type: :controller do
       get :index, format: :json
 
       expect(response).to have_http_status :ok
-      expect(json[:meta][:total]).to eq sections.count - 1
+      expect(json[:sections].count).to eq sections.count - 1
     end
 
     it 'returns all sections for admin users' do
@@ -38,53 +33,80 @@ RSpec.describe SectionsController, type: :controller do
       get :index, format: :json, params: { access_token: token.token }
 
       expect(response).to have_http_status :ok
-      expect(json[:meta][:total]).to eq sections.count
+      expect(json[:sections].count).to eq sections.count
+    end
+  end
+
+  describe '#GET show' do
+    let :section do
+      create :section
+    end
+
+    it 'returns the requested section' do
+      get :show, format: :json, params: { id: section.id }
+
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'section'
+    end
+
+    it 'returns 404 if the section is deleted' do
+      section.update deleted: true
+
+      get :show, format: :json, params: { id: section.id }
+
+      expect(response).to have_http_status :not_found
+    end
+
+    it 'allows admins to view deleted sections' do
+      active_user.update admin: true
+      section.update deleted: true
+
+      get :show, format: :json, params: { id: section.id }.merge(session)
+
+      expect(response).to have_http_status :ok
     end
   end
 
   describe '#POST create' do
-    let :section_attributes do
-      {
-        title:       Faker::Book.title,
-        description: Faker::Hipster.paragraph
-      }
-    end
-
     it 'requires an authenticated user' do
-      post :create, format: :json, params: { section: section_attributes }
+      expect do
+        post :create, format: :json, params: { section: attributes_for(:section) }
+      end.not_to change { Section.count }
 
       expect(response).to have_http_status :unauthorized
-      expect(Section.count).to eq 0
     end
 
     it 'only allows admins to create sections' do
-      post :create, format: :json, params: { access_token: token.token, section: section_attributes }
+      expect do
+        post :create, format: :json, params: { section: attributes_for(:section) }.merge(session)
+      end.not_to change { Section.count }
 
       expect(response).to have_http_status :forbidden
-      expect(Section.count).to eq 0
     end
 
-    it 'creates a section' do
+    it 'creates a section when called by an admin user' do
       active_user.update admin: true
 
-      post :create, format: :json, params: { access_token: token.token, section: section_attributes }
+      expect do
+        post :create, format: :json, params: { section: attributes_for(:section) }.merge(session)
+      end.to change { Section.count }.by(1)
 
       expect(response).to have_http_status :created
-      expect(json).to have_key :section
-      expect(Section.count).to eq 1
+      expect(response).to match_response_schema 'section'
     end
 
     it 'returns errors if the section is not valid' do
       active_user.update admin: true
 
-      post :create, format: :json, params: {
-        access_token: token.token, section: section_attributes.merge(title: nil)
-      }
+      expect do
+        post :create, format: :json, params: {
+          section: attributes_for(:section, title: nil)
+        }.merge(session)
+      end.not_to change { Section.count }
 
       expect(response).to have_http_status :unprocessable_entity
       expect(json).to have_key :errors
       expect(json[:errors]).to have_key :title
-      expect(Section.count).to eq 0
     end
   end
 
@@ -98,47 +120,40 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'requires an authenticated user' do
-      old_attributes = section.attributes
-
-      patch :update, format: :json, params: { id: section.id, section: section_attributes }
+      expect do
+        patch :update, format: :json, params: { id: section.id, section: section_attributes }
+      end.not_to change { section.reload.title }
 
       expect(response).to have_http_status :unauthorized
-      expect(section.reload.attributes).to eq old_attributes
     end
 
     it 'only allows admins to edit sections' do
-      old_attributes = section.attributes
-
-      patch :update, format: :json, params: {
-        access_token: token.token, id: section.id, section: section_attributes
-      }
+      expect do
+        patch :update, format: :json, params: { id: section.id, section: section_attributes }.merge(session)
+      end.not_to change { section.reload.title }
 
       expect(response).to have_http_status :forbidden
-      expect(section.reload.attributes).to eq old_attributes
     end
 
     it 'edits a section when called by an admin' do
       active_user.update admin: true
-      old_attributes = section.attributes
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: section.id, section: section_attributes
-      }
+      expect do
+        patch :update, format: :json, params: { id: section.id, section: section_attributes }.merge(session)
+      end.to change { section.reload.title }
 
       expect(response).to have_http_status :ok
-      expect(section.reload.attributes).not_to eq old_attributes
+      expect(response).to match_response_schema 'section'
     end
 
     it 'returns errors when the section is invalid' do
       active_user.update admin: true
-      old_attributes = section.attributes
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: section.id, section: section_attributes.merge(title: nil)
-      }
+      expect do
+        patch :update, format: :json, params: { id: section.id, section: { title: nil } }.merge(session)
+      end.not_to change { section.reload.title }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(section.reload.attributes).to eq old_attributes
     end
   end
 
@@ -148,26 +163,29 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'requires an authenticated user' do
-      delete :destroy, format: :json, params: { id: section.id }
+      expect do
+        delete :destroy, format: :json, params: { id: section.id }
+      end.not_to change { section.reload.deleted? }
 
       expect(response).to have_http_status :unauthorized
-      expect(section.reload.deleted?).to be false
     end
 
     it 'only allows admins to delete sections' do
-      delete :destroy, format: :json, params: { access_token: token.token, id: section.id }
+      expect do
+        delete :destroy, format: :json, params: { id: section.id }.merge(session)
+      end.not_to change { section.reload.deleted? }
 
       expect(response).to have_http_status :forbidden
-      expect(section.reload.deleted?).to be false
     end
 
     it 'marks a section as deleted when called by an admin' do
       active_user.update admin: true
 
-      delete :destroy, format: :json, params: { access_token: token.token, id: section.id }
+      expect do
+        delete :destroy, format: :json, params: { id: section.id }.merge(session)
+      end.to change { section.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content
-      expect(section.reload.deleted?).to be true
     end
   end
 end

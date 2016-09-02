@@ -1,0 +1,67 @@
+{
+  "definitions": {
+    "section": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "creator_id": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "logo_url": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "posts_count": {
+          "type": "integer"
+        },
+        "visible_posts_count": {
+          "type": "integer"
+        },
+        "conversations_count": {
+          "type": "integer"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "visible_posts_count",
+        "deleted",
+        "created_at",
+        "updated_at"
+      ]
+    }
+  }
+}

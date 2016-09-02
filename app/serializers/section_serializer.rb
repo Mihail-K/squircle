@@ -14,6 +14,9 @@ class SectionSerializer < ActiveModel::Serializer
   attribute :visible_posts_count
   attribute :deleted
 
+  attribute :created_at
+  attribute :updated_at
+
   belongs_to :creator, if: :can_view_creator?
 
   def can_view_deleted_posts?

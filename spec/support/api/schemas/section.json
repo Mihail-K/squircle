@@ -1,0 +1,28 @@
+{
+  "definitions": {
+    "section": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "partials/section.json#/definitions/section"
+        },
+        {
+          "properties": {
+            "creator": {
+              "$ref": "partials/user.json#/definitions/user"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "section": {
+      "$ref": "#/definitions/section"
+    }
+  },
+  "required": [
+    "section"
+  ]
+}
