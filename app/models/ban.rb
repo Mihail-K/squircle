@@ -21,9 +21,6 @@ class Ban < ActiveRecord::Base
   belongs_to :user, inverse_of: :bans
   belongs_to :creator, class_name: 'User'
 
-  attr_readonly :user_id
-  attr_readonly :creator_id
-
   validates :user, presence: true
   validates :creator, presence: true
   validates :reason, presence: true
@@ -61,6 +58,10 @@ class Ban < ActiveRecord::Base
 
   scope :permanent, -> {
     where expires_at: nil
+  }
+
+  scope :visible, -> {
+    where deleted: false
   }
 
   def active?

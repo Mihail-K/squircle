@@ -1,0 +1,24 @@
+{
+  "definitions": {
+    "bans": {
+      "type": "array",
+      "items": {
+        "$ref": "ban.json#/definitions/ban"
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "bans": {
+      "$ref": "#/definitions/bans"
+    },
+    "meta": {
+      "$ref": "partials/meta.json#/definitions/meta"
+    }
+  },
+  "required": [
+    "bans",
+    "meta"
+  ],
+  "additionalProperties": false
+}

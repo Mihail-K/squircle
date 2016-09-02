@@ -1,0 +1,36 @@
+{
+  "definitions": {
+    "ban": {
+      "type": "object",
+      "properties": {
+        "allOf": [
+          {
+            "$ref": "partials/ban.json#/definitions/ban"
+          },
+          {
+            "properties": {
+              "user": {
+                "$ref": "partials/user.json#/definitions/user"
+              },
+              "creator": {
+                "$ref": "partials/creator.json#/definitions/user"
+              }
+            },
+            "required": [
+              "user"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "ban": {
+      "$ref": "#/definitions/ban"
+    }
+  },
+  "required": [
+    "ban"
+  ]
+}

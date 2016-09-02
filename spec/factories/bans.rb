@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :ban do
-    user
+    association :user
     association :creator, factory: :user, admin: true
 
     reason { Faker::Hipster.paragraph }

@@ -37,7 +37,7 @@ class BanPolicy < Political::Policy
       elsif current_user.admin?
         scope.all
       else
-        scope.where(user: current_user)
+        scope.where(user: current_user).visible
       end
     end
   end

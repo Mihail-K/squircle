@@ -7,6 +7,7 @@ class BanSerializer < ActiveModel::Serializer
   attribute :expires_at
   attribute :permanent
   attribute :expired
+  attribute :deleted
   attribute :created_at
   attribute :updated_at
 
