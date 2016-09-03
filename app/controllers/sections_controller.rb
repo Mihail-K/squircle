@@ -20,31 +20,23 @@ class SectionsController < ApiController
   end
 
   def create
-    @section = Section.new section_params do |section|
+    @section = Section.create! section_params do |section|
       section.creator = current_user
     end
 
-    if @section.save
-      render json: @section, status: :created
-    else
-      errors @section
-    end
+    render json: @section, status: :created
   end
 
   def update
-    if @section.update section_params
-      render json: @section
-    else
-      errors @section
-    end
+    @section.update! section_params
+
+    render json: @section
   end
 
   def destroy
-    if @section.update deleted: true
-      head :no_content
-    else
-      errors @section
-    end
+    @section.update! deleted: true
+
+    head :no_content
   end
 
 private

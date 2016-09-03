@@ -24,31 +24,23 @@ class CharactersController < ApiController
   end
 
   def create
-    @character = Character.new character_params do |character|
+    @character = Character.create! character_params do |character|
       character.user = current_user
     end
 
-    if @character.save
-      render json: @character, status: :created
-    else
-      errors @character
-    end
+    render json: @character, status: :created
   end
 
   def update
-    if @character.update character_params
-      render json: @character
-    else
-      errors @character
-    end
+    @character.update! character_params
+
+    render json: @character
   end
 
   def destroy
-    if @character.update deleted: true
-      head :no_content
-    else
-      errors @character
-    end
+    @character.update! deleted: true
+
+    head :no_content
   end
 
 private

@@ -20,34 +20,25 @@ class ReportsController < ApiController
   end
 
   def create
-    @report = Report.new report_params do |report|
+    @report = Report.create! report_params do |report|
       report.creator = current_user
     end
 
-    if @report.save
-      render json: @report, status: :created
-    else
-      errors @report
-    end
+    render json: @report, status: :created
   end
 
   def update
     @report.attributes = report_params
-    @report.closed_by = current_user if @report.status_changed?(from: 'open')
+    @report.closed_by  = current_user if @report.status_changed?(from: 'open')
+    @report.save!
 
-    if @report.save
-      render json: @report
-    else
-      errors @report
-    end
+    render json: @report
   end
 
   def destroy
-    if @report.update deleted: true
-      head :no_content
-    else
-      errors @report
-    end
+    @report.update! deleted: true
+
+    head :no_content
   end
 
 private

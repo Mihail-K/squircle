@@ -28,35 +28,26 @@ class ConversationsController < ApiController
   end
 
   def create
-    @conversation = Conversation.new conversation_params do |conversation|
+    @conversation = Conversation.create! conversation_params do |conversation|
       conversation.author    = current_user
       conversation.locked_by = current_user if conversation.locked?
     end
 
-    if @conversation.save
-      render json: @conversation, status: :created
-    else
-      errors @conversation
-    end
+    render json: @conversation, status: :created
   end
 
   def update
     @conversation.attributes = conversation_params
     @conversation.locked_by  = current_user if @conversation.locked_changed?(to: true)
+    @conversation.save!
 
-    if @conversation.save
-      render json: @conversation
-    else
-      errors @conversation
-    end
+    render json: @conversation
   end
 
   def destroy
-    if @conversation.update(deleted: true)
-      head :no_content
-    else
-      errors @conversation
-    end
+    @conversation.update! deleted: true
+
+    head :no_content
   end
 
 private

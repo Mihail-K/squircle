@@ -20,31 +20,23 @@ class BansController < ApiController
   end
 
   def create
-    @ban = Ban.new ban_params do |ban|
+    @ban = Ban.create! ban_params do |ban|
       ban.creator = current_user
     end
 
-    if @ban.save
-      render json: @ban, status: :created
-    else
-      errors @ban
-    end
+    render json: @ban, status: :created
   end
 
   def update
-    if @ban.update ban_params
-      render json: @ban
-    else
-      errors @ban
-    end
+    @ban.update! ban_params
+
+    render json: @ban
   end
 
   def destroy
-    if @ban.update deleted: true
-      head :no_content
-    else
-      errors @ban
-    end
+    @ban.update! deleted: true
+
+    head :no_content
   end
 
 private

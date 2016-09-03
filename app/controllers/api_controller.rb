@@ -3,6 +3,12 @@ class ApiController < ActionController::API
     not_found
   end
 
+  rescue_from ActiveRecord::RecordInvalid,
+              ActiveRecord::RecordNotSaved,
+              ActiveRecord::RecordNotDestroyed do |exception|
+    render json: { errors: exception.record.errors }, status: :unprocessable_entity
+  end
+
   rescue_from Political::Policy::NotAllowed do
     forbid
   end

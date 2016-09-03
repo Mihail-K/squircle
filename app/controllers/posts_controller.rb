@@ -22,32 +22,24 @@ class PostsController < ApiController
   end
 
   def create
-    @post = Post.new post_params do |post|
+    @post = Post.create! post_params do |post|
       post.author = current_user
     end
 
-    if @post.save
-      render json: @post, status: :created
-    else
-      errors @post
-    end
+    render json: @post, status: :created
   end
 
   def update
     @post.editor = current_user
-    if @post.update post_params
-      render json: @post
-    else
-      errors @post
-    end
+    @post.update! post_params
+
+    render json: @post
   end
 
   def destroy
-    if @post.update deleted: true
-      head :no_content
-    else
-      errors @post
-    end
+    @post.update! deleted: true
+
+    head :no_content
   end
 
 private
