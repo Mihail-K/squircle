@@ -68,9 +68,10 @@ private
     if Post.where(author_id: current_user)
            .where(Post.arel_table[:created_at].gteq(20.seconds.ago))
            .exists?
-      @post = Post.new
-      @post.errors.add :base, 'you can only post once every 20 seconds'
-      errors @post
+      # Prevent posts from being made more than once per 20 seconds.
+      raise ActiveRecord::RecordInvalid, @post = Post.new do |post|
+        post.errors.add :base, 'you can only post once every 20 seconds'
+      end
     end
   end
 end

@@ -3,10 +3,6 @@ class CharactersController < ApiController
 
   before_action :doorkeeper_authorize!, except: %i(index show)
 
-  before_action :set_user, except: :create, if: -> {
-    params.key? :user_id
-  }
-
   before_action :set_characters, except: :create
   before_action :set_character, only: %i(show update destroy)
   before_action :apply_pagination, only: :index
@@ -49,13 +45,9 @@ private
     params.require(:character).permit *policy_params
   end
 
-  def set_user
-    @user = policy_scope(User).where(id: params[:user_id])
-  end
-
   def set_characters
     @characters = policy_scope(Character).includes(:user, :creator)
-    @characters = @characters.where(user: @user) unless @user.nil?
+    @characters = @characters.where(user: params[:user_id]) if params.key?(:user_id)
   end
 
   def apply_pagination
