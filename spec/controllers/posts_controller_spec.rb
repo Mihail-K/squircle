@@ -153,6 +153,28 @@ RSpec.describe PostsController, type: :controller do
 
       expect(response).to have_http_status :forbidden
     end
+
+    it 'prevents users from posting to frequently' do
+      expect do
+        post :create, format: :json, params: {
+          post: attributes_for(:post, conversation_id: conversation.id)
+        }.merge(session)
+      end.to change { Post.count }.by(1)
+
+      expect(response).to have_http_status :created
+
+      expect do
+        post :create, format: :json, params: {
+          post: attributes_for(:post, conversation_id: conversation.id)
+        }.merge(session)
+      end.not_to change { Post.count }
+
+      expect(response).to have_http_status :unprocessable_entity
+      expect(response).to match_response_schema 'errors'
+
+      expect(json[:errors]).to have_key :base
+      expect(json[:errors][:base]).to include('you can only post once every 20 seconds')
+    end
   end
 
   describe '#PATCH update' do
