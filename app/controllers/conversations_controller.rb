@@ -1,5 +1,6 @@
 class ConversationsController < ApiController
   include Political::Authority
+  include FloodLimitable
 
   before_action :doorkeeper_authorize!, except: %i(index show)
 

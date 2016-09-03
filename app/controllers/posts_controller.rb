@@ -1,13 +1,12 @@
 class PostsController < ApiController
   include Political::Authority
+  include FloodLimitable
 
   before_action :doorkeeper_authorize!, except: %i(index show)
 
   before_action :set_posts, except: :create
   before_action :set_post, except: %i(index create)
   before_action :apply_pagination, only: :index
-
-  before_action :check_flood_limit, only: :create, unless: :admin?
 
   before_action { policy!(@post || Post) }
 
@@ -62,16 +61,5 @@ private
 
   def set_post
     @post = @posts.find params[:id]
-  end
-
-  def check_flood_limit
-    if Post.where(author_id: current_user)
-           .where(Post.arel_table[:created_at].gteq(20.seconds.ago))
-           .exists?
-      # Prevent posts from being made more than once per 20 seconds.
-      raise ActiveRecord::RecordInvalid, @post = Post.new { |post|
-        post.errors.add :base, 'you can only post once every 20 seconds'
-      }
-    end
   end
 end

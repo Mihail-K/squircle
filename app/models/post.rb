@@ -73,6 +73,10 @@ class Post < ActiveRecord::Base
                            )
   }
 
+  scope :flood, -> {
+    where Post.arel_table[:created_at].gteq(20.seconds.ago)
+  }
+
   scope :visible, -> {
     where(deleted: false).joins(:conversation)
                          .merge(Conversation.visible)

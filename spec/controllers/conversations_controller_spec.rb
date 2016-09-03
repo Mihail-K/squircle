@@ -83,16 +83,11 @@ RSpec.describe ConversationsController, type: :controller do
       create :section
     end
 
-    let :conversation_attributes do
-      {
-        section_id: section.id,
-        posts_attributes: [ FactoryGirl.attributes_for(:post).slice(:title, :body) ]
-      }
-    end
-
     it 'requires an authenticated user' do
       expect do
-        post :create, format: :json, params: { conversation: conversation_attributes }
+        post :create, format: :json, params: {
+          conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post) ] }
+        }
       end.not_to change { Conversation.count }
 
       expect(response).to have_http_status :unauthorized
@@ -100,7 +95,9 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'creates a new conversation' do
       expect do
-        post :create, format: :json, params: { conversation: conversation_attributes }.merge(session)
+        post :create, format: :json, params: {
+          conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post) ] }
+        }.merge(session)
       end.to change { Conversation.count }.by(1)
 
       expect(response).to have_http_status :created
@@ -111,23 +108,33 @@ RSpec.describe ConversationsController, type: :controller do
       active_user.update banned: true
 
       expect do
-        post :create, format: :json, params: { conversation: conversation_attributes }.merge(session)
+        post :create, format: :json, params: {
+          conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post) ] }
+        }.merge(session)
       end.not_to change { Conversation.count }
 
       expect(response).to have_http_status :forbidden
     end
 
     it 'returns errors if the conversation is invalid' do
-      conversation_attributes[:posts_attributes].first[:body] = nil
-
       expect do
-        post :create, format: :json, params: { conversation: conversation_attributes }.merge(session)
+        post :create, format: :json, params: {
+          conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post, body: nil) ] }
+        }.merge(session)
       end.not_to change { Conversation.count }
 
       expect(response).to have_http_status :unprocessable_entity
       expect(response).to match_response_schema 'errors'
 
       expect(json[:errors]).to have_key 'posts.body'
+    end
+
+    it_behaves_like 'flood_limitable' do
+      let :attributes do
+        {
+          conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post) ] }
+        }.merge(session)
+      end
     end
   end
 
