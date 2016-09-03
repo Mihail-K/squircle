@@ -147,7 +147,8 @@ RSpec.describe UsersController, type: :controller do
       end.not_to change { User.count }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(json).to have_key :errors
+      expect(response).to match_response_schema 'errors'
+
       expect(json[:errors]).to have_key :email
     end
   end
@@ -194,7 +195,8 @@ RSpec.describe UsersController, type: :controller do
       end.not_to change { active_user.reload.email }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(json).to have_key :errors
+      expect(response).to match_response_schema 'errors'
+
       expect(json[:errors]).to have_key :email
     end
   end

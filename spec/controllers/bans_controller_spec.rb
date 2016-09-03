@@ -139,7 +139,8 @@ RSpec.describe BansController, type: :controller do
       end.not_to change { Ban.count }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(json).to have_key :errors
+      expect(response).to match_response_schema 'errors'
+
       expect(json[:errors]).to have_key :reason
     end
   end
@@ -207,6 +208,19 @@ RSpec.describe BansController, type: :controller do
       end.not_to change { ban.reload.creator }
 
       expect(response).to have_http_status :ok
+    end
+
+    it 'returns errors if the ban is invalid' do
+      active_user.update admin: true
+
+      expect do
+        patch :update, format: :json, params: { id: ban.id, ban: { reason: nil } }.merge(session)
+      end.not_to change { ban.reload.attributes }
+
+      expect(response).to have_http_status :unprocessable_entity
+      expect(response).to match_response_schema 'errors'
+
+      expect(json[:errors]).to have_key :reason
     end
   end
 

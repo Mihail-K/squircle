@@ -1,0 +1,26 @@
+{
+  "definitions": {
+    "errors": {
+      "type": "object",
+      "patternProperties": {
+        ".+": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "errors": {
+      "$ref": "#/definitions/errors"
+    }
+  },
+  "required": [
+    "errors"
+  ],
+  "additionalProperties": false
+}

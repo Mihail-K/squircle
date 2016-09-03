@@ -125,7 +125,8 @@ RSpec.describe ConversationsController, type: :controller do
       end.not_to change { Conversation.count }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(json).to have_key :errors
+      expect(response).to match_response_schema 'errors'
+
       expect(json[:errors]).to have_key 'posts.body'
     end
   end
@@ -166,6 +167,21 @@ RSpec.describe ConversationsController, type: :controller do
 
       expect(response).to have_http_status :ok
       expect(json).to have_key :conversation
+    end
+
+    it 'returns errors if the conversation is invalid' do
+      active_user.update admin: true
+
+      expect do
+        patch :update, format: :json, params: {
+          id: conversation.id, conversation: { section_id: nil }
+        }.merge(session)
+      end.not_to change { conversation.reload.title }
+
+      expect(response).to have_http_status :unprocessable_entity
+      expect(response).to match_response_schema 'errors'
+
+      expect(json[:errors]).to have_key :section
     end
   end
 

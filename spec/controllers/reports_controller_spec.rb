@@ -171,7 +171,8 @@ RSpec.describe ReportsController, type: :controller do
       end.not_to change { Report.count }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(json).to have_key :errors
+      expect(response).to match_response_schema 'errors'
+
       expect(json[:errors]).to have_key :reportable
     end
   end
@@ -245,7 +246,8 @@ RSpec.describe ReportsController, type: :controller do
       end.not_to change { report.reload.attributes }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(json).to have_key :errors
+      expect(response).to match_response_schema 'errors'
+
       expect(json[:errors]).to have_key :description
     end
   end

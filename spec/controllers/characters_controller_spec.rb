@@ -113,7 +113,8 @@ RSpec.describe CharactersController, type: :controller do
       end.not_to change { Character.count }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(json).to have_key :errors
+      expect(response).to match_response_schema 'errors'
+
       expect(json[:errors]).to have_key :name
     end
   end
@@ -177,7 +178,8 @@ RSpec.describe CharactersController, type: :controller do
       end.not_to change { character.reload.attributes }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(json).to have_key :errors
+      expect(response).to match_response_schema 'errors'
+
       expect(json[:errors]).to have_key :name
     end
   end

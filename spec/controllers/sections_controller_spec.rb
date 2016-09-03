@@ -105,7 +105,8 @@ RSpec.describe SectionsController, type: :controller do
       end.not_to change { Section.count }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(json).to have_key :errors
+      expect(response).to match_response_schema 'errors'
+
       expect(json[:errors]).to have_key :title
     end
   end
@@ -154,6 +155,9 @@ RSpec.describe SectionsController, type: :controller do
       end.not_to change { section.reload.title }
 
       expect(response).to have_http_status :unprocessable_entity
+      expect(response).to match_response_schema 'errors'
+
+      expect(json[:errors]).to have_key :title
     end
   end
 
