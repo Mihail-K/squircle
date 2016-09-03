@@ -3,10 +3,6 @@ require 'rails_helper'
 RSpec.describe BansController, type: :controller do
   include_context 'authentication'
 
-  let :json do
-    JSON.parse(response.body).with_indifferent_access
-  end
-
   describe '#GET index' do
     let! :bans do
       create_list :ban, 5, user: active_user
@@ -190,40 +186,59 @@ RSpec.describe BansController, type: :controller do
 
       expect(response).to have_http_status :ok
     end
+
+    it 'prevents the assigned user from being changed' do
+      active_user.update admin: true
+      user_id = create(:user).id
+
+      expect do
+        patch :update, format: :json, params: { id: ban.id, ban: { user_id: user_id } }.merge(session)
+      end.not_to change { ban.reload.user }
+
+      expect(response).to have_http_status :ok
+    end
+
+    it 'prevents the assigned creator from being changed' do
+      active_user.update admin: true
+      user_id = create(:user).id
+
+      expect do
+        patch :update, format: :json, params: { id: ban.id, ban: { creator_id: user_id } }.merge(session)
+      end.not_to change { ban.reload.creator }
+
+      expect(response).to have_http_status :ok
+    end
   end
 
   describe '#DELETE destroy' do
-    let! :ban do
-      create :ban
+    let :ban do
+      create :ban, user: active_user
     end
 
     it 'requires an authenticated user' do
-      delete :destroy, format: :json, params: {
-        id: ban.id
-      }
+      expect do
+        delete :destroy, format: :json, params: { id: ban.id }
+      end.not_to change { ban.reload.deleted? }
 
-      expect(response.status).to eq 401
-      expect(ban.reload.deleted?).to be false
+      expect(response).to have_http_status :unauthorized
     end
 
     it 'only allows admins to delete bans' do
-      delete :destroy, format: :json, params: {
-        access_token: token.token, id: ban.id
-      }
+      expect do
+        delete :destroy, format: :json, params: { id: ban.id }.merge(session)
+      end.not_to change { ban.reload.deleted? }
 
-      expect(response.status).to eq 404
-      expect(ban.reload.deleted?).to be false
+      expect(response).to have_http_status :forbidden
     end
 
-    it 'marks a ban as deleted' do
+    it 'marks a ban as deleted when called by an admin' do
       active_user.update admin: true
 
-      delete :destroy, format: :json, params: {
-        access_token: token.token, id: ban.id
-      }
+      expect do
+        delete :destroy, format: :json, params: { id: ban.id }.merge(session)
+      end.to change { ban.reload.deleted? }.from(false).to(true)
 
-      expect(response.status).to eq 204
-      expect(ban.reload.deleted?).to be true
+      expect(response).to have_http_status :no_content
     end
   end
 end

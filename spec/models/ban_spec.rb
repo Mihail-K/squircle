@@ -37,22 +37,6 @@ RSpec.describe Ban, type: :model do
     expect(ban).not_to be_valid
   end
 
-  it 'cannot be assigned to a different user' do
-    new_user = build :user
-
-    ban.save
-    ban.update user: new_user
-    expect(ban.reload.user).not_to eq new_user
-  end
-
-  it 'cannot be assigned to a different creator' do
-    new_user = build :user, admin: true
-
-    ban.save
-    ban.update creator: new_user
-    expect(ban.reload.creator).not_to eq new_user
-  end
-
   it 'cannot apply to its creator' do
     ban.user = ban.creator
     expect(ban).not_to be_valid
