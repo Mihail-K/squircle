@@ -2,7 +2,7 @@ class ReportPolicy < Political::Policy
   alias_method :report, :record
 
   def index?
-    true
+    authenticated?
   end
 
   def show?
