@@ -1,0 +1,42 @@
+---
+definitions:
+  character:
+    type: object
+    properties:
+      id:
+        type: integer
+      user_id:
+        type: integer
+      creator_id:
+        type: integer
+      name:
+        type: string
+      title:
+        oneOf:
+        - type: 'null'
+        - type: string
+      description:
+        oneOf:
+        - type: 'null'
+        - type: string
+      posts_count:
+        type: integer
+      deleted:
+        type: boolean
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    required:
+    - id
+    - user_id
+    - creator_id
+    - name
+    - title
+    - description
+    - posts_count
+    - deleted
+    - created_at
+    - updated_at

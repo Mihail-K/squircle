@@ -3,201 +3,225 @@ require 'rails_helper'
 RSpec.describe CharactersController, type: :controller do
   include_context 'authentication'
 
-  let :json do
-    JSON.parse(response.body).with_indifferent_access
-  end
-
   describe '#GET index' do
     let! :characters do
-      create_list :character, Faker::Number.between(1, 5)
+      create_list :character, 5
     end
 
     it 'returns a list of characters' do
       get :index, format: :json
 
-      expect(response.status).to eq 200
-      expect(json).to have_key :characters
-      expect(json).to have_key :meta
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'characters'
 
-      expect(json[:meta][:total]).to eq characters.count
+      expect(json[:characters].count).to eq characters.count
     end
 
     it 'only returns visible characters' do
-      characters.sample.update deleted: true
+      deleted_characters = characters.sample(3).each do |character|
+        character.update deleted: true
+      end
 
       get :index, format: :json
 
-      expect(response.status).to eq 200
-      expect(json[:meta][:total]).to eq(characters.count - 1)
+      expect(response).to have_http_status :ok
+      expect(json[:characters].count).to eq characters.count - deleted_characters.count
     end
 
-    it 'returns all characters for authenticated admins' do
+    it 'includes deleted characters when called by an admin' do
       active_user.update admin: true
-      characters.sample.update deleted: true
+      deleted_characters = characters.sample(3).each do |character|
+        character.update deleted: true
+      end
 
-      get :index, format: :json, params: { access_token: token.token }
+      get :index, format: :json, params: session
 
-      expect(response.status).to eq 200
-      expect(json[:meta][:total]).to eq characters.count
+      expect(response).to have_http_status :ok
+      expect(json[:characters].count).to eq characters.count
+    end
+  end
+
+  describe '#GET show' do
+    let :character do
+      create :character, user: active_user
     end
 
-    it 'can return characters only for a specific user' do
-      user = characters.sample.user
+    it 'returns the requested character' do
+      get :show, format: :json, params: { id: character.id }
 
-      get :index, format: :json, params: { user_id: user.id }
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'character'
+    end
 
-      expect(response.status).to eq 200
-      expect(json[:meta][:total]).to eq user.characters.count
+    it 'returns 404 if the character is deleted' do
+      character.update deleted: true
+
+      get :show, format: :json, params: { id: character.id }
+
+      expect(response).to have_http_status :not_found
+    end
+
+    it 'allows admins to view deleted characters' do
+      active_user.update admin: true
+      character.update deleted: true
+
+      get :show, format: :json, params: { id: character.id }.merge(session)
+
+      expect(response).to have_http_status :ok
     end
   end
 
   describe '#POST create' do
-    let :character_attributes do
-      {
-        name:        Faker::Pokemon.name,
-        title:       Faker::Name.title,
-        description: Faker::Hipster.paragraph
-      }
-    end
-
     it 'requires an authenticated user' do
-      old_count = Character.count
+      expect do
+        post :create, format: :json, params: {
+          character: attributes_for(:character)
+        }
+      end.not_to change { Character.count }
 
-      post :create, format: :json, params: {
-        character: character_attributes
-      }
-
-      expect(response.status).to eq 401
-      expect(Character.count).to eq old_count
+      expect(response).to have_http_status :unauthorized
     end
 
-    it 'creates a character' do
-      old_count = Character.count
+    it 'creates a character when called by an authenticated user' do
+      expect do
+        post :create, format: :json, params: {
+          character: attributes_for(:character)
+        }.merge(session)
+      end.to change { Character.count }.by(1)
 
-      post :create, format: :json, params: {
-        access_token: token.token, character: character_attributes
-      }
+      expect(response).to have_http_status :created
+      expect(response).to match_response_schema 'character'
+    end
 
-      expect(response.status).to eq 201
-      expect(json).to have_key :character
+    it 'prevents banned users from creating characters' do
+      active_user.update banned: true
 
-      expect(Character.count).to be > old_count
+      expect do
+        post :create, format: :json, params: {
+          character: attributes_for(:character)
+        }.merge(session)
+      end.not_to change { Character.count }
+
+      expect(response).to have_http_status :forbidden
     end
 
     it 'returns errors if the character is invalid' do
-      old_count = Character.count
+      expect do
+        post :create, format: :json, params: {
+          character: attributes_for(:character, name: nil)
+        }.merge(session)
+      end.not_to change { Character.count }
 
-      post :create, format: :json, params: {
-        access_token: token.token, character: character_attributes.merge(name: nil)
-      }
-
-      expect(response.status).to eq 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(json).to have_key :errors
       expect(json[:errors]).to have_key :name
-
-      expect(Character.count).to eq old_count
-    end
-
-    it %q(doesn't allow banned users to create characters) do
-      old_count = Character.count
-      active_user.update banned: true
-
-      post :create, format: :json, params: {
-        access_token: token.token, character: character_attributes
-      }
-
-      expect(response.status).to eq 403
-      expect(Character.count).to eq old_count
     end
   end
 
   describe '#PATCH update' do
-    let! :character do
+    let :character do
       create :character, user: active_user
     end
 
     it 'requires an authenticated user' do
-      old_name = character.name
+      expect do
+        patch :update, format: :json, params: {
+          id: character.id, character: attributes_for(:character)
+        }
+      end.not_to change { character.reload.attributes }
 
-      patch :update, format: :json, params: {
-        id: character.id, character: { name: Faker::Pokemon.name }
-      }
-
-      expect(response.status).to eq 401
-      expect(character.reload.name).to eq old_name
+      expect(response).to have_http_status :unauthorized
     end
 
-    it 'updates a character owned by the user' do
-      old_name = character.name
+    it 'allows the owner to update character attributes' do
+      expect do
+        patch :update, format: :json, params: {
+          id: character.id, character: attributes_for(:character)
+        }.merge(session)
+      end.to change { character.reload.attributes }
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: character.id,
-        character: { name: Faker::Pokemon.name }
-      }
-
-      expect(response.status).to eq 200
-      expect(character.reload.name).not_to eq old_name
+      expect(response).to have_http_status :ok
+      expect(response).to match_response_schema 'character'
     end
 
-    it 'returns errors if the change is invalid' do
-      old_name = character.name
+    it 'prevents users from updating characters they do not own' do
+      character.update user: create(:user)
 
-      patch :update, format: :json, params: {
-        access_token: token.token, id: character.id, character: { name: nil }
-      }
+      expect do
+        patch :update, format: :json, params: {
+          id: character.id, character: attributes_for(:character)
+        }.merge(session)
+      end.not_to change { character.reload.attributes }
 
-      expect(response.status).to eq 422
+      expect(response).to have_http_status :forbidden
+    end
+
+    it 'allows admins to update characters owned by another user' do
+      active_user.update admin: true
+      character.update user: create(:user)
+
+      expect do
+        patch :update, format: :json, params: {
+          id: character.id, character: attributes_for(:character)
+        }.merge(session)
+      end.to change { character.reload.attributes }
+
+      expect(response).to have_http_status :ok
+    end
+
+    it 'returns errors if the character is invalid' do
+      expect do
+        patch :update, format: :json, params: {
+          id: character.id, character: attributes_for(:character, name: nil)
+        }.merge(session)
+      end.not_to change { character.reload.attributes }
+
+      expect(response).to have_http_status :unprocessable_entity
       expect(json).to have_key :errors
       expect(json[:errors]).to have_key :name
-
-      expect(character.reload.name).to eq old_name
     end
   end
 
   describe '#DELETE destroy' do
-    let! :character do
+    let :character do
       create :character, user: active_user
     end
 
     it 'requires an authenticated user' do
-      delete :destroy, format: :json, params: {
-        id: character.id
-      }
+      expect do
+        delete :destroy, format: :json, params: { id: character.id }
+      end.not_to change { character.reload.deleted? }
 
-      expect(response.status).to eq 401
-      expect(character.reload.deleted?).to be false
+      expect(response).to have_http_status :unauthorized
     end
 
-    it 'marks a character as deleted' do
-      delete :destroy, format: :json, params: {
-        access_token: token.token, id: character.id
-      }
+    it 'allows users to delete a character they own' do
+      expect do
+        delete :destroy, format: :json, params: { id: character.id }.merge(session)
+      end.to change { character.reload.deleted? }.from(false).to(true)
 
-      expect(response.status).to eq 204
-      expect(character.reload.deleted?).to be true
+      expect(response).to have_http_status :no_content
     end
 
-    it %q(doesn't allow users to delete characters they don't own) do
+    it 'prevents users from deleting a character they do no own' do
       character.update user: create(:user)
 
-      delete :destroy, format: :json, params: {
-        access_token: token.token, id: character.id
-      }
+      expect do
+        delete :destroy, format: :json, params: { id: character.id }.merge(session)
+      end.not_to change { character.reload.deleted? }
 
-      expect(response.status).to eq 403
-      expect(character.reload.deleted?).to be false
+      expect(response).to have_http_status :forbidden
     end
 
-    it 'allows admin users to delete any character' do
+    it 'allows admins to delete characters they do not own' do
       active_user.update admin: true
       character.update user: create(:user)
 
-      delete :destroy, format: :json, params: {
-        access_token: token.token, id: character.id
-      }
+      expect do
+        delete :destroy, format: :json, params: { id: character.id }.merge(session)
+      end.to change { character.reload.deleted? }.from(false).to(true)
 
-      expect(response.status).to eq 204
-      expect(character.reload.deleted?).to be true
+      expect(response).to have_http_status :no_content
     end
   end
 end

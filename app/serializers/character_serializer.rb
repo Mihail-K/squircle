@@ -9,7 +9,10 @@ class CharacterSerializer < ActiveModel::Serializer
   attribute :title
   attribute :description
   attribute :posts_count
+  attribute :deleted
+
   attribute :created_at
+  attribute :updated_at
 
   attribute :avatar_url do
     object.avatar.url

@@ -1,0 +1,42 @@
+{
+  "definitions": {
+    "character": {
+      "allOf": [
+        {
+          "$ref": "partials/character.json#/definitions/character"
+        },
+        {
+          "properties": {
+            "user": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "partials/user.json#/definitions/user"
+                }
+              ]
+            },
+            "creator": {
+              "$ref": "partials/user.json#/definitions/user"
+            }
+          },
+          "required": [
+            "user",
+            "creator"
+          ]
+        }
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "character": {
+      "$ref": "#/definitions/character"
+    }
+  },
+  "required": [
+    "character"
+  ],
+  "additionalProperties": false
+}
