@@ -1,0 +1,24 @@
+{
+  "definitions": {
+    "reports": {
+      "type": "array",
+      "items": {
+        "$ref": "report.json#/definitions/report"
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "reports": {
+      "$ref": "#/definitions/reports"
+    },
+    "meta": {
+      "$ref": "partials/meta.json#/definitions/meta"
+    }
+  },
+  "required": [
+    "reports",
+    "meta"
+  ],
+  "additionalProperties": false
+}

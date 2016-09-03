@@ -1,0 +1,96 @@
+{
+  "definitions": {
+    "report": {
+      "allOf": [
+        {
+          "$ref": "partials/report.json#/definitions/report"
+        },
+        {
+          "properties": {
+            "reportable": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "post"
+                      ]
+                    },
+                    "post": {
+                      "$ref": "partials/post.json#/definitions/post"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "post"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "user"
+                      ]
+                    },
+                    "user": {
+                      "$ref": "partials/user.json#/definitions/user"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "user"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "conversation"
+                      ]
+                    },
+                    "conversation": {
+                      "$ref": "partials/conversation.json#/definitions/conversation"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "conversation"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "creator": {
+              "$ref": "partials/user.json#/definitions/user"
+            },
+            "closed_by": {
+              "$ref": "partials/user.json#/definitions/user"
+            }
+          },
+          "required": [
+            "reportable",
+            "creator"
+          ]
+        }
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "report": {
+      "$ref": "#/definitions/report"
+    }
+  },
+  "required": [
+    "report"
+  ],
+  "additionalProperties": false
+}
