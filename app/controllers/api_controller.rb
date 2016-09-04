@@ -1,4 +1,6 @@
 class ApiController < ActionController::API
+  include Political::Authority
+
   rescue_from ActiveRecord::RecordNotFound do
     not_found
   end

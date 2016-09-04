@@ -1,13 +1,11 @@
 class BansController < ApiController
-  include Political::Authority
-
   before_action :doorkeeper_authorize!
 
   before_action :set_bans, except: :create
   before_action :set_ban, except: %i(index create)
   before_action :apply_pagination, only: :index
 
-  before_action { policy!(@ban || Ban) }
+  before_action :enforce_policy!
 
   def index
     render json: @bans,
@@ -40,10 +38,6 @@ class BansController < ApiController
   end
 
 private
-
-  def ban_params
-    params.require(:ban).permit *policy_params
-  end
 
   def set_bans
     @bans = policy_scope(Ban).includes(:user)

@@ -1,5 +1,4 @@
 class ConversationsController < ApiController
-  include Political::Authority
   include FloodLimitable
 
   before_action :doorkeeper_authorize!, except: %i(index show)
@@ -11,7 +10,7 @@ class ConversationsController < ApiController
   before_action :load_first_posts, :load_last_posts, only: :index
   before_action :load_participated, only: :index, if: -> { current_user.present? }
 
-  before_action { policy!(@conversation || Conversation) }
+  before_action :enforce_policy!
 
   after_action :increment_views_count, only: :show
 
@@ -52,10 +51,6 @@ class ConversationsController < ApiController
   end
 
 private
-
-  def conversation_params
-    params.require(:conversation).permit *policy_params
-  end
 
   def set_conversations
     @conversations = policy_scope(Conversation).includes(:author, :section)

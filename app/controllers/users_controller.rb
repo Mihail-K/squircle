@@ -1,15 +1,11 @@
 class UsersController < ApiController
-  include Political::Authority
-
   before_action :doorkeeper_authorize!, except: %i(index show create)
 
   before_action :set_users, except: %i(me create)
   before_action :set_user, only: %i(show update destroy)
   before_action :apply_pagination, only: :index
 
-  before_action :confirm_email, only: :update
-
-  before_action { policy!(@user || User) }
+  before_action :enforce_policy!
 
   def me
     render json: current_user
@@ -45,10 +41,6 @@ class UsersController < ApiController
 
 private
 
-  def user_params
-    params.require(:user).permit *policy_params
-  end
-
   def set_users
     @users = policy_scope(User).includes(:characters, :created_characters)
     @users = @users.recently_active if params.key?(:recently_active)
@@ -61,9 +53,5 @@ private
 
   def apply_pagination
     @users = @users.page(params[:page]).per(params[:count])
-  end
-
-  def confirm_email
-    @user.touch(:email_confirmed_at) if params[:user][:email_token] == @user.email_token
   end
 end

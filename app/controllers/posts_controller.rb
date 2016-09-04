@@ -1,5 +1,4 @@
 class PostsController < ApiController
-  include Political::Authority
   include FloodLimitable
 
   before_action :doorkeeper_authorize!, except: %i(index show)
@@ -8,7 +7,7 @@ class PostsController < ApiController
   before_action :set_post, except: %i(index create)
   before_action :apply_pagination, only: :index
 
-  before_action { policy!(@post || Post) }
+  before_action :enforce_policy!
 
   def index
     render json: @posts,
@@ -42,10 +41,6 @@ class PostsController < ApiController
   end
 
 private
-
-  def post_params
-    params.require(:post).permit *policy_params
-  end
 
   def set_posts
     @posts = policy_scope(Post).includes(:author, :editor, :character, :conversation)

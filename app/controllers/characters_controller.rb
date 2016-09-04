@@ -1,13 +1,11 @@
 class CharactersController < ApiController
-  include Political::Authority
-
   before_action :doorkeeper_authorize!, except: %i(index show)
 
   before_action :set_characters, except: :create
   before_action :set_character, only: %i(show update destroy)
   before_action :apply_pagination, only: :index
 
-  before_action { policy!(@character || Character) }
+  before_action :enforce_policy!
 
   def index
     render json: @characters,
@@ -40,10 +38,6 @@ class CharactersController < ApiController
   end
 
 private
-
-  def character_params
-    params.require(:character).permit *policy_params
-  end
 
   def set_characters
     @characters = policy_scope(Character).includes(:user, :creator)

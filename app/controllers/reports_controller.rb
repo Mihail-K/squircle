@@ -1,13 +1,11 @@
 class ReportsController < ApiController
-  include Political::Authority
-
   before_action :doorkeeper_authorize!
 
   before_action :set_reports, except: :create
   before_action :set_report, except: %i(index create)
   before_action :apply_pagination, only: :index
 
-  before_action { policy!(@report || Report) }
+  before_action :enforce_policy!
 
   def index
     render json: @reports,
@@ -42,10 +40,6 @@ class ReportsController < ApiController
   end
 
 private
-
-  def report_params
-    params.require(:report).permit *policy_params
-  end
 
   def set_reports
     @reports = policy_scope(Report).includes(:creator, :reportable)

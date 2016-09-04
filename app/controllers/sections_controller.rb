@@ -1,13 +1,11 @@
 class SectionsController < ApiController
-  include Political::Authority
-
   before_action :doorkeeper_authorize!, except: %i(index show)
 
   before_action :set_sections, except: :create
   before_action :set_section, except: %i(index create)
   before_action :apply_pagination, only: :index
 
-  before_action { policy!(@section || Section) }
+  before_action :enforce_policy!
 
   def index
     render json: @sections,
@@ -40,10 +38,6 @@ class SectionsController < ApiController
   end
 
 private
-
-  def section_params
-    params.require(:section).permit *policy_params
-  end
 
   def set_sections
     @sections = policy_scope(Section)
