@@ -44,18 +44,12 @@ class Conversation < ActiveRecord::Base
   validates :locked_by, presence: true, if: :locked?
   validates :section, presence: true
 
-  validate :locking_user_is_admin, if: -> { locked_changed?(to: true) }
-
-  before_validation :set_first_post_author, on: :create, if: 'author.present?'
+  before_validation :set_first_post_author, on: :create
   before_validation :set_title_from_first_post, on: :create, unless: :title?
 
   before_save :set_locked_on_timestamp, if: -> { locked_changed?(to: true) }
 
   after_create :set_visible_posts_count
-
-  scope :locked, -> {
-    where(locked: true)
-  }
 
   scope :visible, -> {
     where(deleted: false).joins(:section).merge(Section.visible)
@@ -70,27 +64,23 @@ class Conversation < ActiveRecord::Base
                                                    .gteq(1.day.ago)
   }
 
-  def locking_user_is_admin
-    errors.add :locked, 'can only be changed by admins' unless locked_by.try(:admin?)
-  end
-
-  def set_first_post_author
-    posts.first.author = author
-  end
-
-  def set_title_from_first_post
-    self.title = posts.first.title
-  end
-
-  def set_locked_on_timestamp
-    self.locked_on = Time.zone.now
-  end
-
   def active?
     !locked? && !deleted? && !section.try(:deleted?)
   end
 
 private
+
+  def set_first_post_author
+    posts.first.author = author if posts.first.present?
+  end
+
+  def set_title_from_first_post
+    self.title = posts.first.title if posts.first.present?
+  end
+
+  def set_locked_on_timestamp
+    self.locked_on = Time.zone.now
+  end
 
   def set_visible_posts_count
     update_columns visible_posts_count: posts.visible.count
