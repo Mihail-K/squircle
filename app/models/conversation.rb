@@ -44,12 +44,12 @@ class Conversation < ActiveRecord::Base
   validates :locked_by, presence: true, if: :locked?
   validates :section, presence: true
 
-  validate :locking_user_is_admin, if: -> { locked_changed? to: true }
+  validate :locking_user_is_admin, if: -> { locked_changed?(to: true) }
 
   before_validation :set_first_post_author, on: :create, if: 'author.present?'
   before_validation :set_title_from_first_post, on: :create, unless: :title?
 
-  before_save :set_locked_on_timestamp, if: -> { locked_changed? to: true }
+  before_save :set_locked_on_timestamp, if: -> { locked_changed?(to: true) }
 
   after_create :set_visible_posts_count
 
@@ -58,8 +58,11 @@ class Conversation < ActiveRecord::Base
   }
 
   scope :visible, -> {
-    where(deleted: false).joins(:section)
-                         .merge(Section.visible)
+    where(deleted: false).joins(:section).merge(Section.visible)
+  }
+
+  scope :active, -> {
+    visible.where(locked: false)
   }
 
   scope :recently_active, -> {
@@ -81,6 +84,10 @@ class Conversation < ActiveRecord::Base
 
   def set_locked_on_timestamp
     self.locked_on = Time.zone.now
+  end
+
+  def active?
+    !locked? && !deleted? && !section.try(:deleted?)
   end
 
 private

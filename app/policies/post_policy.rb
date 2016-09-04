@@ -11,17 +11,17 @@ class PostPolicy < Political::Policy
 
   def create?
     return true if current_user.try(:admin?)
-    current_user.present? && !current_user.banned? && !locked?
+    current_user.present? && !current_user.banned? && conversation_active?
   end
 
   def update?
     return true if current_user.try(:admin?)
-    current_user.present? && author? && !current_user.banned? && !locked?
+    current_user.present? && author? && !current_user.banned? && conversation_active?
   end
 
   def destroy?
     return true if current_user.try(:admin?)
-    current_user.present? && author? && !current_user.banned? && !locked?
+    current_user.present? && author? && !current_user.banned? && conversation_active?
   end
 
   class Parameters < Political::Policy::Parameters
@@ -49,12 +49,12 @@ private
     post.author_id == current_user.id
   end
 
-  def locked?
+  def conversation_active?
     if model?
       return false unless params[:post].respond_to?(:[])
-      Conversation.locked.exists?(id: params[:post][:conversation_id])
+      Conversation.active.exists?(id: params[:post][:conversation_id])
     else
-      post.conversation.locked?
+      post.conversation.active?
     end
   end
 end

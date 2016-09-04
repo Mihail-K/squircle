@@ -106,7 +106,7 @@ RSpec.describe PostsController, type: :controller do
       expect(response).to have_http_status :unauthorized
     end
 
-    it 'creates a new post on a conversation' do
+    it 'creates a new post in a conversation' do
       expect do
         post :create, format: :json, params: {
           post: attributes_for(:post, conversation_id: conversation.id)
@@ -114,7 +114,7 @@ RSpec.describe PostsController, type: :controller do
       end.to change { Post.count }.by(1)
 
       expect(response).to have_http_status :created
-      expect(response).to match_response_schema 'post'
+      expect(response).to match_response_schema :post
     end
 
     it 'does not allow banned users to create posts' do
@@ -129,17 +129,16 @@ RSpec.describe PostsController, type: :controller do
       expect(response).to have_http_status :forbidden
     end
 
-    it 'does not allow posting in conversations that do not exist' do
+    it 'does not allow posting in deleted conversations' do
+      conversation.update deleted: true
+
       expect do
         post :create, format: :json, params: {
-          post: attributes_for(:post, conversation_id: conversation.id + 1)
+          post: attributes_for(:post, conversation_id: conversation.id)
         }.merge(session)
       end.not_to change { Post.count }
 
-      expect(response).to have_http_status :unprocessable_entity
-      expect(response).to match_response_schema 'errors'
-
-      expect(json[:errors]).to have_key :conversation
+      expect(response).to have_http_status :forbidden
     end
 
     it 'does not allow posting in locked conversations' do

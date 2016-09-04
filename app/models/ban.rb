@@ -23,12 +23,12 @@ class Ban < ActiveRecord::Base
 
   validates :user, presence: true
   validates :creator, presence: true
-  validates :reason, presence: true
+  validates :reason, presence: true, length: { in: 10..1000 }
 
   validate :creator_is_admin, on: :create
   validate :creator_is_not_user, on: :create
 
-  after_create :apply_ban_to_user, unless: :expired?
+  after_create :apply_ban_to_user, if: :active?
 
   scope :active, -> {
     where Ban.arel_table[:deleted]
