@@ -5,6 +5,8 @@ RSpec.describe Ban, type: :model do
     build :ban
   end
 
+  it_behaves_like ApplicationRecord
+
   it 'has a valid factory' do
     expect(ban).to be_valid
   end
@@ -30,11 +32,6 @@ RSpec.describe Ban, type: :model do
   it 'never expires if its permanent' do
     ban.expires_at = nil
     expect(ban.expired?).to be false
-  end
-
-  it 'can only be created by an admin' do
-    ban.creator = build :user
-    expect(ban).not_to be_valid
   end
 
   it 'cannot apply to its creator' do
@@ -64,7 +61,7 @@ RSpec.describe Ban, type: :model do
     end
 
     it 'does not include bans that have been deleted' do
-      ban.update deleted: true
+      ban.update deleted: true, deleted_by: create(:user)
 
       expect(Ban.active.exists?(id: ban)).to be false
     end
@@ -92,7 +89,7 @@ RSpec.describe Ban, type: :model do
     end
 
     it 'includes bans that have been deleted' do
-      ban.update deleted: true
+      ban.update deleted: true, deleted_by: create(:user)
 
       expect(Ban.inactive.exists?(id: ban)).to be true
     end

@@ -83,7 +83,7 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'returns 404 if the ban has been deleted' do
-      ban.update deleted: true
+      ban.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: ban.id }.merge(session)
 
@@ -178,7 +178,7 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'updates the deleted state on a ban' do
-      ban.update deleted: true
+      ban.update deleted: true, deleted_by: active_user
       active_user.update admin: true
 
       expect do

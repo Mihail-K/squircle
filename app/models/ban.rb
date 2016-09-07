@@ -2,22 +2,25 @@
 #
 # Table name: bans
 #
-#  id         :integer          not null, primary key
-#  reason     :string           not null
-#  expires_at :datetime
-#  user_id    :integer          not null
-#  creator_id :integer          not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  deleted    :boolean          default(FALSE), not null
+#  id            :integer          not null, primary key
+#  reason        :string           not null
+#  expires_at    :datetime
+#  user_id       :integer          not null
+#  creator_id    :integer          not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  deleted       :boolean          default(FALSE), not null
+#  deleted_by_id :integer
+#  deleted_at    :datetime
 #
 # Indexes
 #
-#  index_bans_on_creator_id  (creator_id)
-#  index_bans_on_user_id     (user_id)
+#  index_bans_on_creator_id     (creator_id)
+#  index_bans_on_deleted_by_id  (deleted_by_id)
+#  index_bans_on_user_id        (user_id)
 #
 
-class Ban < ActiveRecord::Base
+class Ban < ApplicationRecord
   belongs_to :user, inverse_of: :bans
   belongs_to :creator, class_name: 'User'
 
@@ -25,7 +28,6 @@ class Ban < ActiveRecord::Base
   validates :creator, presence: true
   validates :reason, presence: true, length: { in: 10..1000 }
 
-  validate :creator_is_admin, on: :create
   validate :creator_is_not_user, on: :create
 
   after_create :apply_ban_to_user, if: :active?
@@ -60,10 +62,6 @@ class Ban < ActiveRecord::Base
     where expires_at: nil
   }
 
-  scope :visible, -> {
-    where deleted: false
-  }
-
   def active?
     !deleted? && !expired?
   end
@@ -79,15 +77,13 @@ class Ban < ActiveRecord::Base
   alias_method :expired, :expired?
   alias_method :permanent, :permanent?
 
-  def creator_is_admin
-    errors.add :creator, 'must be an admin user' unless creator.try(:admin?)
-  end
+private
 
   def creator_is_not_user
     errors.add :base, 'you cannot ban yourself' if user_id == creator_id
   end
 
   def apply_ban_to_user
-    user.update! banned: true if active?
+    user.update!(banned: true) if active?
   end
 end
