@@ -6,6 +6,16 @@
         "id": {
           "type": "integer"
         },
+        "deleted_by_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
         "display_name": {
           "type": "string"
         },
@@ -32,6 +42,9 @@
         "banned": {
           "type": "boolean"
         },
+        "deleted": {
+          "type": "boolean"
+        },
         "avatar_url": {
           "type": "string"
         },
@@ -51,7 +64,8 @@
         "created_at",
         "last_active_at",
         "admin",
-        "banned"
+        "banned",
+        "deleted"
       ]
     }
   }

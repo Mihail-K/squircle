@@ -13,7 +13,10 @@
                 "$ref": "partials/user.json#/definitions/user"
               },
               "creator": {
-                "$ref": "partials/creator.json#/definitions/user"
+                "$ref": "partials/user.json#/definitions/user"
+              },
+              "deleted_by": {
+                "$ref": "partials/user.json#/definitions/user"
               }
             },
             "required": [

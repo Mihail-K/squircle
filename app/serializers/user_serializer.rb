@@ -2,6 +2,8 @@ class UserSerializer < ActiveModel::Serializer
   cache expires_in: 3.hours
 
   attribute :id
+  attribute :deleted_by_id, if: :can_view_deleted?
+
   attribute :display_name
   attribute :created_at
   attribute :last_active_at
@@ -22,6 +24,7 @@ class UserSerializer < ActiveModel::Serializer
 
   attribute :admin
   attribute :banned
+  attribute :deleted
 
   attribute :avatar_url, if: -> { object.avatar.file.present? } do
     object.avatar.url
@@ -33,6 +36,8 @@ class UserSerializer < ActiveModel::Serializer
     object.avatar.thumb.url
   end
 
+  belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted?
+
   def can_view_email?
     object.id == current_user.try(:id) ||
     current_user.try(:admin?)
@@ -40,6 +45,10 @@ class UserSerializer < ActiveModel::Serializer
 
   def can_view_personal_data?
     object.id == current_user.try(:id) ||
+    current_user.try(:admin?)
+  end
+
+  def can_view_deleted?
     current_user.try(:admin?)
   end
 end

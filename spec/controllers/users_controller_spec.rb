@@ -33,7 +33,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'returns only visible users' do
-      users.sample.update deleted: true
+      users.sample.update deleted: true, deleted_by: active_user
 
       get :index, format: :json
 
@@ -43,7 +43,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'returns all users when an admin is authenticated' do
       active_user.update admin: true
-      users.sample.update deleted: true
+      users.sample.update deleted: true, deleted_by: active_user
 
       get :index, format: :json, params: session
 

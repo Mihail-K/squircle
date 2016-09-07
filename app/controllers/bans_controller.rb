@@ -42,7 +42,7 @@ private
   def set_bans
     @bans = policy_scope(Ban).includes(:user)
     @bans = @bans.where(user_id: params[:user_id]) if admin? && params.key?(:user_id)
-    @bans = @bans.includes(:creator) if admin?
+    @bans = @bans.includes(:creator, :deleted_by) if admin?
   end
 
   def set_ban

@@ -34,7 +34,7 @@ class UsersController < ApiController
   end
 
   def destroy
-    @user.update! deleted: true
+    @user.update! deleted: true, deleted_by: current_user
 
     head :no_content
   end
@@ -45,6 +45,7 @@ private
     @users = policy_scope(User).includes(:characters, :created_characters)
     @users = @users.recently_active if params.key?(:recently_active)
     @users = @users.most_active if params.key?(:most_active)
+    @users = @users.includes(:deleted_by) if admin?
   end
 
   def set_user

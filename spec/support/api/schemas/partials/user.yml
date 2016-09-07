@@ -5,6 +5,10 @@ definitions:
     properties:
       id:
         type: integer
+      deleted_by_id:
+        oneOf:
+        - type: 'null'
+        - type: integer
       display_name:
         type: string
       posts_count:
@@ -23,6 +27,8 @@ definitions:
         type: boolean
       banned:
         type: boolean
+      deleted:
+        type: boolean
       avatar_url:
         type: string
       avatar_medium_url:
@@ -39,3 +45,4 @@ definitions:
     - last_active_at
     - admin
     - banned
+    - deleted

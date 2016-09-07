@@ -22,15 +22,18 @@
 #  banned                   :boolean          default(FALSE), not null
 #  visible_posts_count      :integer          default(0), not null
 #  last_active_at           :datetime
+#  deleted_by_id            :integer
+#  deleted_at               :datetime
 #
 # Indexes
 #
-#  index_users_on_display_name  (display_name) UNIQUE
-#  index_users_on_email         (email) UNIQUE
-#  index_users_on_email_token   (email_token) UNIQUE
+#  index_users_on_deleted_by_id  (deleted_by_id)
+#  index_users_on_display_name   (display_name) UNIQUE
+#  index_users_on_email          (email) UNIQUE
+#  index_users_on_email_token    (email_token) UNIQUE
 #
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   has_many :bans, -> { active }, inverse_of: :user
   has_many :previous_bans, -> { inactive }, class_name: 'Ban'
   has_many :issued_bans, foreign_key: :creator_id, class_name: 'Ban'
@@ -56,7 +59,7 @@ class User < ActiveRecord::Base
     o.validates :date_of_birth, timeliness: { after: -> { 100.years.ago }, type: :date }
   end
 
-  before_create :set_last_active_at
+  before_create :set_last_active_at_timestamp
 
   with_options if: -> { previous_changes.key?(:email) } do |o|
     o.after_commit :regenerate_email_token
@@ -106,7 +109,9 @@ class User < ActiveRecord::Base
     where deleted: false
   }
 
-  def set_last_active_at
+private
+
+  def set_last_active_at_timestamp
     self.last_active_at = Time.zone.now
   end
 

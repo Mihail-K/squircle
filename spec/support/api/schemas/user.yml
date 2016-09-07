@@ -3,6 +3,12 @@ type: object
 properties:
   user:
     type: object
-    $ref: partials/user.json#/definitions/user
+    properties:
+      allOf:
+      - $ref: partials/user.json#/definitions/user
+      - properties:
+          deleted_by:
+            $ref: partials/user.json#/definitions/user
 required:
 - user
+additionalProperties: false

@@ -12,6 +12,16 @@
         "creator_id": {
           "type": "integer"
         },
+        "deleted_by_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
         "reason": {
           "type": "string"
         },

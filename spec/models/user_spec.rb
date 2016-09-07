@@ -5,6 +5,8 @@ RSpec.describe User, type: :model do
     build :user
   end
 
+  it_behaves_like ApplicationRecord
+
   it 'has a valid factory' do
     expect(user).to be_valid
   end
