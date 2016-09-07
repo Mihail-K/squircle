@@ -99,7 +99,7 @@ RSpec.describe User, type: :model do
     end
 
     it 'does not includes users that have no visible posts' do
-      user.posts.each { |post| post.update(deleted: true) }
+      user.posts.each { |post| post.update(deleted: true, deleted_by: user) }
       expect(User.most_active.exists?(id: user)).to be false
     end
 

@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'active_model_serializers', '~> 0.10.0'
+gem 'active_record_union'
 gem 'awesome_print'
 gem 'bcrypt', '~> 3.1.7'
 gem 'carrierwave', github: 'carrierwaveuploader/carrierwave'

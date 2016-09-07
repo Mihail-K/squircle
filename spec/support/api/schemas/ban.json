@@ -16,7 +16,14 @@
                 "$ref": "partials/user.json#/definitions/user"
               },
               "deleted_by": {
-                "$ref": "partials/user.json#/definitions/user"
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "partials/user.json#/definitions/user"
+                  }
+                ]
               }
             },
             "required": [

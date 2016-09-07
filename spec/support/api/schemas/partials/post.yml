@@ -8,17 +8,21 @@ definitions:
       author_id:
         type: integer
       editor_id:
-        anyOf:
+        oneOf:
         - type: 'null'
         - type: integer
       character_id:
-        anyOf:
+        oneOf:
         - type: 'null'
         - type: integer
       conversation_id:
         type: integer
+      deleted_by_id:
+        oneOf:
+        - type: 'null'
+        - type: integer
       title:
-        anyOf:
+        oneOf:
         - type: 'null'
         - type: string
       body:

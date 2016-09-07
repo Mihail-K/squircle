@@ -35,7 +35,7 @@ class PostsController < ApiController
   end
 
   def destroy
-    @post.update! deleted: true
+    @post.update! deleted: true, deleted_by: current_user
 
     head :no_content
   end
@@ -48,6 +48,7 @@ private
     @posts = @posts.where(character: params[:character_id]) if params.key?(:character_id)
     @posts = @posts.where(conversation: params[:conversation_id]) if params.key?(:conversation_id)
     @posts = @posts.order(created_at: :asc)
+    @posts = @posts.includes(:deleted_by) if admin?
   end
 
   def apply_pagination

@@ -13,18 +13,21 @@
 #  deleted         :boolean          default(FALSE), not null
 #  conversation_id :integer          not null
 #  formatted_body  :text
+#  deleted_by_id   :integer
+#  deleted_at      :datetime
 #
 # Indexes
 #
 #  index_posts_on_author_id                          (author_id)
 #  index_posts_on_character_id                       (character_id)
 #  index_posts_on_conversation_id                    (conversation_id)
+#  index_posts_on_deleted_by_id                      (deleted_by_id)
 #  index_posts_on_editor_id                          (editor_id)
 #  index_posts_on_postable_type_and_conversation_id  (conversation_id)
 #  index_posts_on_title                              (title)
 #
 
-class Post < ActiveRecord::Base
+class Post < ApplicationRecord
   include Formattable
 
   belongs_to :author, class_name: 'User', counter_cache: :posts_count, inverse_of: :posts
@@ -75,6 +78,12 @@ class Post < ActiveRecord::Base
 
   scope :flood, -> {
     where Post.arel_table[:created_at].gteq(20.seconds.ago)
+  }
+
+  scope :hidden, -> {
+    where(deleted: true).union(
+      where(conversation_id: Conversation.hidden)
+    )
   }
 
   scope :visible, -> {

@@ -30,5 +30,11 @@ class Section < ActiveRecord::Base
   validates :description, length: { in: 5..1000 }
   validates :creator, presence: true
 
-  scope :visible, -> { where(deleted: false) }
+  scope :hidden, -> {
+    where deleted: true
+  }
+
+  scope :visible, -> {
+    where deleted: false
+  }
 end

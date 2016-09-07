@@ -5,6 +5,8 @@ RSpec.describe Post, type: :model do
     build :post
   end
 
+  it_behaves_like ApplicationRecord
+
   it 'has a valid factory' do
     expect(post).to be_valid
   end
@@ -55,7 +57,7 @@ RSpec.describe Post, type: :model do
     end
 
     it 'does not include posts that are deleted' do
-      post.update deleted: true
+      post.update deleted: true, deleted_by: post.author
       expect(Post.visible.exists?(id: post)).to be false
     end
 

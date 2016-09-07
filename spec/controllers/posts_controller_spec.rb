@@ -23,7 +23,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'returns only visible posts' do
       deleted_posts = posts.sample(3).each do |post|
-        post.update deleted: true
+        post.update deleted: true, deleted_by: active_user
       end
 
       get :index, format: :json
@@ -35,7 +35,7 @@ RSpec.describe PostsController, type: :controller do
     it 'includes deleted posts when called by an admin' do
       active_user.update admin: true
       posts.sample(3).each do |post|
-        post.update deleted: true
+        post.update deleted: true, deleted_by: active_user
       end
 
       get :index, format: :json, params: session
@@ -58,7 +58,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'returns 404 for posts that are deleted' do
-      post.update deleted: true
+      post.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: post.id }
 
@@ -66,7 +66,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'allows admins to view deleted posts' do
-      post.update deleted: true
+      post.update deleted: true, deleted_by: active_user
       active_user.update admin: true
 
       get :show, format: :json, params: { id: post.id }.merge(session)
@@ -222,10 +222,11 @@ RSpec.describe PostsController, type: :controller do
 
     it 'allows admins to edit the deleted state of a post' do
       active_user.update admin: true
+      post.update deleted: true, deleted_by: active_user
 
       expect do
-        patch :update, format: :json, params: { id: post.id, post: { deleted: true } }.merge(session)
-      end.to change { post.reload.deleted? }.from(false).to(true)
+        patch :update, format: :json, params: { id: post.id, post: { deleted: false } }.merge(session)
+      end.to change { post.reload.deleted? }.from(true).to(false)
 
       expect(response).to have_http_status :ok
     end
@@ -249,7 +250,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'returns 404 when editing deleted posts' do
-      post.update deleted: true
+      post.update deleted: true, deleted_by: active_user
 
       expect do
         patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }.merge(session)
@@ -334,7 +335,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'returns 404 when trying to delete a post which is already marked as deleted' do
-      post.update deleted: true
+      post.update deleted: true, deleted_by: active_user
 
       expect do
         delete :destroy, format: :json, params: { id: post.id }.merge(session)

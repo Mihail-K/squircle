@@ -10,7 +10,7 @@
           "type": "integer"
         },
         "editor_id": {
-          "anyOf": [
+          "oneOf": [
             {
               "type": "null"
             },
@@ -20,7 +20,7 @@
           ]
         },
         "character_id": {
-          "anyOf": [
+          "oneOf": [
             {
               "type": "null"
             },
@@ -32,8 +32,18 @@
         "conversation_id": {
           "type": "integer"
         },
+        "deleted_by_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
         "title": {
-          "anyOf": [
+          "oneOf": [
             {
               "type": "null"
             },

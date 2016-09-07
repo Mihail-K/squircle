@@ -6,6 +6,7 @@ class PostSerializer < ActiveModel::Serializer
   attribute :editor_id
   attribute :character_id
   attribute :conversation_id
+  attribute :deleted_by_id, if: :can_view_deleted?
 
   attribute :title
   attribute :body
@@ -21,4 +22,9 @@ class PostSerializer < ActiveModel::Serializer
   belongs_to :editor, serializer: UserSerializer
   belongs_to :character
   belongs_to :conversation
+  belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted?
+
+  def can_view_deleted?
+    current_user.try(:admin?)
+  end
 end

@@ -8,11 +8,15 @@ definitions:
         author:
           $ref: partials/user.json#/definitions/user
         editor:
-          anyOf:
+          oneOf:
           - type: 'null'
           - $ref: partials/user.json#/definitions/user
         conversation:
           $ref: partials/conversation.json#/definitions/conversation
+        deleted_by:
+          oneOf:
+          - type: 'null'
+          - $ref: partials/user.json#/definitions/user
       required:
       - author
       - editor

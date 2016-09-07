@@ -51,6 +51,12 @@ class Conversation < ActiveRecord::Base
 
   after_create :set_visible_posts_count
 
+  scope :hidden, -> {
+    where(deleted: true).union(
+      joins(:section).merge(Section.hidden)
+    )
+  }
+
   scope :visible, -> {
     where(deleted: false).joins(:section).merge(Section.visible)
   }
