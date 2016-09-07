@@ -5,6 +5,7 @@ class ConversationSerializer < ActiveModel::Serializer
   attribute :author_id
   attribute :section_id
   attribute :locked_by_id, if: :can_view_locking_user?
+  attribute :deleted_by_id, if: :can_view_deleted?
 
   attribute :title
   attribute :views_count
@@ -24,12 +25,17 @@ class ConversationSerializer < ActiveModel::Serializer
   belongs_to :author, serializer: UserSerializer
   belongs_to :locked_by, serializer: UserSerializer, if: :can_view_locking_user?
   belongs_to :section
+  belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted?
 
   has_one :first_post, serializer: PostSerializer, if: :include_first_post?
   has_one :last_post, serializer: PostSerializer, if: :include_last_post?
 
   def can_view_locking_user?
     object.locked_by_id == current_user.try(:id) ||
+    current_user.try(:admin?)
+  end
+
+  def can_view_deleted?
     current_user.try(:admin?)
   end
 

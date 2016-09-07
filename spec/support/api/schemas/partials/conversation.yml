@@ -13,6 +13,10 @@ definitions:
         oneOf:
         - type: 'null'
         - type: integer
+      deleted_by_id:
+        oneOf:
+        - type: 'null'
+        - type: integer
       title:
         type: string
       views_count:

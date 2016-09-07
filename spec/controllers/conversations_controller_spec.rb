@@ -18,7 +18,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'only returns visible conversations' do
       deleted_conversations = conversations.sample(3).each do |conversation|
-        conversation.update deleted: true
+        conversation.update deleted: true, deleted_by: active_user
       end
 
       get :index, format: :json
@@ -30,7 +30,7 @@ RSpec.describe ConversationsController, type: :controller do
     it 'returns all conversations for admin users' do
       active_user.update admin: true
       deleted_conversations = conversations.sample(3).each do |conversation|
-        conversation.update deleted: true
+        conversation.update deleted: true, deleted_by: active_user
       end
 
       get :index, format: :json, params: session
@@ -53,7 +53,7 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'returns 404 for conversations that are deleted' do
-      conversation.update deleted: true
+      conversation.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: conversation.id }
 
@@ -62,7 +62,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'allows admins to view deleted conversations' do
       active_user.update admin: true
-      conversation.update deleted: true
+      conversation.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: conversation.id }.merge(session)
 

@@ -13,6 +13,10 @@ definitions:
           oneOf:
           - type: 'null'
           - $ref: partials/user.json#/definitions/user
+        deleted_by:
+          oneOf:
+          - type: 'null'
+          - $ref: partials/user.json#/definitions/user
       required:
       - author
       - section

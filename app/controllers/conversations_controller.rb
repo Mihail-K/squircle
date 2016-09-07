@@ -45,7 +45,7 @@ class ConversationsController < ApiController
   end
 
   def destroy
-    @conversation.update! deleted: true
+    @conversation.update! deleted: true, deleted_by: current_user
 
     head :no_content
   end
@@ -59,6 +59,7 @@ private
     @conversations = @conversations.where(section: params[:section_id]) if params.key?(:section_id)
     @conversations = @conversations.order(last_active_at: :desc)
     @conversations = @conversations.recently_active if params.key?(:recently_active)
+    @conversations = @conversations.includes(:deleted_by) if admin?
   end
 
   def apply_pagination

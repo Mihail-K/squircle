@@ -75,7 +75,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'returns 404 for posts in a deleted conversation' do
-      post.conversation.update deleted: true
+      post.conversation.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: post.id }
 
@@ -130,7 +130,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'does not allow posting in deleted conversations' do
-      conversation.update deleted: true
+      conversation.update deleted: true, deleted_by: active_user
 
       expect do
         post :create, format: :json, params: {

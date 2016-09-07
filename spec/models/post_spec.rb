@@ -62,7 +62,7 @@ RSpec.describe Post, type: :model do
     end
 
     it 'does not include posts that are in deleted conversations' do
-      post.conversation.update deleted: true
+      post.conversation.update deleted: true, deleted_by: post.author
       expect(Post.visible.exists?(id: post)).to be false
     end
   end

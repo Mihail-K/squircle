@@ -22,6 +22,16 @@
             }
           ]
         },
+        "deleted_by_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
         "title": {
           "type": "string"
         },
