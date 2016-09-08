@@ -19,7 +19,8 @@ class CharactersController < ApiController
 
   def create
     @character = Character.create! character_params do |character|
-      character.user = current_user
+      character.user    = current_user if character.user.nil?
+      character.creator = current_user
     end
 
     render json: @character, status: :created
@@ -32,7 +33,7 @@ class CharactersController < ApiController
   end
 
   def destroy
-    @character.update! deleted: true
+    @character.update! deleted: true, deleted_by: current_user
 
     head :no_content
   end

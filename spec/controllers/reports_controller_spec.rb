@@ -5,7 +5,7 @@ RSpec.describe ReportsController, type: :controller do
 
   describe '#GET index' do
     let! :reports do
-      create_list :report, 5, :reportable_user, creator: active_user
+      create_list :report, 5, creator: active_user
     end
 
     it 'requires an authenticated user' do
@@ -37,7 +37,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'only returns reports that are in a visible state' do
       deleted_reports = reports.sample(3).each do |report|
-        report.update deleted: true
+        report.update deleted: true, deleted_by: active_user
       end
 
       get :index, format: :json, params: session
@@ -74,7 +74,7 @@ RSpec.describe ReportsController, type: :controller do
 
   describe '#GET show' do
     let :report do
-      create :report, :reportable_user, creator: active_user
+      create :report, creator: active_user
     end
 
     it 'requires an authenticated user' do
@@ -99,7 +99,7 @@ RSpec.describe ReportsController, type: :controller do
     end
 
     it 'prevents users from viewing deleted reports' do
-      report.update deleted: true
+      report.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: report.id }.merge(session)
 
@@ -108,7 +108,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'allows admins to view deleted reports' do
       active_user.update admin: true
-      report.update deleted: true
+      report.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: report.id }.merge(session)
 
@@ -179,7 +179,7 @@ RSpec.describe ReportsController, type: :controller do
 
   describe '#PATCH update' do
     let :report do
-      create :report, :reportable_user, creator: active_user
+      create :report, creator: active_user
     end
 
     it 'requires an authenticated user' do
@@ -254,7 +254,7 @@ RSpec.describe ReportsController, type: :controller do
 
   describe '#DELETE destroy' do
     let :report do
-      create :report, :reportable_user, creator: active_user
+      create :report, creator: active_user
     end
 
     it 'requires an authenticated user' do

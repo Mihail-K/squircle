@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :report do
     association :creator, factory: :user
+    association :reportable, factory: :user, strategy: :build
 
     description { Faker::Lorem.paragraph }
 
@@ -14,10 +15,6 @@ FactoryGirl.define do
 
     trait :reportable_post do
       association :reportable, factory: :post, strategy: :build
-    end
-
-    trait :reportable_user do
-      association :reportable, factory: :user, strategy: :build
     end
   end
 end

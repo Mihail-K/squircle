@@ -23,6 +23,11 @@ definitions:
       last_active_at:
         type: string
         format: date-time
+      deleted_at:
+        oneOf:
+        - type: 'null'
+        - type: string
+          format: date-time
       admin:
         type: boolean
       banned:

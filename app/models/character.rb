@@ -14,21 +14,22 @@
 #  posts_count    :integer          default(0), not null
 #  avatar         :string
 #  gallery_images :string
+#  deleted_by_id  :integer
+#  deleted_at     :datetime
 #
 # Indexes
 #
-#  index_characters_on_creator_id  (creator_id)
-#  index_characters_on_name        (name)
-#  index_characters_on_user_id     (user_id)
+#  index_characters_on_creator_id     (creator_id)
+#  index_characters_on_deleted_by_id  (deleted_by_id)
+#  index_characters_on_name           (name)
+#  index_characters_on_user_id        (user_id)
 #
 
-class Character < ActiveRecord::Base
+class Character < ApplicationRecord
   belongs_to :user, counter_cache: :characters_count, inverse_of: :characters
   belongs_to :creator, counter_cache: :created_characters_count, class_name: 'User'
 
-  has_many :posts, -> { visible }, inverse_of: :character
-
-  attr_readonly :creator_id
+  has_many :posts, inverse_of: :character
 
   mount_uploader :avatar, AvatarUploader
   process_in_background :avatar
@@ -43,14 +44,4 @@ class Character < ActiveRecord::Base
   validates :user, presence: true, on: :create
   validates :creator, presence: true
   validates :gallery_images, length: { maximum: 5 }
-
-  before_validation :set_creator_from_user, if: 'creator.nil?'
-
-  scope :visible, -> {
-    where deleted: false
-  }
-
-  def set_creator_from_user
-    self.creator = user
-  end
 end

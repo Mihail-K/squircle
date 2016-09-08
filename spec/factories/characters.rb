@@ -1,11 +1,13 @@
 FactoryGirl.define do
   factory :character do
-    association :user, factory: :user, strategy: :build
+    association :creator, factory: :user
 
     name { Faker::Pokemon.name }
     title { Faker::Name.title }
     description { Faker::Hipster.paragraph }
 
-    deleted false
+    after :build do |character|
+      character.user ||= character.creator
+    end
   end
 end

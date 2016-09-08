@@ -9,6 +9,16 @@
         "creator_id": {
           "type": "integer"
         },
+        "deleted_by_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
         "title": {
           "type": "string"
         },
@@ -51,6 +61,17 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "deleted_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
         }
       },
       "required": [

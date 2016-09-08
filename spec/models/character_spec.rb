@@ -5,6 +5,8 @@ RSpec.describe Character, type: :model do
     build :character
   end
 
+  it_behaves_like ApplicationRecord
+
   it 'has a valid factory' do
     expect(character).to be_valid
   end

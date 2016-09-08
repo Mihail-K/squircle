@@ -7,6 +7,10 @@ definitions:
         type: integer
       creator_id:
         type: integer
+      deleted_by_id:
+        oneOf:
+        - type: 'null'
+        - type: integer
       title:
         type: string
       description:
@@ -31,6 +35,11 @@ definitions:
       updated_at:
         type: string
         format: date-time
+      deleted_at:
+        oneOf:
+        - type: 'null'
+        - type: string
+          format: date-time
     required:
     - id
     - title

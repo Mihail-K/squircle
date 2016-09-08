@@ -83,7 +83,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'returns 404 for posts in a deleted section' do
-      post.conversation.section.update deleted: true
+      post.conversation.section.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: post.id }
 

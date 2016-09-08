@@ -13,17 +13,20 @@
 #  updated_at      :datetime         not null
 #  closed_at       :datetime
 #  closed_by_id    :integer
+#  deleted_by_id   :integer
+#  deleted_at      :datetime
 #
 # Indexes
 #
 #  index_reports_on_closed_by_id                       (closed_by_id)
 #  index_reports_on_creator_id                         (creator_id)
 #  index_reports_on_deleted                            (deleted)
+#  index_reports_on_deleted_by_id                      (deleted_by_id)
 #  index_reports_on_reportable_type_and_reportable_id  (reportable_type,reportable_id)
 #  index_reports_on_status                             (status)
 #
 
-class Report < ActiveRecord::Base
+class Report < ApplicationRecord
   belongs_to :reportable, polymorphic: true
   belongs_to :creator, class_name: 'User'
   belongs_to :closed_by, class_name: 'User'
@@ -43,10 +46,6 @@ class Report < ActiveRecord::Base
   validates :description, presence: true, length: { in: 10..1000 }
 
   before_save :set_closed_at_timestamp, if: -> { status_changed? from: 'open' }
-
-  scope :visible, -> {
-    where deleted: false
-  }
 
   def closed?
     status != 'open'

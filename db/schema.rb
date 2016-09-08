@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160907190549) do
+ActiveRecord::Schema.define(version: 20160908044403) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                        null: false
@@ -39,7 +39,10 @@ ActiveRecord::Schema.define(version: 20160907190549) do
     t.integer  "posts_count",    default: 0,     null: false
     t.string   "avatar"
     t.string   "gallery_images"
+    t.integer  "deleted_by_id"
+    t.datetime "deleted_at"
     t.index ["creator_id"], name: "index_characters_on_creator_id"
+    t.index ["deleted_by_id"], name: "index_characters_on_deleted_by_id"
     t.index ["name"], name: "index_characters_on_name"
     t.index ["user_id"], name: "index_characters_on_user_id"
   end
@@ -136,9 +139,12 @@ ActiveRecord::Schema.define(version: 20160907190549) do
     t.datetime "updated_at",                       null: false
     t.datetime "closed_at"
     t.integer  "closed_by_id"
+    t.integer  "deleted_by_id"
+    t.datetime "deleted_at"
     t.index ["closed_by_id"], name: "index_reports_on_closed_by_id"
     t.index ["creator_id"], name: "index_reports_on_creator_id"
     t.index ["deleted"], name: "index_reports_on_deleted"
+    t.index ["deleted_by_id"], name: "index_reports_on_deleted_by_id"
     t.index ["reportable_type", "reportable_id"], name: "index_reports_on_reportable_type_and_reportable_id"
     t.index ["status"], name: "index_reports_on_status"
   end
@@ -154,7 +160,10 @@ ActiveRecord::Schema.define(version: 20160907190549) do
     t.datetime "updated_at",                          null: false
     t.integer  "posts_count",         default: 0,     null: false
     t.integer  "visible_posts_count", default: 0,     null: false
+    t.integer  "deleted_by_id"
+    t.datetime "deleted_at"
     t.index ["creator_id"], name: "index_sections_on_creator_id"
+    t.index ["deleted_by_id"], name: "index_sections_on_deleted_by_id"
     t.index ["title"], name: "index_sections_on_title"
   end
 

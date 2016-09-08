@@ -13,14 +13,17 @@
 #  updated_at          :datetime         not null
 #  posts_count         :integer          default(0), not null
 #  visible_posts_count :integer          default(0), not null
+#  deleted_by_id       :integer
+#  deleted_at          :datetime
 #
 # Indexes
 #
-#  index_sections_on_creator_id  (creator_id)
-#  index_sections_on_title       (title)
+#  index_sections_on_creator_id     (creator_id)
+#  index_sections_on_deleted_by_id  (deleted_by_id)
+#  index_sections_on_title          (title)
 #
 
-class Section < ActiveRecord::Base
+class Section < ApplicationRecord
   belongs_to :creator, class_name: 'User'
 
   has_many :conversations, inverse_of: :section
@@ -29,12 +32,4 @@ class Section < ActiveRecord::Base
   validates :title, presence: true
   validates :description, length: { in: 5..1000 }
   validates :creator, presence: true
-
-  scope :hidden, -> {
-    where deleted: true
-  }
-
-  scope :visible, -> {
-    where deleted: false
-  }
 end

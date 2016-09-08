@@ -19,7 +19,7 @@ RSpec.describe CharactersController, type: :controller do
 
     it 'only returns visible characters' do
       deleted_characters = characters.sample(3).each do |character|
-        character.update deleted: true
+        character.update deleted: true, deleted_by: active_user
       end
 
       get :index, format: :json
@@ -31,7 +31,7 @@ RSpec.describe CharactersController, type: :controller do
     it 'includes deleted characters when called by an admin' do
       active_user.update admin: true
       deleted_characters = characters.sample(3).each do |character|
-        character.update deleted: true
+        character.update deleted: true, deleted_by: active_user
       end
 
       get :index, format: :json, params: session
@@ -43,7 +43,7 @@ RSpec.describe CharactersController, type: :controller do
 
   describe '#GET show' do
     let :character do
-      create :character, user: active_user
+      create :character, creator: active_user
     end
 
     it 'returns the requested character' do
@@ -54,7 +54,7 @@ RSpec.describe CharactersController, type: :controller do
     end
 
     it 'returns 404 if the character is deleted' do
-      character.update deleted: true
+      character.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: character.id }
 
@@ -121,7 +121,7 @@ RSpec.describe CharactersController, type: :controller do
 
   describe '#PATCH update' do
     let :character do
-      create :character, user: active_user
+      create :character, creator: active_user
     end
 
     it 'requires an authenticated user' do
@@ -186,7 +186,7 @@ RSpec.describe CharactersController, type: :controller do
 
   describe '#DELETE destroy' do
     let :character do
-      create :character, user: active_user
+      create :character, creator: active_user
     end
 
     it 'requires an authenticated user' do

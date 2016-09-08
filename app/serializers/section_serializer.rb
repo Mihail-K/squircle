@@ -3,6 +3,7 @@ class SectionSerializer < ActiveModel::Serializer
 
   attribute :id
   attribute :creator_id, if: :can_view_creator?
+  attribute :deleted_by_id, if: :can_view_deleted_by?
 
   attribute :title
   attribute :description
@@ -17,13 +18,18 @@ class SectionSerializer < ActiveModel::Serializer
   attribute :created_at
   attribute :updated_at
 
-  belongs_to :creator, if: :can_view_creator?
+  belongs_to :creator, serializer: UserSerializer, if: :can_view_creator?
+  belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted_by?
 
   def can_view_deleted_posts?
     current_user.try(:admin?)
   end
 
   def can_view_creator?
+    current_user.try(:admin?)
+  end
+
+  def can_view_deleted_by?
     current_user.try(:admin?)
   end
 end

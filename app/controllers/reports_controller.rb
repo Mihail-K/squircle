@@ -34,7 +34,7 @@ class ReportsController < ApiController
   end
 
   def destroy
-    @report.update! deleted: true
+    @report.update! deleted: true, deleted_by: current_user
 
     head :no_content
   end

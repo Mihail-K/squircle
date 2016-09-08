@@ -32,7 +32,7 @@ class SectionsController < ApiController
   end
 
   def destroy
-    @section.update! deleted: true
+    @section.update! deleted: true, deleted_by: current_user
 
     head :no_content
   end
@@ -41,7 +41,7 @@ private
 
   def set_sections
     @sections = policy_scope(Section)
-    @sections = @sections.includes(:creator) if admin?
+    @sections = @sections.includes(:creator, :deleted_by) if admin?
   end
 
   def set_section

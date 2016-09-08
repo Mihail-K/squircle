@@ -2,8 +2,10 @@ require 'rails_helper'
 
 RSpec.describe Report, type: :model do
   let :report do
-    build :report, :reportable_user
+    build :report
   end
+
+  it_behaves_like ApplicationRecord
 
   it 'has a valid factory' do
     expect(report).to be_valid

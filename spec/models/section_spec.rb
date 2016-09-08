@@ -5,6 +5,8 @@ RSpec.describe Section, type: :model do
     build :section
   end
 
+  it_behaves_like ApplicationRecord
+
   it 'has a valid factory' do
     expect(section).to be_valid
   end

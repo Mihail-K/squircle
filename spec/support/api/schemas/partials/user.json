@@ -36,6 +36,17 @@
           "type": "string",
           "format": "date-time"
         },
+        "deleted_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
+        },
         "admin": {
           "type": "boolean"
         },

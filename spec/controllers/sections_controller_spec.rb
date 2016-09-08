@@ -18,7 +18,7 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'does not return sections that are not visible' do
-      sections.sample.update deleted: true
+      sections.sample.update deleted: true, deleted_by: active_user
 
       get :index, format: :json
 
@@ -28,7 +28,7 @@ RSpec.describe SectionsController, type: :controller do
 
     it 'returns all sections for admin users' do
       active_user.update admin: true
-      sections.sample.update deleted: true
+      sections.sample.update deleted: true, deleted_by: active_user
 
       get :index, format: :json, params: { access_token: token.token }
 
@@ -50,7 +50,7 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'returns 404 if the section is deleted' do
-      section.update deleted: true
+      section.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: section.id }
 
@@ -59,7 +59,7 @@ RSpec.describe SectionsController, type: :controller do
 
     it 'allows admins to view deleted sections' do
       active_user.update admin: true
-      section.update deleted: true
+      section.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: section.id }.merge(session)
 

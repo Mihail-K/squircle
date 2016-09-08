@@ -70,7 +70,7 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'returns 404 for conversations in a deleted section' do
-      conversation.section.update deleted: true
+      conversation.section.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: conversation.id }
 

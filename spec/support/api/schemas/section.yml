@@ -7,6 +7,10 @@ definitions:
     - properties:
         creator:
           $ref: partials/user.json#/definitions/user
+        deleted_by:
+          oneOf:
+          - type: 'null'
+          - $ref: partials/user.json#/definitions/user
 type: object
 properties:
   section:
