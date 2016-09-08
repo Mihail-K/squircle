@@ -27,7 +27,7 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'returns all sections for admin users' do
-      active_user.update admin: true
+      active_user.update role: :admin
       sections.sample.update deleted: true, deleted_by: active_user
 
       get :index, format: :json, params: { access_token: token.token }
@@ -58,7 +58,7 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'allows admins to view deleted sections' do
-      active_user.update admin: true
+      active_user.update role: :admin
       section.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: section.id }.merge(session)
@@ -85,7 +85,7 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'creates a section when called by an admin user' do
-      active_user.update admin: true
+      active_user.update role: :admin
 
       expect do
         post :create, format: :json, params: { section: attributes_for(:section) }.merge(session)
@@ -96,7 +96,7 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'returns errors if the section is not valid' do
-      active_user.update admin: true
+      active_user.update role: :admin
 
       expect do
         post :create, format: :json, params: {
@@ -137,7 +137,7 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'edits a section when called by an admin' do
-      active_user.update admin: true
+      active_user.update role: :admin
 
       expect do
         patch :update, format: :json, params: { id: section.id, section: section_attributes }.merge(session)
@@ -148,7 +148,7 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'returns errors when the section is invalid' do
-      active_user.update admin: true
+      active_user.update role: :admin
 
       expect do
         patch :update, format: :json, params: { id: section.id, section: { title: nil } }.merge(session)
@@ -183,7 +183,7 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'marks a section as deleted when called by an admin' do
-      active_user.update admin: true
+      active_user.update role: :admin
 
       expect do
         delete :destroy, format: :json, params: { id: section.id }.merge(session)

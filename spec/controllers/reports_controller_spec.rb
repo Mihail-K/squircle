@@ -47,7 +47,7 @@ RSpec.describe ReportsController, type: :controller do
     end
 
     it 'returns all reports for admin users' do
-      active_user.update admin: true
+      active_user.update role: :admin
 
       other_user    = create(:user)
       other_reports = reports.sample(3).each do |report|
@@ -107,7 +107,7 @@ RSpec.describe ReportsController, type: :controller do
     end
 
     it 'allows admins to view deleted reports' do
-      active_user.update admin: true
+      active_user.update role: :admin
       report.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: report.id }.merge(session)
@@ -116,7 +116,7 @@ RSpec.describe ReportsController, type: :controller do
     end
 
     it 'allows admins to reports owned by other users' do
-      active_user.update admin: true
+      active_user.update role: :admin
       report.update creator: create(:user)
 
       get :show, format: :json, params: { id: report.id }.merge(session)
@@ -226,7 +226,7 @@ RSpec.describe ReportsController, type: :controller do
     end
 
     it 'allows admins to change the status of a report' do
-      active_user.update admin: true
+      active_user.update role: :admin
 
       expect do
         patch :update, format: :json, params: {
@@ -284,7 +284,7 @@ RSpec.describe ReportsController, type: :controller do
     end
 
     it 'allows admins to mark a report as deleted' do
-      active_user.update admin: true
+      active_user.update role: :admin
 
       expect do
         delete :destroy, format: :json, params: { id: report.id }.merge(session)

@@ -13,7 +13,6 @@
 #  date_of_birth            :date             not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
-#  admin                    :boolean          default(FALSE), not null
 #  characters_count         :integer          default(0), not null
 #  created_characters_count :integer          default(0), not null
 #  posts_count              :integer          default(0), not null
@@ -24,6 +23,7 @@
 #  last_active_at           :datetime
 #  deleted_by_id            :integer
 #  deleted_at               :datetime
+#  role                     :string           default("user"), not null
 #
 # Indexes
 #
@@ -46,11 +46,18 @@ class User < ApplicationRecord
   has_secure_token :email_token
   has_secure_password
 
+  enum role: {
+    user:      'user',
+    moderator: 'moderator',
+    admin:     'admin'
+  }
+
   mount_uploader :avatar, AvatarUploader
   process_in_background :avatar
 
   validates :email, presence: true, uniqueness: true
   validates :display_name, presence: true, uniqueness: true
+  validates :role, presence: true
 
   validates :date_of_birth, presence: true
 
@@ -103,10 +110,6 @@ class User < ApplicationRecord
                 User.arel_table[:visible_posts_count]
                     .gt(0)
               )
-  }
-
-  scope :visible, -> {
-    where deleted: false
   }
 
 private

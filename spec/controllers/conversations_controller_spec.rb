@@ -28,7 +28,7 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'returns all conversations for admin users' do
-      active_user.update admin: true
+      active_user.update role: :admin
       deleted_conversations = conversations.sample(3).each do |conversation|
         conversation.update deleted: true, deleted_by: active_user
       end
@@ -61,7 +61,7 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'allows admins to view deleted conversations' do
-      active_user.update admin: true
+      active_user.update role: :admin
       conversation.update deleted: true, deleted_by: active_user
 
       get :show, format: :json, params: { id: conversation.id }.merge(session)
@@ -164,7 +164,7 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'updates the locked state of a conversation' do
-      active_user.update admin: true
+      active_user.update role: :admin
 
       expect do
         patch :update, format: :json, params: {
@@ -177,7 +177,7 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'returns errors if the conversation is invalid' do
-      active_user.update admin: true
+      active_user.update role: :admin
 
       expect do
         patch :update, format: :json, params: {
@@ -214,7 +214,7 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'marks a conversation as deleted when called by an admin user' do
-      active_user.update admin: true
+      active_user.update role: :admin
 
       expect do
         delete :destroy, format: :json, params: { id: conversation.id }.merge(session)

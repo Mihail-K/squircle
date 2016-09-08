@@ -47,8 +47,13 @@
             }
           ]
         },
-        "admin": {
-          "type": "boolean"
+        "role": {
+          "type": "string",
+          "enum": [
+            "user",
+            "moderator",
+            "admin"
+          ]
         },
         "banned": {
           "type": "boolean"
@@ -74,7 +79,7 @@
         "created_characters_count",
         "created_at",
         "last_active_at",
-        "admin",
+        "role",
         "banned",
         "deleted"
       ]

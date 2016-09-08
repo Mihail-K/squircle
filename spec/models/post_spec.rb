@@ -77,7 +77,7 @@ RSpec.describe Post, type: :model do
     end
 
     it 'is true when the user is an admin' do
-      expect(post.editable_by?(create(:user, admin: true))).to be true
+      expect(post.editable_by?(create(:user, role: :admin))).to be true
     end
   end
 end

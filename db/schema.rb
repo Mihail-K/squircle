@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160908044403) do
+ActiveRecord::Schema.define(version: 20160908052330) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                        null: false
@@ -168,27 +168,27 @@ ActiveRecord::Schema.define(version: 20160908044403) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",                                    null: false
+    t.string   "email",                                     null: false
     t.string   "email_token"
     t.datetime "email_confirmed_at"
     t.string   "password_digest"
     t.string   "display_name"
     t.string   "first_name"
     t.string   "last_name"
-    t.date     "date_of_birth",                            null: false
-    t.datetime "created_at",                               null: false
-    t.datetime "updated_at",                               null: false
-    t.boolean  "admin",                    default: false, null: false
-    t.integer  "characters_count",         default: 0,     null: false
-    t.integer  "created_characters_count", default: 0,     null: false
-    t.integer  "posts_count",              default: 0,     null: false
+    t.date     "date_of_birth",                             null: false
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
+    t.integer  "characters_count",         default: 0,      null: false
+    t.integer  "created_characters_count", default: 0,      null: false
+    t.integer  "posts_count",              default: 0,      null: false
     t.string   "avatar"
-    t.boolean  "deleted",                  default: false, null: false
-    t.boolean  "banned",                   default: false, null: false
-    t.integer  "visible_posts_count",      default: 0,     null: false
+    t.boolean  "deleted",                  default: false,  null: false
+    t.boolean  "banned",                   default: false,  null: false
+    t.integer  "visible_posts_count",      default: 0,      null: false
     t.datetime "last_active_at"
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
+    t.string   "role",                     default: "user", null: false
     t.index ["deleted_by_id"], name: "index_users_on_deleted_by_id"
     t.index ["display_name"], name: "index_users_on_display_name", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true

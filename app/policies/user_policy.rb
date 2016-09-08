@@ -2,7 +2,7 @@ class UserPolicy < Political::Policy
   alias_method :user, :record
 
   def me?
-    current_user.present?
+    authenticated?
   end
 
   def index?
@@ -28,7 +28,7 @@ class UserPolicy < Political::Policy
   class Parameters < Political::Parameters
     def permitted
       permitted  = %i(email date_of_birth display_name first_name last_name password password_confirmation avatar)
-      permitted += %i(deleted admin) if current_user.try(:admin?)
+      permitted += %i(deleted role) if current_user.try(:admin?)
       permitted
     end
   end

@@ -22,7 +22,7 @@ class UserSerializer < ActiveModel::Serializer
     current_user.try(:admin?) ? object.posts_count : object.visible_posts_count
   end
 
-  attribute :admin
+  attribute :role
   attribute :banned
   attribute :deleted
 

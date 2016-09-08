@@ -10,7 +10,7 @@ class BanPolicy < Political::Policy
   end
 
   def create?
-    current_user.try(:admin?)
+    authenticated? && %w(moderator admin).include?(current_user.role)
   end
 
   def update?
