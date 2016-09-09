@@ -117,9 +117,9 @@ class User < ApplicationRecord
 
   def can?(permission)
     if permission.is_a?(Permission)
-      permissions.exists?(id: permission)
+      permission_cache[permission.name] ||= permissions.exists?(id: permission.id)
     else
-      permissions.exists?(name: permission)
+      permission_cache[permission] ||= permissions.exists?(name: permission)
     end
   end
 
@@ -143,5 +143,9 @@ private
 
   def assign_default_user_role
     self.role = 'user'
+  end
+
+  def permission_cache
+    @permission_cache ||= ActiveSupport::HashWithIndifferentAccess.new
   end
 end
