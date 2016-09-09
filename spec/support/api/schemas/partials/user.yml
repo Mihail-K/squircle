@@ -28,12 +28,6 @@ definitions:
         - type: 'null'
         - type: string
           format: date-time
-      role:
-        type: string
-        enum:
-        - user
-        - moderator
-        - admin
       banned:
         type: boolean
       deleted:
@@ -52,6 +46,5 @@ definitions:
     - created_characters_count
     - created_at
     - last_active_at
-    - role
     - banned
     - deleted

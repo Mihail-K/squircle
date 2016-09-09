@@ -2,43 +2,53 @@ class BanPolicy < Political::Policy
   alias_method :ban, :record
 
   def index?
-    authenticated?
+    authenticated? && can_view_bans?
   end
 
   def show?
-    scope.apply.exists?(id: ban.id)
+    index? && scope.apply.exists?(id: ban.id)
   end
 
   def create?
-    authenticated? && %w(moderator admin).include?(current_user.role)
+    index? && current_user.can?(:create_bans)
   end
 
   def update?
-    show? && create?
+    show? && current_user.can?(:update_bans)
   end
 
   def destroy?
-    show? && create?
+    show? && current_user.can?(:delete_bans)
   end
 
   class Parameters < Political::Parameters
     def permitted
       permitted  = %i(reason expires_at)
       permitted << :user_id if action?('create')
-      permitted << :deleted if action?('update')
+      permitted << :deleted if action?('update') && current_user.can?(:delete_bans)
       permitted
     end
   end
 
   class Scope < Political::Scope
     def apply
-      if current_user.nil?
-        scope.none
-      elsif current_user.admin?
-        scope.all
-      else
-        scope.where(user: current_user).visible
+      return scope.none unless authenticated?
+
+      scope.chain do |scope|
+        scope.none unless current_user.can?(:view_own_bans)
+      end.chain do |scope|
+        scope.where(user: current_user) unless current_user.can?(:view_others_bans)
+      end.chain do |scope|
+        scope.visible unless current_user.can?(:view_deleted_bans)
       end
+    end
+  end
+
+private
+
+  def can_view_bans?
+    %i(view_own_bans view_others_bans view_deleted_bans).any? do |view_bans|
+      current_user.can?(view_bans)
     end
   end
 end

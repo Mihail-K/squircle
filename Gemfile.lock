@@ -7,8 +7,9 @@ GIT
       activesupport (>= 4.0.0)
       mime-types (>= 1.16)
 
-PATH
-  remote: ../political
+GIT
+  remote: https://platterz-machine:ff18548fdf87319819121b42ef17bff34ba98346@github.com/platterz/political
+  revision: 146cbbb30bad5e5efd4e04c34d1735a5ef80885c
   specs:
     political (0.1.0)
       activerecord (>= 4.2.0)

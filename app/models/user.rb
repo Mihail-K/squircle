@@ -23,7 +23,7 @@
 #  last_active_at           :datetime
 #  deleted_by_id            :integer
 #  deleted_at               :datetime
-#  role                     :string           default("user"), not null
+#  role_id                  :integer
 #
 # Indexes
 #
@@ -31,9 +31,13 @@
 #  index_users_on_display_name   (display_name) UNIQUE
 #  index_users_on_email          (email) UNIQUE
 #  index_users_on_email_token    (email_token) UNIQUE
+#  index_users_on_role_id        (role_id)
 #
 
 class User < ApplicationRecord
+  belongs_to :role
+  has_many :permissions, through: :role
+
   has_many :bans, -> { active }, inverse_of: :user
   has_many :previous_bans, -> { inactive }, class_name: 'Ban'
   has_many :issued_bans, foreign_key: :creator_id, class_name: 'Ban'
@@ -45,12 +49,6 @@ class User < ApplicationRecord
 
   has_secure_token :email_token
   has_secure_password
-
-  enum role: {
-    user:      'user',
-    moderator: 'moderator',
-    admin:     'admin'
-  }
 
   mount_uploader :avatar, AvatarUploader
   process_in_background :avatar
@@ -66,6 +64,7 @@ class User < ApplicationRecord
     o.validates :date_of_birth, timeliness: { after: -> { 100.years.ago }, type: :date }
   end
 
+  before_validation :assign_default_user_role, on: :create, if: 'role.nil?'
   before_create :set_last_active_at_timestamp
 
   with_options if: -> { previous_changes.key?(:email) } do |o|
@@ -112,6 +111,26 @@ class User < ApplicationRecord
               )
   }
 
+  def admin?
+    role.try(:name) == 'admin'
+  end
+
+  def can?(permission)
+    if permission.is_a?(Permission)
+      permissions.exists?(id: permission)
+    else
+      permissions.exists?(name: permission)
+    end
+  end
+
+  def role=(role)
+    if role.is_a?(Role)
+      super role
+    else
+      super Role.find_by!(name: role)
+    end
+  end
+
 private
 
   def set_last_active_at_timestamp
@@ -120,5 +139,9 @@ private
 
   def send_email_confirmation
     # TODO
+  end
+
+  def assign_default_user_role
+    self.role = 'user'
   end
 end
