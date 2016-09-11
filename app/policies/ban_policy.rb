@@ -2,9 +2,7 @@ class BanPolicy < Political::Policy
   alias_method :ban, :record
 
   def index?
-    authenticated? && %i(view_owned_bans view_bans view_deleted_bans).any? do |view_bans|
-      current_user.can?(view_bans)
-    end
+    authenticated? && current_user.can?(:view_owned_bans)
   end
 
   def show?
