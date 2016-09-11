@@ -35,6 +35,7 @@
 class User < ApplicationRecord
   has_and_belongs_to_many :roles
   has_many :role_permissions, through: :roles
+  has_many :permissions, -> { distinct }, through: :role_permissions
 
   has_many :bans, -> { active }, inverse_of: :user
   has_many :previous_bans, -> { inactive }, class_name: 'Ban'
@@ -109,11 +110,11 @@ class User < ApplicationRecord
   }
 
   def admin?
-    @admin ||= roles.exists?(name: 'admin')
+    roles.exists?(name: 'admin')
   end
 
   def banned?
-    @banned ||= roles.exists?(name: 'banned')
+    roles.exists?(name: 'banned')
   end
 
   def can?(permission)

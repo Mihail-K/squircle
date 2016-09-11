@@ -108,4 +108,27 @@ RSpec.describe User, type: :model do
       expect(User.most_active.exists?(id: user)).to be false
     end
   end
+
+  describe '.can?' do
+    let :user do
+      create :user
+    end
+
+    let :permission do
+      user.permissions.first
+    end
+
+    it 'is true if the user has permission' do
+      expect(user.can?(permission.name)).to be true
+    end
+
+    it 'is false if the user does not have permission' do
+      expect(user.can?(create(:permission).name)).to be false
+    end
+
+    it 'is true if the permission is implied' do
+      child_permission = create(:permission, implied_by: permission)
+      expect(user.can?(child_permission.name)).to be true
+    end
+  end
 end
