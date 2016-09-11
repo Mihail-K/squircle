@@ -28,7 +28,7 @@ class CharacterPolicy < Political::Policy
   class Parameters < Political::Parameters
     def permitted
       permitted  = %i(name title description avatar)
-      permitted << :user_id if current_user.try(:admin?)
+      permitted << :user_id if current_user.try(:can?, :update_characters)
       permitted
     end
   end

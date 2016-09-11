@@ -110,7 +110,7 @@ class User < ApplicationRecord
   }
 
   def admin?
-    roles.exists?(name: 'admin')
+    @admin ||= roles.exists?(name: 'admin')
   end
 
   def banned?
