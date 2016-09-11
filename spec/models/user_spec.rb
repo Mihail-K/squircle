@@ -104,7 +104,7 @@ RSpec.describe User, type: :model do
     end
 
     it 'does not include banned users' do
-      user.update banned: true
+      user.roles << Role.find_by!(name: 'banned')
       expect(User.most_active.exists?(id: user)).to be false
     end
   end

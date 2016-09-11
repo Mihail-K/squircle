@@ -32,14 +32,22 @@ class BanPolicy < Political::Policy
 
   class Scope < Political::Scope
     def apply
-      return scope.none unless authenticated?
+      return scope.none unless authenticated? && can_view_bans?
 
       scope.chain do |scope|
-        scope.none unless current_user.can?(:view_own_bans)
+        scope.none unless current_user.can?(:view_owned_bans)
       end.chain do |scope|
-        scope.where(user: current_user) unless current_user.can?(:view_others_bans)
+        scope.where(user: current_user) unless current_user.can?(:view_bans)
       end.chain do |scope|
         scope.visible unless current_user.can?(:view_deleted_bans)
+      end
+    end
+
+  private
+
+    def can_view_bans?
+      %i(view_owned_bans view_bans view_deleted_bans).any? do |view_bans|
+        current_user.can?(view_bans)
       end
     end
   end
@@ -47,7 +55,7 @@ class BanPolicy < Political::Policy
 private
 
   def can_view_bans?
-    %i(view_own_bans view_others_bans view_deleted_bans).any? do |view_bans|
+    %i(view_owned_bans view_bans view_deleted_bans).any? do |view_bans|
       current_user.can?(view_bans)
     end
   end

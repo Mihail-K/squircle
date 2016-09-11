@@ -2,7 +2,6 @@ class UserSerializer < ActiveModel::Serializer
   cache expires_in: 3.hours
 
   attribute :id
-  attribute :role_id
   attribute :deleted_by_id, if: :can_view_deleted?
 
   attribute :display_name
@@ -36,7 +35,6 @@ class UserSerializer < ActiveModel::Serializer
     object.avatar.thumb.url
   end
 
-  belongs_to :role
   belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted?
 
   def can_view_email?

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160908153655) do
+ActiveRecord::Schema.define(version: 20160911181448) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                        null: false
@@ -120,16 +120,6 @@ ActiveRecord::Schema.define(version: 20160908153655) do
     t.index ["name"], name: "index_permissions_on_name", unique: true
   end
 
-  create_table "permissions_roles", force: :cascade do |t|
-    t.integer  "role_id",       null: false
-    t.integer  "permission_id", null: false
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
-    t.index ["permission_id"], name: "index_permissions_roles_on_permission_id"
-    t.index ["role_id", "permission_id"], name: "index_permissions_roles_on_role_id_and_permission_id", unique: true
-    t.index ["role_id"], name: "index_permissions_roles_on_role_id"
-  end
-
   create_table "posts", force: :cascade do |t|
     t.string   "title"
     t.text     "body",                            null: false
@@ -173,6 +163,22 @@ ActiveRecord::Schema.define(version: 20160908153655) do
     t.index ["status"], name: "index_reports_on_status"
   end
 
+  create_table "role_permissions", force: :cascade do |t|
+    t.integer  "role_id",                         null: false
+    t.integer  "permission_id",                   null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.string   "value",         default: "allow", null: false
+    t.boolean  "deleted",       default: false,   null: false
+    t.integer  "deleted_by_id"
+    t.datetime "deleted_at"
+    t.index ["deleted_by_id"], name: "index_role_permissions_on_deleted_by_id"
+    t.index ["permission_id"], name: "index_role_permissions_on_permission_id"
+    t.index ["role_id", "permission_id"], name: "index_role_permissions_on_role_id_and_permission_id", unique: true
+    t.index ["role_id"], name: "index_role_permissions_on_role_id"
+    t.index ["value"], name: "index_role_permissions_on_value"
+  end
+
   create_table "roles", force: :cascade do |t|
     t.string   "name",                          null: false
     t.text     "description"
@@ -184,6 +190,16 @@ ActiveRecord::Schema.define(version: 20160908153655) do
     t.index ["deleted"], name: "index_roles_on_deleted"
     t.index ["deleted_by_id"], name: "index_roles_on_deleted_by_id"
     t.index ["name"], name: "index_roles_on_name", unique: true
+  end
+
+  create_table "roles_users", force: :cascade do |t|
+    t.integer  "role_id",    null: false
+    t.integer  "user_id",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["role_id", "user_id"], name: "index_roles_users_on_role_id_and_user_id", unique: true
+    t.index ["role_id"], name: "index_roles_users_on_role_id"
+    t.index ["user_id"], name: "index_roles_users_on_user_id"
   end
 
   create_table "sections", force: :cascade do |t|
@@ -225,12 +241,10 @@ ActiveRecord::Schema.define(version: 20160908153655) do
     t.datetime "last_active_at"
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
-    t.integer  "role_id"
     t.index ["deleted_by_id"], name: "index_users_on_deleted_by_id"
     t.index ["display_name"], name: "index_users_on_display_name", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["email_token"], name: "index_users_on_email_token", unique: true
-    t.index ["role_id"], name: "index_users_on_role_id"
   end
 
 end

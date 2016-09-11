@@ -29,7 +29,7 @@ RSpec.describe CharactersController, type: :controller do
     end
 
     it 'includes deleted characters when called by an admin' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       deleted_characters = characters.sample(3).each do |character|
         character.update deleted: true, deleted_by: active_user
       end
@@ -62,7 +62,7 @@ RSpec.describe CharactersController, type: :controller do
     end
 
     it 'allows admins to view deleted characters' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       character.update deleted: true
 
       get :show, format: :json, params: { id: character.id }.merge(session)
@@ -94,7 +94,7 @@ RSpec.describe CharactersController, type: :controller do
     end
 
     it 'prevents banned users from creating characters' do
-      active_user.update banned: true
+      active_user.roles << Role.find_by!(name: 'banned')
 
       expect do
         post :create, format: :json, params: {
@@ -158,7 +158,7 @@ RSpec.describe CharactersController, type: :controller do
     end
 
     it 'allows admins to update characters owned by another user' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       character.update user: create(:user)
 
       expect do
@@ -216,7 +216,7 @@ RSpec.describe CharactersController, type: :controller do
     end
 
     it 'allows admins to delete characters they do not own' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       character.update user: create(:user)
 
       expect do

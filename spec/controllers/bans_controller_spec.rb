@@ -35,7 +35,7 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'returns all bans for admin users' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       bans.sample(3).each do |ban|
         ban.update user: create(:user)
       end
@@ -74,7 +74,7 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'allows admins to view bans that belong to other users' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       ban.update user: create(:user)
 
       get :show, format: :json, params: { id: ban.id }.merge(session)
@@ -117,7 +117,7 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'creates a ban for the given user when called by an admin' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
         post :create, format: :json, params: {
@@ -130,7 +130,7 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'returns errors if the ban is invalid' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
         post :create, format: :json, params: {
@@ -167,7 +167,7 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'updates the reason on a ban when called by an admin' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
         patch :update, format: :json, params: { id: ban.id, ban: attributes_for(:ban) }.merge(session)
@@ -179,7 +179,7 @@ RSpec.describe BansController, type: :controller do
 
     it 'updates the deleted state on a ban' do
       ban.update deleted: true, deleted_by: active_user
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
         patch :update, format: :json, params: { id: ban.id, ban: { deleted: false } }.merge(session)
@@ -189,7 +189,7 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'prevents the assigned user from being changed' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       user_id = create(:user).id
 
       expect do
@@ -200,7 +200,7 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'prevents the assigned creator from being changed' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       user_id = create(:user).id
 
       expect do
@@ -211,7 +211,7 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'returns errors if the ban is invalid' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
         patch :update, format: :json, params: { id: ban.id, ban: { reason: nil } }.merge(session)
@@ -246,7 +246,7 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'marks a ban as deleted when called by an admin' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
         delete :destroy, format: :json, params: { id: ban.id }.merge(session)

@@ -19,7 +19,8 @@
 #
 
 class Permission < ApplicationRecord
-  has_and_belongs_to_many :roles
+  has_many :role_permissions
+  has_many :roles, through: :role_permissions
 
   validates :name, presence: true, uniqueness: true
   validates :description, length: { maximum: 1000 }

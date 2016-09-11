@@ -33,7 +33,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'includes deleted posts when called by an admin' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       posts.sample(3).each do |post|
         post.update deleted: true, deleted_by: active_user
       end
@@ -67,7 +67,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'allows admins to view deleted posts' do
       post.update deleted: true, deleted_by: active_user
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
 
       get :show, format: :json, params: { id: post.id }.merge(session)
 
@@ -118,7 +118,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'does not allow banned users to create posts' do
-      active_user.update banned: true
+      active_user.roles << Role.find_by!(name: 'banned')
 
       expect do
         post :create, format: :json, params: {
@@ -201,7 +201,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'allows admins to edit posts owned by other users' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       post.update author: create(:user)
 
       expect do
@@ -221,7 +221,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'allows admins to edit the deleted state of a post' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       post.update deleted: true, deleted_by: active_user
 
       expect do
@@ -240,7 +240,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'allows admins to change the editor of a post' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
         patch :update, format: :json, params: { id: post.id, post: { editor_id: nil } }.merge(session)
@@ -303,7 +303,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'allows admins to delete posts owned by other users' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       post.update author: create(:user)
 
       expect do
@@ -324,7 +324,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'allows admins to delete posts in locked conversations' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       post.conversation.update locked: true, locked_by: create(:user, role: :admin)
 
       expect do

@@ -23,7 +23,6 @@
 #  last_active_at           :datetime
 #  deleted_by_id            :integer
 #  deleted_at               :datetime
-#  role_id                  :integer
 #
 # Indexes
 #
@@ -31,12 +30,11 @@
 #  index_users_on_display_name   (display_name) UNIQUE
 #  index_users_on_email          (email) UNIQUE
 #  index_users_on_email_token    (email_token) UNIQUE
-#  index_users_on_role_id        (role_id)
 #
 
 class User < ApplicationRecord
-  belongs_to :role
-  has_many :permissions, through: :role
+  has_and_belongs_to_many :roles
+  has_many :role_permissions, through: :roles
 
   has_many :bans, -> { active }, inverse_of: :user
   has_many :previous_bans, -> { inactive }, class_name: 'Ban'
@@ -55,7 +53,6 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates :display_name, presence: true, uniqueness: true
-  validates :role, presence: true
 
   validates :date_of_birth, presence: true
 
@@ -64,7 +61,7 @@ class User < ApplicationRecord
     o.validates :date_of_birth, timeliness: { after: -> { 100.years.ago }, type: :date }
   end
 
-  before_validation :assign_default_user_role, on: :create, if: 'role.nil?'
+  before_create :assign_default_user_roles
   before_create :set_last_active_at_timestamp
 
   with_options if: -> { previous_changes.key?(:email) } do |o|
@@ -73,11 +70,11 @@ class User < ApplicationRecord
   end
 
   scope :banned, -> {
-    where banned: true
+    joins(:roles).where(roles: { name: 'banned' })
   }
 
   scope :not_banned, -> {
-    where banned: false
+    where.not(id: banned)
   }
 
   scope :no_active_bans, -> {
@@ -112,23 +109,15 @@ class User < ApplicationRecord
   }
 
   def admin?
-    role.try(:name) == 'admin'
+    roles.exists?(name: 'admin')
+  end
+
+  def banned?
+    roles.exists?(name: 'banned')
   end
 
   def can?(permission)
-    if permission.is_a?(Permission)
-      permission_cache[permission.name] ||= permissions.exists?(id: permission.id)
-    else
-      permission_cache[permission] ||= permissions.exists?(name: permission)
-    end
-  end
-
-  def role=(role)
-    if role.is_a?(Role)
-      super role
-    else
-      super Role.find_by!(name: role)
-    end
+    permission_cache[permission] ||= permission_allowed?(permission)
   end
 
 private
@@ -141,11 +130,16 @@ private
     # TODO
   end
 
-  def assign_default_user_role
-    self.role = 'user'
+  def assign_default_user_roles
+    roles << Role.find_by!(name: 'user') unless roles.any? { |role| role.name == 'user' }
   end
 
   def permission_cache
     @permission_cache ||= ActiveSupport::HashWithIndifferentAccess.new
+  end
+
+  def permission_allowed?(permission)
+    values = role_permissions.permission(permission).pluck(:value)
+    values.present? && values.all? { |value| value == 'allow' }
   end
 end

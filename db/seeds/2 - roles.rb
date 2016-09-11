@@ -16,3 +16,9 @@ Role.find_or_create_by! name: 'admin' do |role|
     The highest privileged for forum admins.
   TEXT
 end
+
+Role.find_or_create_by! name: 'banned' do |role|
+  role.description = <<-TEXT.squish
+    A restrictive role for banned users.
+  TEXT
+end

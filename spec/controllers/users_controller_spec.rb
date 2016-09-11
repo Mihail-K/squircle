@@ -42,7 +42,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'returns all users when an admin is authenticated' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
       users.sample.update deleted: true, deleted_by: active_user
 
       get :index, format: :json, params: session
@@ -97,7 +97,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'returns private fields for all users when called by an admin' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
 
       get :show, format: :json, params: { id: user.id }.merge(session)
 
@@ -131,7 +131,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'allows admins to create new users' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
         post :create, format: :json, params: { user: attributes_for(:user) }.merge(session)
@@ -231,7 +231,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'allows admins to delete any user account' do
-      active_user.update role: :admin
+      active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
         delete :destroy, format: :json, params: { id: user.id }.merge(session)

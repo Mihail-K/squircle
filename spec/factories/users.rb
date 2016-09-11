@@ -15,6 +15,14 @@ FactoryGirl.define do
     banned false
     deleted false
 
+    transient do
+      role :user
+    end
+
+    after :build do |user, e|
+      user.roles << Role.find_by!(name: e.role) unless user.roles.exists?(name: e.role)
+    end
+
     # - Avatar - #
 
     trait :with_avatar do

@@ -2,15 +2,15 @@ class CharacterPolicy < Political::Policy
   alias_method :character, :record
 
   def index?
-    true
+    current_user.nil? || current_user.can?(:view_characters)
   end
 
   def show?
-    scope.apply.exists?(id: character.id)
+    index? && scope.apply.exists?(id: character.id)
   end
 
   def create?
-    current_user.present? && (current_user.admin? || !current_user.banned?)
+    index? && current_user.try(:can?, :create_characters)
   end
 
   def update?
