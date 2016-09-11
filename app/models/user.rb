@@ -117,7 +117,13 @@ class User < ApplicationRecord
   end
 
   def can?(permission)
-    permission_cache[permission] ||= permission_allowed?(permission)
+    if permission_cache.key?(permission)
+      Rails.logger.debug "[User #{id}] Permission cache hit: #{permission}".green
+      permission_cache[permission]
+    else
+      Rails.logger.debug "[User #{id}] Permission cache miss: #{permission}".red
+      permission_cache[permission] = permission_allowed?(permission)
+    end
   end
 
 private
