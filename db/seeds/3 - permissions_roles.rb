@@ -20,7 +20,6 @@
   },
   admin: {
     # - Bans - #
-    view_bans:                :allow,
     view_deleted_bans:        :allow,
     create_bans:              :allow,
     update_bans:              :allow,
@@ -31,9 +30,7 @@
   banned: {
     # - Characters - #
     create_characters:        :forbid,
-    update_owned_characters:  :forbid,
     update_characters:        :forbid,
-    delete_owned_characters:  :forbid,
     delete_characters:        :forbid
   }
 }.each do |role, permissions|

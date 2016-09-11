@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160911181448) do
+ActiveRecord::Schema.define(version: 20160911183656) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                        null: false
@@ -115,8 +115,10 @@ ActiveRecord::Schema.define(version: 20160911181448) do
     t.datetime "deleted_at"
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
+    t.integer  "implied_by_id"
     t.index ["deleted"], name: "index_permissions_on_deleted"
     t.index ["deleted_by_id"], name: "index_permissions_on_deleted_by_id"
+    t.index ["implied_by_id"], name: "index_permissions_on_implied_by_id"
     t.index ["name"], name: "index_permissions_on_name", unique: true
   end
 

@@ -2,7 +2,9 @@ class BanPolicy < Political::Policy
   alias_method :ban, :record
 
   def index?
-    authenticated? && can_view_bans?
+    authenticated? && %i(view_owned_bans view_bans view_deleted_bans).any? do |view_bans|
+      current_user.can?(view_bans)
+    end
   end
 
   def show?
@@ -32,31 +34,15 @@ class BanPolicy < Political::Policy
 
   class Scope < Political::Scope
     def apply
-      return scope.none unless authenticated? && can_view_bans?
+      return scope.none unless authenticated?
 
       scope.chain do |scope|
-        scope.none unless current_user.can?(:view_owned_bans)
+        scope.visible unless current_user.can?(:view_deleted_bans)
       end.chain do |scope|
         scope.where(user: current_user) unless current_user.can?(:view_bans)
       end.chain do |scope|
-        scope.visible unless current_user.can?(:view_deleted_bans)
+        scope.none unless current_user.can?(:view_owned_bans)
       end
-    end
-
-  private
-
-    def can_view_bans?
-      %i(view_owned_bans view_bans view_deleted_bans).any? do |view_bans|
-        current_user.can?(view_bans)
-      end
-    end
-  end
-
-private
-
-  def can_view_bans?
-    %i(view_owned_bans view_bans view_deleted_bans).any? do |view_bans|
-      current_user.can?(view_bans)
     end
   end
 end

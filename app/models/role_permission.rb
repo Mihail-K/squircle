@@ -35,10 +35,6 @@ class RolePermission < ApplicationRecord
   validates :value, presence: true
 
   scope :permission, -> (permission) {
-    if permission.is_a?(Permission)
-      where(permission: permission)
-    else
-      joins(:permission).where(permissions: { name: permission })
-    end
+    joins(:permission).where(permissions: { id: Permission.implied(permission) })
   }
 end
