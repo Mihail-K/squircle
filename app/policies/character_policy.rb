@@ -14,12 +14,15 @@ class CharacterPolicy < Political::Policy
   end
 
   def update?
-    return true if current_user.try(:admin?)
-    current_user.present? && !current_user.banned? && character.user_id == current_user.id
+    return false unless show?
+    return true if current_user.can?(:update_characters)
+    character.user_id == current_user.id && current_user.can?(:update_owned_characters)
   end
 
   def destroy?
-    update?
+    return false unless show?
+    return true if current_user.can?(:delete_characters)
+    character.user_id == current_user.id && current_user.can?(:delete_owned_characters)
   end
 
   class Parameters < Political::Parameters
@@ -32,10 +35,8 @@ class CharacterPolicy < Political::Policy
 
   class Scope < Political::Scope
     def apply
-      if current_user.try(:admin?)
-        scope.all
-      else
-        scope.visible
+      scope.chain do |scope|
+        scope.visible unless current_user.try(:can?, :view_deleted_characters)
       end
     end
   end

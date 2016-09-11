@@ -25,7 +25,9 @@
     update_bans:              :allow,
     delete_bans:              :allow,
     # - Characters - #
-    view_deleted_characters:  :allow
+    view_deleted_characters:  :allow,
+    update_characters:        :allow,
+    delete_characters:        :allow,
   },
   banned: {
     # - Characters - #

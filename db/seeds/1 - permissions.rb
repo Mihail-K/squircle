@@ -21,6 +21,12 @@ Permission.find_or_create_by! name: :view_owned_bans do |permission|
   TEXT
 end
 
+Permission.find_or_create_by! name: :view_ban_creator do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to view who created a ban.
+  TEXT
+end
+
 Permission.find_or_create_by! name: :create_bans do |permission|
   permission.description = <<-TEXT.squish
     Permits the user to ban other users.
