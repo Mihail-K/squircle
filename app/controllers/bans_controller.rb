@@ -41,8 +41,9 @@ private
 
   def set_bans
     @bans = policy_scope(Ban).includes(:user)
-    @bans = @bans.where(user_id: params[:user_id]) if admin? && params.key?(:user_id)
-    @bans = @bans.includes(:creator, :deleted_by) if admin?
+    @bans = @bans.where(user: params[:user_id]) if can_view_bans? && params.key?(:user_id)
+    @bans = @bans.includes(:creator) if can_view_ban_creator?
+    @bans = @bans.includes(:deleted_by) if admin?
   end
 
   def set_ban
@@ -51,5 +52,13 @@ private
 
   def apply_pagination
     @bans = @bans.page(params[:page]).per(params[:count])
+  end
+
+  def can_view_bans?
+    current_user.try(:can?, :view_bans)
+  end
+
+  def can_view_ban_creator?
+    current_user.try(:can?, :view_ban_creator)
   end
 end

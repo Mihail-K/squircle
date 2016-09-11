@@ -28,4 +28,9 @@ class Role < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
   validates :description, length: { maximum: 1000 }
+
+  with_options if: :deleted? do |o|
+    o.validates :users, absence: true
+    o.validates :role_permissions, absence: true
+  end
 end
