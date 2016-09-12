@@ -2,18 +2,18 @@ class UserSerializer < ActiveModel::Serializer
   cache expires_in: 3.hours
 
   attribute :id
-  attribute :deleted_by_id, if: :can_view_deleted?
+  attribute :deleted_by_id, if: :can_view_deleted_users?
 
   attribute :display_name
   attribute :created_at
   attribute :last_active_at
 
-  attribute :email, if: :can_view_email?
-  attribute :email_confirmed_at, if: :can_view_email?
+  attribute :email, if: :can_view_users_personal_fields?
+  attribute :email_confirmed_at, if: :can_view_users_personal_fields?
 
-  attribute :first_name, if: :can_view_personal_data?
-  attribute :last_name, if: :can_view_personal_data?
-  attribute :date_of_birth, if: :can_view_personal_data?
+  attribute :first_name, if: :can_view_users_personal_fields?
+  attribute :last_name, if: :can_view_users_personal_fields?
+  attribute :date_of_birth, if: :can_view_users_personal_fields?
 
   attribute :characters_count
   attribute :created_characters_count
@@ -35,19 +35,14 @@ class UserSerializer < ActiveModel::Serializer
     object.avatar.thumb.url
   end
 
-  belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted?
+  belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted_users?
 
-  def can_view_email?
+  def can_view_users_personal_fields?
     object.id == current_user.try(:id) ||
-    current_user.try(:admin?)
+    current_user.try(:can?, :view_users_personal_fields)
   end
 
-  def can_view_personal_data?
-    object.id == current_user.try(:id) ||
-    current_user.try(:admin?)
-  end
-
-  def can_view_deleted?
-    current_user.try(:admin?)
+  def can_view_deleted_users?
+    current_user.try(:can?, :view_deleted_users)
   end
 end

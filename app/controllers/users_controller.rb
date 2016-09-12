@@ -45,7 +45,7 @@ private
     @users = policy_scope(User)
     @users = @users.recently_active if params.key?(:recently_active)
     @users = @users.most_active if params.key?(:most_active)
-    @users = @users.includes(:deleted_by) if admin?
+    @users = @users.includes(:deleted_by) if can_view_deleted_users?
   end
 
   def set_user
@@ -54,5 +54,9 @@ private
 
   def apply_pagination
     @users = @users.page(params[:page]).per(params[:count])
+  end
+
+  def can_view_deleted_users?
+    current_user.try(:can?, :view_deleted_users)
   end
 end
