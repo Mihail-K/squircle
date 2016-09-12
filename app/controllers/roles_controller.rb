@@ -8,8 +8,8 @@ class RolesController < ApiController
   before_action :enforce_policy!
 
   def index
-    render json: @roles
-           each_serializer: RoleSerializer
+    render json: @roles,
+           each_serializer: RoleSerializer,
            meta: meta_for(@roles)
   end
 

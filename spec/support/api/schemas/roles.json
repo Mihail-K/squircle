@@ -12,7 +12,7 @@
   "type": "object",
   "properties": {
     "roles": {
-      "$ref": "#/definitions/role"
+      "$ref": "#/definitions/roles"
     },
     "meta": {
       "$ref": "partials/meta.json#/definitions/meta"
