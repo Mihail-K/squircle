@@ -1,0 +1,18 @@
+---
+$schema: http://json-schema.org/draft-04/schema#
+title: Roles
+definitions:
+  roles:
+    type: array
+    items:
+      $ref: role.json#/definitions/role
+type: object
+properties:
+  roles:
+    $ref: '#/definitions/role'
+  meta:
+    $ref: partials/meta.json#/definitions/meta
+required:
+- roles
+- meta
+additionalProperties: false

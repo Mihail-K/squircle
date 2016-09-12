@@ -1,0 +1,35 @@
+---
+$schema: http://json-schema.org/draft-04/schema#
+title: Role Partial
+definitions:
+  role:
+    type: object
+    properties:
+      id:
+        type: integer
+      deleted_by_id:
+        oneOf:
+        - type: 'null'
+        - type: string
+          format: date-time
+      name:
+        type: string
+      description:
+        type: string
+      deleted:
+        type: boolean
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      deleted_at:
+        oneOf:
+        - type: 'null'
+        - type: string
+          format: date-time
+    required:
+    - id
+    - name
+    - description

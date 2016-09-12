@@ -1,0 +1,20 @@
+---
+$schema: http://json-schema.org/draft-04/schema#
+title: Role
+definitions:
+  role:
+    type: object
+    allOf:
+    - $ref: partials/role.json#/definitions/role
+    - properties:
+        deleted_by:
+          oneOf:
+          - type: 'null'
+          - $ref: partials/user.json#/definitions/user
+type: object
+properties:
+  role:
+    $ref: '#/definitions/role'
+required:
+- role
+additionalProperties: false
