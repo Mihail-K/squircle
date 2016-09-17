@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160911183656) do
+ActiveRecord::Schema.define(version: 20160917215329) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                        null: false
@@ -105,6 +105,35 @@ ActiveRecord::Schema.define(version: 20160911183656) do
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
+  create_table "permissible_implied_permissions", force: :cascade do |t|
+    t.integer "permission_id", null: false
+    t.integer "implied_by_id", null: false
+    t.index ["implied_by_id"], name: "index_permissible_implied_permissions_on_implied_by_id"
+    t.index ["permission_id", "implied_by_id"], name: "permissible_index_on_permission_and_implied_by", unique: true
+    t.index ["permission_id"], name: "index_permissible_implied_permissions_on_permission_id"
+  end
+
+  create_table "permissible_model_permissions", force: :cascade do |t|
+    t.integer  "permission_id",                      null: false
+    t.string   "permissible_type",                   null: false
+    t.integer  "permissible_id",                     null: false
+    t.string   "value",            default: "allow", null: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.index ["permissible_type", "permissible_id"], name: "permissible_index_on_polymorphic_permissible"
+    t.index ["permission_id", "permissible_id", "permissible_type"], name: "permissible_index_on_id_and_polymorphic_permissible", unique: true
+    t.index ["permission_id"], name: "index_permissible_model_permissions_on_permission_id"
+    t.index ["value"], name: "index_permissible_model_permissions_on_value"
+  end
+
+  create_table "permissible_permissions", force: :cascade do |t|
+    t.string   "name",                     null: false
+    t.text     "description", default: "", null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.index ["name"], name: "index_permissible_permissions_on_name", unique: true
   end
 
   create_table "permissions", force: :cascade do |t|

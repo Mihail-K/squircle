@@ -20,10 +20,10 @@ class BanSerializer < ActiveModel::Serializer
   belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted_bans?
 
   def can_view_ban_creator?
-    current_user.try(:can?, :view_ban_creator)
+    current_user.try(:allowed_to?, :view_ban_creator)
   end
 
   def can_view_deleted_bans?
-    current_user.try(:can?, :view_deleted_bans)
+    current_user.try(:allowed_to?, :view_deleted_bans)
   end
 end

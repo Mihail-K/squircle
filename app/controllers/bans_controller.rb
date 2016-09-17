@@ -55,14 +55,14 @@ private
   end
 
   def can_view_bans?
-    current_user.try(:can?, :view_bans)
+    current_user.try(:allowed_to?, :view_bans)
   end
 
   def can_view_ban_creator?
-    current_user.try(:can?, :view_ban_creator)
+    current_user.try(:allowed_to?, :view_ban_creator)
   end
 
   def can_view_ban_creator?
-    current_user.try(:can?, :view_ban_creator)
+    current_user.try(:allowed_to?, :view_ban_creator)
   end
 end

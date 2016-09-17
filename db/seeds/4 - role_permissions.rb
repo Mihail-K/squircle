@@ -51,7 +51,7 @@
 }.each do |role, permissions|
   role = Role.find_by!(name: role)
   permissions.each do |name, value|
-    permission = Permission.find_by!(name: name)
+    permission = Permissible::Permission.find_by!(name: name)
     role.role_permissions.find_or_create_by!(permission: permission) do |role_permission|
       role_permission.value = value
     end

@@ -33,9 +33,12 @@
 #
 
 class User < ApplicationRecord
+  include Permissible::Model
+
   has_and_belongs_to_many :roles
   has_many :role_permissions, through: :roles
-  has_many :permissions, -> { distinct }, through: :role_permissions
+
+  inherits_permissions_from :roles
 
   has_many :bans, -> { active }, inverse_of: :user
   has_many :previous_bans, -> { inactive }, class_name: 'Ban'
@@ -117,16 +120,6 @@ class User < ApplicationRecord
     roles.exists?(name: 'banned')
   end
 
-  def can?(permission)
-    if permission_cache.key?(permission)
-      Rails.logger.debug "[User #{id}] Permission cache hit: #{permission}".green
-      permission_cache[permission]
-    else
-      Rails.logger.debug "[User #{id}] Permission cache miss: #{permission}".red
-      permission_cache[permission] = permission_allowed?(permission)
-    end
-  end
-
 private
 
   def set_last_active_at_timestamp
@@ -139,14 +132,5 @@ private
 
   def assign_default_user_roles
     roles << Role.find_by!(name: 'user') unless roles.any? { |role| role.name == 'user' }
-  end
-
-  def permission_cache
-    @permission_cache ||= ActiveSupport::HashWithIndifferentAccess.new
-  end
-
-  def permission_allowed?(permission)
-    values = role_permissions.permission(permission).pluck(:value)
-    values.present? && values.all? { |value| value == 'allow' }
   end
 end

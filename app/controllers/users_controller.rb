@@ -57,6 +57,6 @@ private
   end
 
   def can_view_deleted_users?
-    current_user.try(:can?, :view_deleted_users)
+    current_user.try(:allowed_to?, :view_deleted_users)
   end
 end

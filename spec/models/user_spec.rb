@@ -109,26 +109,28 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe '.can?' do
+  describe '.allowed_to?' do
     let :user do
       create :user
     end
 
     let :permission do
-      user.permissions.first
+      user.roles.first.permissions.first
     end
 
     it 'is true if the user has permission' do
-      expect(user.can?(permission.name)).to be true
+      expect(user).to be_allowed_to permission.name
     end
 
     it 'is false if the user does not have permission' do
-      expect(user.can?(create(:permission).name)).to be false
+      expect(user).not_to be_allowed_to create(:permission).name
     end
 
     it 'is true if the permission is implied' do
-      child_permission = create(:permission, implied_by: permission)
-      expect(user.can?(child_permission.name)).to be true
+      child_permission = create(:permission)
+      permission.implied_permissions << child_permission
+
+      expect(user).to be_allowed_to child_permission.name
     end
   end
 end
