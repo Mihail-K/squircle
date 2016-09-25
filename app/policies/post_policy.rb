@@ -2,11 +2,11 @@ class PostPolicy < Political::Policy
   alias_method :post, :record
 
   def index?
-    true
+    current_user.nil? || current_user.allowed_to?(:view_posts)
   end
 
   def show?
-    scope.apply.exists?(id: post.id)
+    index? && scope.apply.exists?(id: post.id)
   end
 
   def create?
@@ -35,7 +35,7 @@ class PostPolicy < Political::Policy
 
   class Scope < Political::Policy::Scope
     def apply
-      if current_user.try(:admin?)
+      if current_user.try(:allowed_to?, :view_deleted_posts)
         scope.all
       else
         scope.visible

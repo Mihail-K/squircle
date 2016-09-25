@@ -29,6 +29,7 @@
 
 class Post < ApplicationRecord
   include Formattable
+  include Rummage::Searchable
 
   belongs_to :author, class_name: 'User', counter_cache: :posts_count, inverse_of: :posts
   belongs_to :editor, class_name: 'User'
@@ -92,8 +93,8 @@ class Post < ApplicationRecord
   }
 
   def editable_by?(user)
-    return true if user.try(:admin?)
-    author_id == user.try(:id) && !user.try(:banned?)
+    return true if user.try(:allowed_to?, :update_posts)
+    author_id == user.try(:id) && user.try(:allowed_to?, :update_owned_posts)
   end
 
 private

@@ -15,6 +15,12 @@ GIT
       activerecord (>= 4.2.0)
 
 PATH
+  remote: ../Projects/rummage
+  specs:
+    rummage (0.1.0)
+      activerecord (>= 4.2)
+
+PATH
   remote: ../permissible
   specs:
     permissible (0.1.0)
@@ -286,6 +292,7 @@ DEPENDENCIES
   resque_spec
   rspec
   rspec-rails
+  rummage!
   sass-rails (~> 5.0)
   simplecov
   spring

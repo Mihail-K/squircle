@@ -48,7 +48,7 @@ private
     @posts = @posts.where(character: params[:character_id]) if params.key?(:character_id)
     @posts = @posts.where(conversation: params[:conversation_id]) if params.key?(:conversation_id)
     @posts = @posts.order(created_at: :asc)
-    @posts = @posts.includes(:deleted_by) if admin?
+    @posts = @posts.includes(:deleted_by) if can_view_deleted_posts?
   end
 
   def apply_pagination
@@ -57,5 +57,9 @@ private
 
   def set_post
     @post = @posts.find params[:id]
+  end
+
+  def can_view_deleted_posts?
+    current_user.try(:allowed_to?, :view_deleted_posts)
   end
 end

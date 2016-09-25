@@ -9,10 +9,7 @@ class ConversationSerializer < ActiveModel::Serializer
 
   attribute :title
   attribute :views_count
-  attribute :posts_count do
-    # Unless the viewer is an admin, show only visible post count.
-    current_user.try(:admin?) ? object.posts_count : object.visible_posts_count
-  end
+  attribute :posts_count
   attribute :created_at
   attribute :updated_at
   attribute :last_active_at
@@ -32,11 +29,11 @@ class ConversationSerializer < ActiveModel::Serializer
 
   def can_view_locking_user?
     object.locked_by_id == current_user.try(:id) ||
-    current_user.try(:admin?)
+    current_user.try(:allowed_to?, :lock_conversations)
   end
 
   def can_view_deleted?
-    current_user.try(:admin?)
+    current_user.try(:allowed_to?, :view_deleted_conversations)
   end
 
   def include_participation?

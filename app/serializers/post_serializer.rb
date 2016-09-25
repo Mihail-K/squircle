@@ -12,7 +12,7 @@ class PostSerializer < ActiveModel::Serializer
   attribute :body
   attribute :formatted_body
   attribute :editable do
-    object.editable_by? current_user
+    object.editable_by?(current_user)
   end
   attribute :deleted
   attribute :created_at
@@ -25,6 +25,6 @@ class PostSerializer < ActiveModel::Serializer
   belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted?
 
   def can_view_deleted?
-    current_user.try(:admin?)
+    current_user.try(:allowed_to?, :view_deleted_posts)
   end
 end

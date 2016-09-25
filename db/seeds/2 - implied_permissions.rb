@@ -9,6 +9,13 @@
   update_characters:       :update_owned_characters,
   delete_characters:       :delete_owned_characters,
 
+  # - Conversations - #
+  view_deleted_conversations: :view_conversations,
+
+  # - Posts - #
+  view_deleted_posts: :view_posts,
+  update_posts:       :update_owned_posts,
+
   # - Users - #
   view_deleted_users: :view_users,
   update_users:       :update_self,

@@ -87,6 +87,52 @@ Permissible::Permission.find_or_create_by! name: :delete_owned_characters do |pe
   TEXT
 end
 
+# - Conversation Permissions - #
+
+Permissible::Permission.find_or_create_by! name: :view_deleted_conversations do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to view deleted conversations.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :view_conversations do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to view other users' conversations.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :lock_conversations do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to lock and unlock conversations.
+  TEXT
+end
+
+# - Post Permissions - #
+
+Permissible::Permission.find_or_create_by! name: :view_deleted_posts do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to view deleted posts.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :view_posts do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to view other users' posts.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :update_owned_posts do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to edit their own posts.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :update_posts do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to edit other users' posts.
+  TEXT
+end
+
 # - User Permissions - #
 
 Permissible::Permission.find_or_create_by! name: :view_deleted_users do |permission|

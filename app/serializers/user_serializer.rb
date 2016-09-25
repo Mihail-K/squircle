@@ -17,10 +17,7 @@ class UserSerializer < ActiveModel::Serializer
 
   attribute :characters_count
   attribute :created_characters_count
-  attribute :posts_count do
-    # Unless the viewer is an admin, show only visible post count.
-    current_user.try(:admin?) ? object.posts_count : object.visible_posts_count
-  end
+  attribute :posts_count
 
   attribute :banned
   attribute :deleted

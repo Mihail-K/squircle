@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+gem 'rummage', path: '../Projects/rummage'
+
 gem 'active_model_serializers', '~> 0.10.0'
 gem 'active_record_union'
 gem 'awesome_print'

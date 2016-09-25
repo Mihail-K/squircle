@@ -43,7 +43,7 @@ private
     @bans = policy_scope(Ban).includes(:user)
     @bans = @bans.where(user: params[:user_id]) if can_view_bans? && params.key?(:user_id)
     @bans = @bans.includes(:creator) if can_view_ban_creator?
-    @bans = @bans.includes(:deleted_by) if can_view_ban_creator?
+    @bans = @bans.includes(:deleted_by) if can_view_deleted_bans?
   end
 
   def set_ban
@@ -62,7 +62,7 @@ private
     current_user.try(:allowed_to?, :view_ban_creator)
   end
 
-  def can_view_ban_creator?
-    current_user.try(:allowed_to?, :view_ban_creator)
+  def can_view_deleted_bans?
+    current_user.try(:allowed_to?, :view_deleted_bans)
   end
 end

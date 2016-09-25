@@ -59,7 +59,7 @@ private
     @conversations = @conversations.where(section: params[:section_id]) if params.key?(:section_id)
     @conversations = @conversations.order(last_active_at: :desc)
     @conversations = @conversations.recently_active if params.key?(:recently_active)
-    @conversations = @conversations.includes(:deleted_by) if admin?
+    @conversations = @conversations.includes(:deleted_by) if can_view_deleted_conversations?
   end
 
   def apply_pagination
@@ -97,5 +97,9 @@ private
 
   def increment_views_count
     @conversation.increment!(:views_count)
+  end
+
+  def can_view_deleted_conversations?
+    current_user.try(:allowed_to?, :view_deleted_conversations)
   end
 end
