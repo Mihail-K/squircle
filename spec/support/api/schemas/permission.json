@@ -1,0 +1,41 @@
+{
+  "definitions": {
+    "permission": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "permission": {
+      "$ref": "#/definitions/permission"
+    }
+  },
+  "required": [
+    "permission"
+  ],
+  "additionalProperties": false
+}

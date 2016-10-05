@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     resources :posts, only: %i(index create)
   end
 
+  resources :permissions, only: %i(index show)
   resources :posts
 
   resources :reports

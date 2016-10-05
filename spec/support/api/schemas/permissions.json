@@ -1,0 +1,24 @@
+{
+  "definitions": {
+    "permissions": {
+      "type": "array",
+      "items": {
+        "$ref": "permission.json#/definitions/permission"
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "permissions": {
+      "$ref": "#/definitions/permissions"
+    },
+    "meta": {
+      "$ref": "partials/meta.json#/definitions/meta"
+    }
+  },
+  "required": [
+    "permissions",
+    "meta"
+  ],
+  "additionalProperties": false
+}
