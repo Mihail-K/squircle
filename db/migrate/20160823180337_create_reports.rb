@@ -4,7 +4,7 @@ class CreateReports < ActiveRecord::Migration[5.0]
       t.references :reportable, index: true, polymorphic: true, null: false
       t.string     :status, null: false, index: true, default: 'open'
       t.text       :description
-      t.references :creator, foreign_key: true, references: :users, null: false
+      t.references :creator, foreign_key: { to_table: :users }, null: false
       t.boolean    :deleted, null: false, default: false, index: true
       t.timestamps null: false
     end
