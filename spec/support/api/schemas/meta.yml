@@ -1,4 +1,7 @@
 ---
+$schema: http://json-schema.org/draft-04/schema#
+title: Meta
+description: The generalized pagination dictionary.
 definitions:
   meta:
     type: object
