@@ -7,6 +7,6 @@ class CreatePosts < ActiveRecord::Migration[5.0]
       t.references :editor,    foreign_key: true, index: true, references: :users
       t.references :character, foreign_key: true, index: true, references: :characters
       t.timestamps  null: false
-    end
+    end 
   end
 end
