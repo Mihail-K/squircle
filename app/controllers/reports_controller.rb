@@ -1,4 +1,4 @@
-class ReportsController < ApiController
+class ReportsController < ApplicationController
   before_action :doorkeeper_authorize!
 
   before_action :set_reports, except: :create

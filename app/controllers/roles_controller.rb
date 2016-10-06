@@ -1,4 +1,4 @@
-class RolesController < ApiController
+class RolesController < ApplicationController
   before_action :doorkeeper_authorize!
 
   before_action :set_roles, except: :create
