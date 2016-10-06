@@ -1,4 +1,4 @@
-class UsersController < ApiController
+class UsersController < ApplicationController
   before_action :doorkeeper_authorize!, except: %i(index show create)
 
   before_action :set_users, except: %i(me create)

@@ -1,4 +1,4 @@
-class SectionsController < ApiController
+class SectionsController < ApplicationController
   before_action :doorkeeper_authorize!, except: %i(index show)
 
   before_action :set_sections, except: :create

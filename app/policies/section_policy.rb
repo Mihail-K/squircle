@@ -1,4 +1,4 @@
-class SectionPolicy < Political::Policy
+class SectionPolicy < ApplicationPolicy
   alias_method :section, :record
 
   def index?
@@ -6,7 +6,7 @@ class SectionPolicy < Political::Policy
   end
 
   def show?
-    scope.apply.exists?(id: section)
+    scope.exists?(id: section)
   end
 
   def create?
@@ -21,14 +21,12 @@ class SectionPolicy < Political::Policy
     current_user.try(:admin?)
   end
 
-  class Parameters < Political::Parameters
-    def permitted
-      %i(title description deleted)
-    end
+  def permitted_attributes
+    %i(title description deleted)
   end
 
-  class Scope < Political::Scope
-    def apply
+  class Scope < ApplicationPolicy::Scope
+    def resolve
       if current_user.try(:admin?)
         scope.all
       else
