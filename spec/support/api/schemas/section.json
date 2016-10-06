@@ -2,28 +2,101 @@
   "definitions": {
     "section": {
       "type": "object",
-      "allOf": [
-        {
-          "$ref": "partials/section.json#/definitions/section"
+      "properties": {
+        "id": {
+          "type": "integer"
         },
-        {
-          "properties": {
-            "creator": {
-              "$ref": "partials/user.json#/definitions/user"
+        "creator_id": {
+          "type": "integer"
+        },
+        "deleted_by_id": {
+          "oneOf": [
+            {
+              "type": "null"
             },
-            "deleted_by": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "partials/user.json#/definitions/user"
-                }
-              ]
+            {
+              "type": "integer"
             }
-          }
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "logo_url": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "posts_count": {
+          "type": "integer"
+        },
+        "visible_posts_count": {
+          "type": "integer"
+        },
+        "conversations_count": {
+          "type": "integer"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
+        },
+        "creator": {
+          "$ref": "user.json#/definitions/user"
+        },
+        "deleted_by": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "user.json#/definitions/user"
+            }
+          ]
         }
-      ]
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "visible_posts_count",
+        "deleted",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
     }
   },
   "type": "object",
@@ -34,5 +107,6 @@
   },
   "required": [
     "section"
-  ]
+  ],
+  "additionalProperties": false
 }

@@ -13,11 +13,12 @@
       "$ref": "#/definitions/sections"
     },
     "meta": {
-      "$ref": "partials/meta.json#/definitions/meta"
+      "$ref": "meta.json#/definitions/meta"
     }
   },
   "required": [
     "sections",
     "meta"
-  ]
+  ],
+  "additionalProperties": false
 }

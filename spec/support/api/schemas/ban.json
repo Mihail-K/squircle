@@ -3,35 +3,96 @@
     "ban": {
       "type": "object",
       "properties": {
-        "allOf": [
-          {
-            "$ref": "partials/ban.json#/definitions/ban"
-          },
-          {
-            "properties": {
-              "user": {
-                "$ref": "partials/user.json#/definitions/user"
-              },
-              "creator": {
-                "$ref": "partials/user.json#/definitions/user"
-              },
-              "deleted_by": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "partials/user.json#/definitions/user"
-                  }
-                ]
-              }
+        "id": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "integer"
+        },
+        "creator_id": {
+          "type": "integer"
+        },
+        "deleted_by_id": {
+          "oneOf": [
+            {
+              "type": "null"
             },
-            "required": [
-              "user"
-            ]
-          }
-        ]
-      }
+            {
+              "type": "integer"
+            }
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "expires_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
+        },
+        "permanent": {
+          "type": "boolean"
+        },
+        "expired": {
+          "type": "boolean"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
+        },
+        "user": {
+          "$ref": "user.json#/definitions/user"
+        },
+        "creator": {
+          "$ref": "user.json#/definitions/user"
+        },
+        "deleted_by": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "user.json#/definitions/user"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "user_id",
+        "reason",
+        "expires_at",
+        "permanent",
+        "expired",
+        "deleted",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
     }
   },
   "type": "object",
@@ -42,5 +103,6 @@
   },
   "required": [
     "ban"
-  ]
+  ],
+  "additionalProperties": false
 }

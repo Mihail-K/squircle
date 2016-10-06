@@ -4,9 +4,9 @@ properties:
   users:
     type: array
     items:
-      $ref: partials/user.json#/definitions/user
+      $ref: user.json#/definitions/user
   meta:
-    $ref: partials/meta.json#/definitions/meta
+    $ref: meta.json#/definitions/meta
 required:
 - users
 - meta

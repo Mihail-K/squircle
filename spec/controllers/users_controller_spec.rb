@@ -14,7 +14,7 @@ RSpec.describe UsersController, type: :controller do
       get :me, format: :json, params: { access_token: token.token }
 
       expect(response).to have_http_status :ok
-      expect(response).to match_response_schema 'user-full'
+      expect(response).to match_response_schema :user
 
       expect(json[:user][:id]).to eq active_user.id
     end
@@ -29,7 +29,7 @@ RSpec.describe UsersController, type: :controller do
       get :index, format: :json
 
       expect(response).to have_http_status :ok
-      expect(response).to match_response_schema 'users'
+      expect(response).to match_response_schema :users
     end
 
     it 'returns only visible users' do
@@ -85,15 +85,14 @@ RSpec.describe UsersController, type: :controller do
       get :show, format: :json, params: { id: user.id }
 
       expect(response).to have_http_status :ok
-      expect(response).to match_response_schema 'user'
-      expect(response).not_to match_response_schema 'user-full'
+      expect(response).to match_response_schema :user
     end
 
     it 'returns private fields when returning the authenticated user' do
       get :show, format: :json, params: { id: active_user.id }.merge(session)
 
       expect(response).to have_http_status :ok
-      expect(response).to match_response_schema 'user-full'
+      expect(response).to match_response_schema :user
     end
 
     it 'returns private fields for all users when called by an admin' do
@@ -102,7 +101,6 @@ RSpec.describe UsersController, type: :controller do
       get :show, format: :json, params: { id: user.id }.merge(session)
 
       expect(response).to have_http_status :ok
-      expect(response).to match_response_schema 'user-full'
     end
 
     it 'returns 404 when the user is not found' do
@@ -119,7 +117,7 @@ RSpec.describe UsersController, type: :controller do
       end.to change { User.count }.by(1)
 
       expect(response).to have_http_status :created
-      expect(response).to match_response_schema 'user'
+      expect(response).to match_response_schema :user
     end
 
     it %q(doesn't allow authenticated users to create new users) do
@@ -138,7 +136,7 @@ RSpec.describe UsersController, type: :controller do
       end.to change { User.count }.by(1)
 
       expect(response).to have_http_status :created
-      expect(response).to match_response_schema 'user-full'
+      expect(response).to match_response_schema :user
     end
 
     it 'returns errors when the user is invalid' do
@@ -147,7 +145,7 @@ RSpec.describe UsersController, type: :controller do
       end.not_to change { User.count }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(response).to match_response_schema 'errors'
+      expect(response).to match_response_schema :errors
 
       expect(json[:errors]).to have_key :email
     end
@@ -176,7 +174,7 @@ RSpec.describe UsersController, type: :controller do
       end.to change { active_user.reload.email }
 
       expect(response).to have_http_status :ok
-      expect(response).to match_response_schema 'user-full'
+      expect(response).to match_response_schema :user
     end
 
     it %q(does not allow users to update other users' attributes) do
@@ -195,7 +193,7 @@ RSpec.describe UsersController, type: :controller do
       end.not_to change { active_user.reload.email }
 
       expect(response).to have_http_status :unprocessable_entity
-      expect(response).to match_response_schema 'errors'
+      expect(response).to match_response_schema :errors
 
       expect(json[:errors]).to have_key :email
     end

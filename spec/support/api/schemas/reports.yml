@@ -9,7 +9,7 @@ properties:
   reports:
     $ref: '#/definitions/reports'
   meta:
-    $ref: 'partials/meta.json#/definitions/meta'
+    $ref: meta.json#/definitions/meta
 required:
 - reports
 - meta

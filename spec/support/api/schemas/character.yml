@@ -1,22 +1,69 @@
 ---
 definitions:
   character:
-    allOf:
-    - $ref: partials/character.json#/definitions/character
-    - properties:
-        user:
-          oneOf:
-          - type: 'null'
-          - $ref: partials/user.json#/definitions/user
-        creator:
-          $ref: partials/user.json#/definitions/user
-        deleted_by:
-          oneOf:
-          - type: 'null'
-          - $ref: partials/user.json#/definitions/user
-      required:
-      - user
-      - creator
+    type: object
+    properties:
+      id:
+        type: integer
+      user_id:
+        type: integer
+      creator_id:
+        type: integer
+      name:
+        type: string
+      title:
+        oneOf:
+        - type: 'null'
+        - type: string
+      description:
+        oneOf:
+        - type: 'null'
+        - type: string
+      posts_count:
+        type: integer
+      deleted:
+        type: boolean
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      avatar_url:
+        oneOf:
+        - type: 'null'
+        - type: string
+      gallery_image_urls:
+        type: array
+        items:
+          type: string
+      deleted_at:
+        oneOf:
+        - type: 'null'
+        - type: string
+          format: date-time
+      user:
+        oneOf:
+        - type: 'null'
+        - $ref: user.json#/definitions/user
+      creator:
+        $ref: user.json#/definitions/user
+      deleted_by:
+        oneOf:
+        - type: 'null'
+        - $ref: user.json#/definitions/user
+    required:
+    - id
+    - user_id
+    - creator_id
+    - name
+    - title
+    - description
+    - posts_count
+    - deleted
+    - created_at
+    - updated_at
+    additionalProperties: false
 type: object
 properties:
   character:

@@ -1,27 +1,15 @@
 ---
 definitions:
-  conversation:
-    type: object
-    allOf:
-    - $ref: conversation.json#/definitions/conversation
-    - properties:
-        participated:
-          type: boolean
-        first_post:
-          $ref: partials/post.json#/definitions/post
-        last_post:
-          $ref: partials/post.json#/definitions/post
-      required:
-      - first_post
-      - last_post
-type: object
-properties:
   conversations:
     type: array
     items:
-      $ref: "#/definitions/conversation"
+      $ref: conversation.json#/definitions/conversation
+type: object
+properties:
+  conversations:
+    $ref: '#/definitions/conversations'
   meta:
-    $ref: partials/meta.json#/definitions/meta
+    $ref: meta.json#/definitions/meta
 required:
 - conversations
 - meta

@@ -11,7 +11,7 @@ properties:
   roles:
     $ref: '#/definitions/roles'
   meta:
-    $ref: partials/meta.json#/definitions/meta
+    $ref: meta.json#/definitions/meta
 required:
 - roles
 - meta

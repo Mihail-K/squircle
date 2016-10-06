@@ -9,7 +9,7 @@ properties:
   characters:
     $ref: '#/definitions/characters'
   meta:
-    $ref: partials/meta.json#/definitions/meta
+    $ref: meta.json#/definitions/meta
 required:
 - characters
 - meta

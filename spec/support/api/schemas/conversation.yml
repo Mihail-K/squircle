@@ -2,27 +2,87 @@
 definitions:
   conversation:
     type: object
-    allOf:
-    - $ref: partials/conversation.json#/definitions/conversation
-    - properties:
-        author:
-          $ref: partials/user.json#/definitions/user
-        section:
-          $ref: partials/section.json#/definitions/section
-        locked_by:
-          oneOf:
-          - type: 'null'
-          - $ref: partials/user.json#/definitions/user
-        deleted_by:
-          oneOf:
-          - type: 'null'
-          - $ref: partials/user.json#/definitions/user
-      required:
-      - author
-      - section
+    properties:
+      id:
+        type: integer
+      author_id:
+        type: integer
+      section_id:
+        type: integer
+      locked_by_id:
+        oneOf:
+        - type: 'null'
+        - type: integer
+      deleted_by_id:
+        oneOf:
+        - type: 'null'
+        - type: integer
+      title:
+        type: string
+      views_count:
+        type: integer
+      posts_count:
+        type: integer
+      locked:
+        type: boolean
+      deleted:
+        type: boolean
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      deleted_at:
+        oneOf:
+        - type: 'null'
+        - type: string
+          format: date-time
+      last_active_at:
+        oneOf:
+        - type: 'null'
+        - type: string
+          format: date-time
+      locked_on:
+        oneOf:
+        - type: 'null'
+        - type: string
+          format: date-time
+      author:
+        $ref: user.json#/definitions/user
+      section:
+        $ref: section.json#/definitions/section
+      locked_by:
+        oneOf:
+        - type: 'null'
+        - $ref: user.json#/definitions/user
+      deleted_by:
+        oneOf:
+        - type: 'null'
+        - $ref: user.json#/definitions/user
+      first_post:
+        $ref: post.json#/definitions/post
+      last_post:
+        $ref: post.json#/definitions/post
+    required:
+    - id
+    - author_id
+    - section_id
+    - title
+    - views_count
+    - posts_count
+    - locked
+    - deleted
+    - created_at
+    - updated_at
+    - last_active_at
+    - locked
+    - locked_on
+    additionalProperties: false
 type: object
 properties:
   conversation:
     $ref: "#/definitions/conversation"
 required:
 - conversation
+additionalProperties: false
