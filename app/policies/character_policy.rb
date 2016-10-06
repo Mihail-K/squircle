@@ -1,42 +1,40 @@
-class CharacterPolicy < Political::Policy
+class CharacterPolicy < ApplicationPolicy
   alias_method :character, :record
 
   def index?
-    current_user.nil? || current_user.allowed_to?(:view_characters)
+    guest? || allowed_to?(:view_characters)
   end
 
   def show?
-    index? && scope.apply.exists?(id: character.id)
+    index? && scope.exists?(id: character.id)
   end
 
   def create?
-    index? && current_user.try(:allowed_to?, :create_characters)
+    index? && allowed_to?(:create_characters)
   end
 
   def update?
     return false unless show?
-    return true if current_user.allowed_to?(:update_characters)
-    character.user_id == current_user.id && current_user.allowed_to?(:update_owned_characters)
+    return true if allowed_to?(:update_characters)
+    character.user_id == current_user.id && allowed_to?(:update_owned_characters)
   end
 
   def destroy?
     return false unless show?
-    return true if current_user.allowed_to?(:delete_characters)
-    character.user_id == current_user.id && current_user.allowed_to?(:delete_owned_characters)
+    return true if allowed_to?(:delete_characters)
+    character.user_id == current_user.id && allowed_to?(:delete_owned_characters)
   end
 
-  class Parameters < Political::Parameters
-    def permitted
-      permitted  = %i(name title description avatar)
-      permitted << :user_id if current_user.try(:allowed_to?, :update_characters)
-      permitted
-    end
+  def permitted_attributes
+    attributes  = %i(name title description avatar)
+    attributes << :user_id if allowed_to?(:update_characters)
+    attributes
   end
 
-  class Scope < Political::Scope
-    def apply
+  class Scope < ApplicationPolicy::Scope
+    def resolve
       scope.chain do |scope|
-        scope.visible unless current_user.try(:allowed_to?, :view_deleted_characters)
+        scope.visible unless allowed_to?(:view_deleted_characters)
       end
     end
   end

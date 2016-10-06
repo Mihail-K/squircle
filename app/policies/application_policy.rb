@@ -54,6 +54,10 @@ class ApplicationPolicy
       current_user.present?
     end
 
+    def guest?
+      current_user.nil?
+    end
+
     def allowed_to?(permission)
       authenticated? && current_user.allowed_to?(permission)
     end
@@ -67,6 +71,10 @@ protected
 
   def authenticated?
     current_user.present?
+  end
+
+  def guest?
+    current_user.nil?
   end
 
   def allowed_to?(permission)
