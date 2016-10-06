@@ -122,6 +122,7 @@ GEM
       pkg-config (~> 1.1.7)
     pg (0.18.4)
     pkg-config (1.1.7)
+    puma (3.6.0)
     pundit (1.1.0)
       activesupport (>= 3.0.0)
     rack (2.0.1)
@@ -273,6 +274,7 @@ DEPENDENCIES
   mini_magick
   permissible!
   pg
+  puma
   pundit
   rack-cors
   rails
