@@ -8,7 +8,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
   if Rails.env.development? || Rails.env.test?
     storage :file
   else
-    storage :fog
+    storage :file # :fog FIXME
   end
 
   # Override the directory where uploaded files will be stored.
