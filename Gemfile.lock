@@ -8,23 +8,18 @@ GIT
       mime-types (>= 1.16)
 
 GIT
+  remote: git://github.com/mihail-k/permissible.git
+  revision: eb37eed44e40e2054f71d6a471f4441100c67c40
+  specs:
+    permissible (0.1.0)
+      railties (>= 4.2)
+
+GIT
   remote: https://platterz-machine:ff18548fdf87319819121b42ef17bff34ba98346@github.com/platterz/political
   revision: 146cbbb30bad5e5efd4e04c34d1735a5ef80885c
   specs:
     political (0.1.0)
       activerecord (>= 4.2.0)
-
-PATH
-  remote: ../Projects/rummage
-  specs:
-    rummage (0.1.0)
-      activerecord (>= 4.2)
-
-PATH
-  remote: ../permissible
-  specs:
-    permissible (0.1.0)
-      railties (>= 4.2)
 
 GEM
   remote: https://rubygems.org/
@@ -132,6 +127,7 @@ GEM
     nokogiri (1.6.8)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
+    pg (0.18.4)
     pkg-config (1.1.7)
     rack (2.0.1)
     rack-cors (0.4.0)
@@ -281,6 +277,7 @@ DEPENDENCIES
   kaminari
   mini_magick
   permissible!
+  pg
   political!
   rack-cors
   rails
@@ -292,7 +289,6 @@ DEPENDENCIES
   resque_spec
   rspec
   rspec-rails
-  rummage!
   sass-rails (~> 5.0)
   simplecov
   spring

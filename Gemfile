@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'rummage', path: '../Projects/rummage'
-
 gem 'active_model_serializers', '~> 0.10.0'
 gem 'active_record_union'
 gem 'awesome_print'
@@ -11,7 +9,7 @@ gem 'carrierwave_backgrounder'
 gem 'doorkeeper'
 gem 'kaminari'
 gem 'mini_magick'
-gem 'permissible', path: '../permissible'
+gem 'permissible', github: 'mihail-k/permissible'
 gem 'political', git: 'https://platterz-machine:ff18548fdf87319819121b42ef17bff34ba98346@github.com/platterz/political'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails'
@@ -21,17 +19,7 @@ gem 'redis-rails'
 gem 'resque'
 gem 'resque-scheduler'
 gem 'sass-rails', '~> 5.0'
-gem 'sqlite3'
 gem 'validates_timeliness'
-
-group :development, :test do
-  gem 'byebug'
-  gem 'dotenv-rails'
-  gem 'factory_girl_rails'
-  gem 'faker'
-  gem 'rspec'
-  gem 'rspec-rails'
-end
 
 group :development do
   gem 'annotate'
@@ -43,4 +31,18 @@ group :test do
   gem 'json-schema'
   gem 'resque_spec'
   gem 'simplecov', require: false
+end
+
+group :development, :test do
+  gem 'byebug'
+  gem 'dotenv-rails'
+  gem 'factory_girl_rails'
+  gem 'faker'
+  gem 'rspec'
+  gem 'rspec-rails'
+  gem 'sqlite3'
+end
+
+group :production do
+  gem 'pg'
 end

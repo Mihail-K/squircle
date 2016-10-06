@@ -29,7 +29,6 @@
 
 class Post < ApplicationRecord
   include Formattable
-  include Rummage::Searchable
 
   belongs_to :author, class_name: 'User', counter_cache: :posts_count, inverse_of: :posts
   belongs_to :editor, class_name: 'User'

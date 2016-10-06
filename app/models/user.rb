@@ -34,7 +34,6 @@
 
 class User < ApplicationRecord
   include Permissible::Model
-  include Rummage::Searchable
 
   has_and_belongs_to_many :roles
   has_many :role_permissions, through: :roles
