@@ -6,7 +6,7 @@ class CreateSections < ActiveRecord::Migration[5.0]
       t.string     :logo
       t.integer    :conversations_count, null: false, default: 0
       t.boolean    :deleted, null: false, default: false
-      t.references :creator, foreign_key: true, index: true, references: :users, null: false
+      t.references :creator, foreign_key: { to_table: :users }, index: true, references: :users, null: false
       t.timestamps null: false
     end
   end
