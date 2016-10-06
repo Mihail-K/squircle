@@ -20,7 +20,7 @@ class CreatePermissibleTables < ActiveRecord::Migration
 
     create_table :permissible_implied_permissions do |t|
       t.references :permission, null: false, index: true, foreign_key: true
-      t.references :implied_by, null: false, index: true, foreign_key: true, references: :permissible_permissions
+      t.references :implied_by, null: false, index: true, foreign_key: { to_table: :permissible_permissions }, references: :permissible_permissions
       t.index      [:permission_id, :implied_by_id], unique: true, name: <<-NAME.squish
         permissible_index_on_permission_and_implied_by
       NAME
