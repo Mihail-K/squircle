@@ -1,4 +1,4 @@
-class PermissionsController < ApiController
+class PermissionsController < ApplicationController
   before_action :doorkeeper_authorize!
 
   before_action :set_permissions
