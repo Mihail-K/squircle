@@ -1,4 +1,4 @@
-class ConversationsController < ApiController
+class ConversationsController < ApplicationController
   include FloodLimitable
 
   before_action :doorkeeper_authorize!, except: %i(index show)

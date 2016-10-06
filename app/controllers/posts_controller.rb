@@ -1,7 +1,9 @@
-class PostsController < ApiController
+class PostsController < ApplicationController
   include FloodLimitable
 
   before_action :doorkeeper_authorize!, except: %i(index show)
+
+  before_action :set_conversation, only: :create
 
   before_action :set_posts, except: :create
   before_action :set_post, except: %i(index create)
@@ -41,6 +43,11 @@ class PostsController < ApiController
   end
 
 private
+
+  def set_conversation
+    @conversation = policy_scope(Conversation).find(params[:conversation_id] || post_params[:conversation_id])
+    forbid if @conversation.locked? unless admin?
+  end
 
   def set_posts
     @posts = policy_scope(Post).includes(:author, :editor, :character, :conversation)

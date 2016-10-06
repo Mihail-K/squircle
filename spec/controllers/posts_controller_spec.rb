@@ -136,9 +136,9 @@ RSpec.describe PostsController, type: :controller do
         post :create, format: :json, params: {
           post: attributes_for(:post, conversation_id: conversation.id)
         }.merge(session)
-      end.not_to change { Post.count }
 
-      expect(response).to have_http_status :forbidden
+        expect(response).to have_http_status :not_found
+      end.not_to change { Post.count }
     end
 
     it 'does not allow posting in locked conversations' do
@@ -148,9 +148,9 @@ RSpec.describe PostsController, type: :controller do
         post :create, format: :json, params: {
           post: attributes_for(:post, conversation_id: conversation.id)
         }.merge(session)
-      end.not_to change { Post.count }
 
-      expect(response).to have_http_status :forbidden
+        expect(response).to have_http_status :forbidden
+      end.not_to change { Post.count }
     end
 
     it_behaves_like 'flood_limitable' do

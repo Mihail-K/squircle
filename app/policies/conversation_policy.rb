@@ -1,4 +1,4 @@
-class ConversationPolicy < Political::Policy
+class ConversationPolicy < ApplicationPolicy
   alias_method :conversation, :record
 
   def index?
@@ -6,35 +6,37 @@ class ConversationPolicy < Political::Policy
   end
 
   def show?
-    scope.apply.exists?(id: conversation.id)
+    scope.exists?(id: conversation.id)
   end
 
   def create?
     return true if current_user.try(:admin?)
-    current_user.present? && !current_user.banned?
+    authenticated? && !current_user.banned?
   end
 
   def update?
     return true if current_user.try(:admin?)
-    current_user.present? && author? && !current_user.banned? && !locked?
+    authenticated? && author? && !current_user.banned? && !locked?
   end
 
   def destroy?
     current_user.try(:admin?)
   end
 
-  class Parameters < Political::Parameters
-    def permitted
-      permitted  = [ ]
-      permitted << :section_id if action?('create') || current_user.try(:admin?)
-      permitted << { posts_attributes: %i(character_id title body) } if action?('create')
-      permitted += %i(deleted locked) if current_user.try(:admin?)
-      permitted
-    end
+  def permitted_attributes_for_create
+    attributes  = [:section_id, posts_attributes: %i(character_id title body)]
+    attributes += %i(deleted locked) if current_user.try(:admin?)
+    attributes
   end
 
-  class Scope < Political::Scope
-    def apply
+  def permitted_attributes_for_update
+    attributes  = [ ]
+    attributes += %i(section_id deleted locked) if current_user.try(:admin?)
+    attributes
+  end
+
+  class Scope < ApplicationPolicy::Scope
+    def resolve
       if current_user.try(:admin?)
         scope.all
       else

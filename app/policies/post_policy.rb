@@ -1,17 +1,17 @@
-class PostPolicy < Political::Policy
+class PostPolicy < ApplicationPolicy
   alias_method :post, :record
 
   def index?
-    current_user.nil? || current_user.allowed_to?(:view_posts)
+    guest? || allowed_to?(:view_posts)
   end
 
   def show?
-    index? && scope.apply.exists?(id: post.id)
+    index? && scope.exists?(id: post.id)
   end
 
   def create?
     return true if current_user.try(:admin?)
-    authenticated? && !current_user.banned? && conversation_active?
+    authenticated? && !current_user.banned?
   end
 
   def update?
@@ -24,17 +24,20 @@ class PostPolicy < Political::Policy
     authenticated? && !current_user.banned? && current_user_is_author? && conversation_active?
   end
 
-  class Parameters < Political::Policy::Parameters
-    def permitted
-      permitted  = %i(character_id title body)
-      permitted += %i(conversation_id)   if action?('create')
-      permitted += %i(deleted editor_id) if current_user.try(:admin?)
-      permitted
-    end
+  def permitted_attributes_for_create
+    attributes  = %i(conversation_id character_id title body)
+    attributes += %i(deleted editor_id) if current_user.try(:admin?)
+    attributes
   end
 
-  class Scope < Political::Policy::Scope
-    def apply
+  def permitted_attributes_for_update
+    attributes  = %i(character_id title body)
+    attributes += %i(deleted editor_id) if current_user.try(:admin?)
+    attributes
+  end
+
+  class Scope < ApplicationPolicy::Scope
+    def resolve
       if current_user.try(:allowed_to?, :view_deleted_posts)
         scope.all
       else
@@ -50,11 +53,6 @@ private
   end
 
   def conversation_active?
-    if model?
-      return false unless params[:post].respond_to?(:[])
-      Conversation.active.exists?(id: params[:post][:conversation_id])
-    else
-      post.conversation.active?
-    end
+    post.conversation.active?
   end
 end
