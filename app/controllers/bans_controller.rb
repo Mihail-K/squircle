@@ -1,4 +1,4 @@
-class BansController < ApiController
+class BansController < ApplicationController
   before_action :doorkeeper_authorize!
 
   before_action :set_bans, except: :create
