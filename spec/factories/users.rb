@@ -32,7 +32,7 @@ FactoryGirl.define do
     # - Characters - #
 
     trait :with_characters do
-      characters_count Faker::Number.between(1, 10)
+      characters_count 1
     end
 
     transient do

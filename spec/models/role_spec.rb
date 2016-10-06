@@ -21,11 +21,47 @@ RSpec.describe Role, type: :model do
 
   describe 'user' do
     let :role do
-      Role.where name: 'user'
+      Role.find_by name: 'user'
     end
 
     it 'exists' do
-      expect(role).to exist
+      expect(role).to be_present
+    end
+
+    it 'is allowed to view owned bans' do
+      expect(role).to be_allowed_to :view_owned_bans
+    end
+
+    it 'is not allowed to view others bans' do
+      expect(role).not_to be_allowed_to :view_bans
+    end
+
+    it 'is not allowed to create bans' do
+      expect(role).not_to be_allowed_to :create_bans
+    end
+
+    it 'is not allowed to view deleted posts' do
+      expect(role).not_to be_allowed_to :view_deleted_posts
+    end
+
+    it 'is allowed to create posts' do
+      expect(role).to be_allowed_to :create_posts
+    end
+
+    it 'is allowed to edit owned posts' do
+      expect(role).to be_allowed_to :update_owned_posts
+    end
+
+    it 'is not allowed to edit others posts' do
+      expect(role).not_to be_allowed_to :update_posts
+    end
+
+    it 'is allowed to delete owned posts' do
+      expect(role).to be_allowed_to :delete_owned_posts
+    end
+
+    it 'is not allowed to delete others posts' do
+      expect(role).not_to be_allowed_to :delete_posts
     end
   end
 
@@ -41,21 +77,53 @@ RSpec.describe Role, type: :model do
 
   describe 'admin' do
     let :role do
-      Role.where name: 'admin'
+      Role.find_by name: 'admin'
     end
 
     it 'exists' do
-      expect(role).to exist
+      expect(role).to be_present
+    end
+
+    it 'is allowed to update bans' do
+      expect(role).to be_allowed_to :update_bans
     end
   end
 
   describe 'banned' do
     let :role do
-      Role.where name: 'banned'
+      Role.find_by name: 'banned'
     end
 
     it 'exists' do
-      expect(role).to exist
+      expect(role).to be_present
+    end
+
+    it 'is not forbidden to view owned bans' do
+      expect(role).not_to be_forbidden_to :view_owned_bans
+    end
+
+    it 'is forbidden to create bans' do
+      expect(role).to be_forbidden_to :create_bans
+    end
+
+    it 'is forbidden to update bans' do
+      expect(role).to be_forbidden_to :update_bans
+    end
+
+    it 'is forbidden to delete bans' do
+      expect(role).to be_forbidden_to :delete_bans
+    end
+
+    it 'is forbidden to make new posts' do
+      expect(role).to be_forbidden_to :create_posts
+    end
+
+    it 'is forbidden to edit posts' do
+      expect(role).to be_forbidden_to :update_posts
+    end
+
+    it 'is forbidden to delete posts' do
+      expect(role).to be_forbidden_to :delete_posts
     end
   end
 end

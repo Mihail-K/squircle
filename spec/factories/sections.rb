@@ -9,7 +9,7 @@ FactoryGirl.define do
     # - Conversations - #
 
     trait :with_conversations do
-      conversations_count { Faker::Number.between(1, 3) }
+      conversations_count 1
     end
 
     transient do

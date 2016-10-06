@@ -15,6 +15,7 @@
   # - Posts - #
   view_deleted_posts: :view_posts,
   update_posts:       :update_owned_posts,
+  delete_posts:       :delete_owned_posts,
 
   # - Users - #
   view_deleted_users: :view_users,

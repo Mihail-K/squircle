@@ -5,7 +5,7 @@ FactoryGirl.define do
     deleted false
 
     trait :with_posts do
-      post_count { Faker::Number.between(1, 15) }
+      post_count 1
     end
 
     transient do

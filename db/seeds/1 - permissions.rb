@@ -121,6 +121,12 @@ Permissible::Permission.find_or_create_by! name: :view_posts do |permission|
   TEXT
 end
 
+Permissible::Permission.find_or_create_by! name: :create_posts do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to create new posts.
+  TEXT
+end
+
 Permissible::Permission.find_or_create_by! name: :update_owned_posts do |permission|
   permission.description = <<-TEXT.squish
     Permits the user to edit their own posts.
@@ -130,6 +136,18 @@ end
 Permissible::Permission.find_or_create_by! name: :update_posts do |permission|
   permission.description = <<-TEXT.squish
     Permits the user to edit other users' posts.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :delete_owned_posts do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user the delete their own posts.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :delete_posts do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to delete other users' posts.
   TEXT
 end
 

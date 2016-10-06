@@ -12,7 +12,9 @@
     view_conversations:         :allow,
     # - Posts - #
     view_posts:                 :allow,
+    create_posts:               :allow,
     update_owned_posts:         :allow,
+    delete_owned_posts:         :allow,
     # - Users - #
     view_users:                 :allow,
     update_self:                :allow,
@@ -30,7 +32,9 @@
     view_deleted_conversations: :allow,
     # - Posts - #
     view_deleted_posts:         :allow,
-    update_posts:               :allow
+    create_posts:               :allow,
+    update_posts:               :allow,
+    delete_posts:               :allow
   },
   admin: {
     # - Bans - #
@@ -44,7 +48,9 @@
     delete_characters:          :allow,
     # - Posts - #
     view_deleted_posts:         :allow,
+    create_posts:               :allow,
     update_posts:               :allow,
+    delete_posts:               :allow,
     # - Users - #
     view_deleted_users:         :allow,
     view_users_personal_fields: :allow,
@@ -53,6 +59,10 @@
     delete_users:               :allow
   },
   banned: {
+    # - Bans - #
+    create_bans:                :forbid,
+    update_bans:                :forbid,
+    delete_bans:                :forbid,
     # - Characters - #
     create_characters:          :forbid,
     update_characters:          :forbid,
@@ -61,7 +71,9 @@
     update_users:               :forbid,
     delete_users:               :forbid,
     # - Posts - #
-    update_posts:               :forbid
+    create_posts:               :forbid,
+    update_posts:               :forbid,
+    delete_posts:               :forbid
   }
 }.each do |role, permissions|
   role = Role.find_by!(name: role)

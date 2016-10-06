@@ -9,13 +9,13 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'requires an authenticated user' do
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :unauthorized
     end
 
     it 'returns a list of bans for the user' do
-      get :index, format: :json, params: session
+      get :index, params: session
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'bans'
@@ -28,7 +28,7 @@ RSpec.describe BansController, type: :controller do
         ban.update user: create(:user)
       end
 
-      get :index, format: :json, params: session
+      get :index, params: session
 
       expect(response).to have_http_status :ok
       expect(json[:bans].count).to eq bans.count - 3
@@ -40,7 +40,7 @@ RSpec.describe BansController, type: :controller do
         ban.update user: create(:user)
       end
 
-      get :index, format: :json, params: session
+      get :index, params: session
 
       expect(response).to have_http_status :ok
       expect(json[:bans].count).to eq bans.count
@@ -53,13 +53,13 @@ RSpec.describe BansController, type: :controller do
     end
 
     it 'requires an authenticated user' do
-      get :show, format: :json, params: { id: ban.id }
+      get :show, params: { id: ban.id }
 
       expect(response).to have_http_status :unauthorized
     end
 
     it 'returns the requested ban, if it belongs to the current user' do
-      get :show, format: :json, params: { id: ban.id }.merge(session)
+      get :show, params: { id: ban.id }.merge(session)
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'ban'
@@ -68,7 +68,7 @@ RSpec.describe BansController, type: :controller do
     it 'prevents users from accessing bans that do not belong to them' do
       ban.update user: create(:user)
 
-      get :show, format: :json, params: { id: ban.id }.merge(session)
+      get :show, params: { id: ban.id }.merge(session)
 
       expect(response).to have_http_status :not_found
     end
@@ -77,7 +77,7 @@ RSpec.describe BansController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
       ban.update user: create(:user)
 
-      get :show, format: :json, params: { id: ban.id }.merge(session)
+      get :show, params: { id: ban.id }.merge(session)
 
       expect(response).to have_http_status :ok
     end
@@ -85,7 +85,7 @@ RSpec.describe BansController, type: :controller do
     it 'returns 404 if the ban has been deleted' do
       ban.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: ban.id }.merge(session)
+      get :show, params: { id: ban.id }.merge(session)
 
       expect(response).to have_http_status :not_found
     end
@@ -98,83 +98,85 @@ RSpec.describe BansController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           ban: attributes_for(:ban, user_id: user.id)
         }
-      end.not_to change { Ban.count }
 
-      expect(response).to have_http_status :unauthorized
+        expect(response).to have_http_status :unauthorized
+      end.not_to change { Ban.count }
     end
 
     it 'only allows admin users to create bans' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           ban: attributes_for(:ban, user_id: user.id)
         }.merge(session)
-      end.not_to change { Ban.count }
 
-      expect(response).to have_http_status :forbidden
+        expect(response).to have_http_status :forbidden
+      end.not_to change { Ban.count }
     end
 
     it 'creates a ban for the given user when called by an admin' do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           ban: attributes_for(:ban, user_id: user.id)
         }.merge(session)
-      end.to change { Ban.count }.by(1)
 
-      expect(response).to have_http_status :created
-      expect(response).to match_response_schema 'ban'
+        expect(response).to have_http_status :created
+        expect(response).to match_response_schema 'ban'
+      end.to change { Ban.count }.by(1)
     end
 
     it 'returns errors if the ban is invalid' do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           ban: attributes_for(:ban, user_id: user.id, reason: nil)
         }.merge(session)
+
+        expect(response).to have_http_status :unprocessable_entity
+        expect(response).to match_response_schema 'errors'
+
+        expect(json[:errors]).to have_key :reason
       end.not_to change { Ban.count }
-
-      expect(response).to have_http_status :unprocessable_entity
-      expect(response).to match_response_schema 'errors'
-
-      expect(json[:errors]).to have_key :reason
     end
   end
 
   describe '#PATCH update' do
     let :ban do
-      create :ban, user: active_user
+      create :ban
     end
 
     it 'requires an authenticated user' do
       expect do
-        patch :update, format: :json, params: { id: ban.id, ban: attributes_for(:ban) }
-      end.not_to change { ban.reload.attributes }
+        patch :update, params: { id: ban.id, ban: attributes_for(:ban) }
 
-      expect(response).to have_http_status :unauthorized
+        expect(response).to have_http_status :unauthorized
+      end.not_to change { ban.reload.attributes }
     end
 
-    it 'only allows admins to delete bans' do
-      expect do
-        patch :update, format: :json, params: { id: ban.id, ban: attributes_for(:ban) }.merge(session)
-      end.not_to change { ban.reload.attributes }
+    it 'only allows admins to update bans' do
+      ban.update user: active_user
 
-      expect(response).to have_http_status :forbidden
+      expect do
+        patch :update, params: { id: ban.id, ban: attributes_for(:ban) }.merge(session)
+
+        expect(response).to have_http_status :forbidden
+      end.not_to change { ban.reload.attributes }
     end
 
     it 'updates the reason on a ban when called by an admin' do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        patch :update, format: :json, params: { id: ban.id, ban: attributes_for(:ban) }.merge(session)
-      end.to change { ban.reload.attributes }
+        patch :update, params: { id: ban.id, ban: attributes_for(:ban) }.merge(session)
 
-      expect(response).to have_http_status :ok
-      expect(response).to match_response_schema 'ban'
+        expect(response).to have_http_status :ok
+        expect(response).to match_response_schema 'ban'
+      end.to change { ban.reload.attributes }
     end
 
     it 'updates the deleted state on a ban' do
@@ -182,10 +184,10 @@ RSpec.describe BansController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        patch :update, format: :json, params: { id: ban.id, ban: { deleted: false } }.merge(session)
-      end.to change { ban.reload.deleted? }.from(true).to(false)
+        patch :update, params: { id: ban.id, ban: { deleted: false } }.merge(session)
 
-      expect(response).to have_http_status :ok
+        expect(response).to have_http_status :ok
+      end.to change { ban.reload.deleted? }.from(true).to(false)
     end
 
     it 'prevents the assigned user from being changed' do
@@ -193,10 +195,10 @@ RSpec.describe BansController, type: :controller do
       user_id = create(:user).id
 
       expect do
-        patch :update, format: :json, params: { id: ban.id, ban: { user_id: user_id } }.merge(session)
-      end.not_to change { ban.reload.user }
+        patch :update, params: { id: ban.id, ban: { user_id: user_id } }.merge(session)
 
-      expect(response).to have_http_status :ok
+        expect(response).to have_http_status :ok
+      end.not_to change { ban.reload.user }
     end
 
     it 'prevents the assigned creator from being changed' do
@@ -204,55 +206,57 @@ RSpec.describe BansController, type: :controller do
       user_id = create(:user).id
 
       expect do
-        patch :update, format: :json, params: { id: ban.id, ban: { creator_id: user_id } }.merge(session)
-      end.not_to change { ban.reload.creator }
+        patch :update, params: { id: ban.id, ban: { creator_id: user_id } }.merge(session)
 
-      expect(response).to have_http_status :ok
+        expect(response).to have_http_status :ok
+      end.not_to change { ban.reload.creator }
     end
 
     it 'returns errors if the ban is invalid' do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        patch :update, format: :json, params: { id: ban.id, ban: { reason: nil } }.merge(session)
+        patch :update, params: { id: ban.id, ban: { reason: nil } }.merge(session)
+
+        expect(response).to have_http_status :unprocessable_entity
+        expect(response).to match_response_schema 'errors'
+
+        expect(json[:errors]).to have_key :reason
       end.not_to change { ban.reload.attributes }
-
-      expect(response).to have_http_status :unprocessable_entity
-      expect(response).to match_response_schema 'errors'
-
-      expect(json[:errors]).to have_key :reason
     end
   end
 
   describe '#DELETE destroy' do
     let :ban do
-      create :ban, user: active_user
+      create :ban
     end
 
     it 'requires an authenticated user' do
       expect do
-        delete :destroy, format: :json, params: { id: ban.id }
-      end.not_to change { ban.reload.deleted? }
+        delete :destroy, params: { id: ban.id }
 
-      expect(response).to have_http_status :unauthorized
+        expect(response).to have_http_status :unauthorized
+      end.not_to change { ban.reload.deleted? }
     end
 
     it 'only allows admins to delete bans' do
-      expect do
-        delete :destroy, format: :json, params: { id: ban.id }.merge(session)
-      end.not_to change { ban.reload.deleted? }
+      ban.update user: active_user
 
-      expect(response).to have_http_status :forbidden
+      expect do
+        delete :destroy, params: { id: ban.id }.merge(session)
+
+        expect(response).to have_http_status :forbidden
+      end.not_to change { ban.reload.deleted? }
     end
 
     it 'marks a ban as deleted when called by an admin' do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        delete :destroy, format: :json, params: { id: ban.id }.merge(session)
-      end.to change { ban.reload.deleted? }.from(false).to(true)
+        delete :destroy, params: { id: ban.id }.merge(session)
 
-      expect(response).to have_http_status :no_content
+        expect(response).to have_http_status :no_content
+      end.to change { ban.reload.deleted? }.from(false).to(true)
     end
   end
 end
