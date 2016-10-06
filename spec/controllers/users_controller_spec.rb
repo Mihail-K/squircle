@@ -5,13 +5,13 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'GET #me' do
     it 'requires an authenticated user' do
-      get :me, format: :json
+      get :me
 
       expect(response).to have_http_status :unauthorized
     end
 
     it 'returns the current user' do
-      get :me, format: :json, params: { access_token: token.token }
+      get :me, params: { access_token: token.token }
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema :user
@@ -26,7 +26,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'responds with 200' do
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema :users
@@ -35,7 +35,7 @@ RSpec.describe UsersController, type: :controller do
     it 'returns only visible users' do
       users.sample.update deleted: true, deleted_by: active_user
 
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :ok
       expect(json[:users].count).to eq users.count - 1
@@ -45,7 +45,7 @@ RSpec.describe UsersController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
       users.sample.update deleted: true, deleted_by: active_user
 
-      get :index, format: :json, params: session
+      get :index, params: session
 
       expect(response).to have_http_status :ok
       expect(json[:users].count).to eq users.count
@@ -56,7 +56,7 @@ RSpec.describe UsersController, type: :controller do
         create :post, author: user
       end
 
-      get :index, format: :json, params: { recently_active: true }
+      get :index, params: { recently_active: true }
 
       expect(response).to have_http_status :ok
       expect(json[:users].count).to eq recently_active.count
@@ -68,7 +68,7 @@ RSpec.describe UsersController, type: :controller do
         create_list :post, 3 - index, author: user
       end
 
-      get :index, format: :json, params: { most_active: true }
+      get :index, params: { most_active: true }
 
       expect(response).to have_http_status :ok
       expect(json[:users].count).to eq most_active.count
@@ -82,29 +82,16 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'returns the requested user' do
-      get :show, format: :json, params: { id: user.id }
+      get :show, params: { id: user.id }
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema :user
     end
 
-    it 'returns private fields when returning the authenticated user' do
-      get :show, format: :json, params: { id: active_user.id }.merge(session)
+    it 'returns 404 when the user is deleted' do
+      user.update deleted: true, deleted_by: active_user
 
-      expect(response).to have_http_status :ok
-      expect(response).to match_response_schema :user
-    end
-
-    it 'returns private fields for all users when called by an admin' do
-      active_user.roles << Role.find_by!(name: 'admin')
-
-      get :show, format: :json, params: { id: user.id }.merge(session)
-
-      expect(response).to have_http_status :ok
-    end
-
-    it 'returns 404 when the user is not found' do
-      get :show, format: :json, params: { id: user.id + 1 }
+      get :show, params: { id: user.id }
 
       expect(response).to have_http_status :not_found
     end
@@ -113,16 +100,16 @@ RSpec.describe UsersController, type: :controller do
   describe '#POST create' do
     it 'creates a new user' do
       expect do
-        post :create, format: :json, params: { user: attributes_for(:user) }
+        post :create, params: { user: attributes_for(:user) }
       end.to change { User.count }.by(1)
 
       expect(response).to have_http_status :created
       expect(response).to match_response_schema :user
     end
 
-    it %q(doesn't allow authenticated users to create new users) do
+    it "doesn't allow authenticated users to create new users" do
       expect do
-        post :create, format: :json, params: { user: attributes_for(:user) }.merge(session)
+        post :create, params: { user: attributes_for(:user) }.merge(session)
       end.not_to change { User.count }
 
       expect(response).to have_http_status :forbidden
@@ -132,7 +119,7 @@ RSpec.describe UsersController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        post :create, format: :json, params: { user: attributes_for(:user) }.merge(session)
+        post :create, params: { user: attributes_for(:user) }.merge(session)
       end.to change { User.count }.by(1)
 
       expect(response).to have_http_status :created
@@ -141,7 +128,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'returns errors when the user is invalid' do
       expect do
-        post :create, format: :json, params: { user: attributes_for(:user, email: nil) }
+        post :create, params: { user: attributes_for(:user, email: nil) }
       end.not_to change { User.count }
 
       expect(response).to have_http_status :unprocessable_entity
@@ -158,7 +145,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: active_user.id, user: { email: Faker::Internet.email }
         }
       end.not_to change { active_user.reload.email }
@@ -168,7 +155,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'updates the user when authenticated' do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: active_user.id, user: { email: Faker::Internet.email }
         }.merge(session)
       end.to change { active_user.reload.email }
@@ -177,9 +164,9 @@ RSpec.describe UsersController, type: :controller do
       expect(response).to match_response_schema :user
     end
 
-    it %q(does not allow users to update other users' attributes) do
+    it "doesn't allow users to edit other users" do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: user.id, user: { email: Faker::Internet.email }
         }.merge(session)
       end.not_to change { user.reload.email }
@@ -189,7 +176,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'returns errors if the user is invalid' do
       expect do
-        patch :update, format: :json, params: { id: active_user.id, user: { email: nil } }.merge(session)
+        patch :update, params: { id: active_user.id, user: { email: nil } }.merge(session)
       end.not_to change { active_user.reload.email }
 
       expect(response).to have_http_status :unprocessable_entity
@@ -206,7 +193,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        delete :destroy, format: :json, params: { id: user.id }
+        delete :destroy, params: { id: user.id }
       end.not_to change { user.reload.deleted? }
 
       expect(response).to have_http_status :unauthorized
@@ -214,7 +201,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'prevents users from deleting other user accounts' do
       expect do
-        delete :destroy, format: :json, params: { id: user.id }.merge(session)
+        delete :destroy, params: { id: user.id }.merge(session)
       end.not_to change { user.reload.deleted? }
 
       expect(response).to have_http_status :forbidden
@@ -222,7 +209,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'marks the authenticated user as deleted' do
       expect do
-        delete :destroy, format: :json, params: { id: active_user.id }.merge(session)
+        delete :destroy, params: { id: active_user.id }.merge(session)
       end.to change { active_user.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content
@@ -232,7 +219,7 @@ RSpec.describe UsersController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        delete :destroy, format: :json, params: { id: user.id }.merge(session)
+        delete :destroy, params: { id: user.id }.merge(session)
       end.to change { user.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content
