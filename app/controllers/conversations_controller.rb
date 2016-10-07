@@ -69,6 +69,7 @@ private
   def load_first_posts
     # Load a list of first posts for the list of conversations.
     @first_posts = policy_scope(Post).first_posts.where(conversation: @conversations)
+    @first_posts = @first_posts.where(id: @first_posts.pluck(Post.arel_table[:id].minimum))
 
     # Re-map the first posts to a Hash keyed by the posts' conversation ids.
     @first_posts = @first_posts.map { |post| [ post.conversation_id, post ] }.to_h
@@ -77,6 +78,7 @@ private
   def load_last_posts
     # Load a list of last posts for the list of conversations.
     @last_posts = policy_scope(Post).last_posts.where(conversation: @conversations)
+    @last_posts = @last_posts.where(id: @last_posts.pluck(Post.arel_table[:id].maximum))
 
     # Re-map the last posts to a Hash keyed by the posts' conversation ids.
     @last_posts = @last_posts.map { |post| [ post.conversation_id, post ] }.to_h
