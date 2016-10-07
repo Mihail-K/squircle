@@ -54,27 +54,45 @@ class Post < ApplicationRecord
   after_update :update_conversation_activity, if: :deleted_changed?
   after_destroy :update_conversation_activity
 
-  scope :first_posts, -> {
-    group(:conversation_id).having(
-                             Post.arel_table[:created_at]
-                                 .eq(Post.arel_table[:created_at].minimum)
-                           )
-                           .having(
-                             Post.arel_table[:id]
-                                 .eq(Post.arel_table[:id].minimum)
-                           )
-  }
+  if Rails.env.development? || Rails.env.test?
+    scope :first_posts, -> {
+      group(:conversation_id).having(
+                               Post.arel_table[:created_at]
+                                   .eq(Post.arel_table[:created_at].minimum)
+                             )
+                             .having(
+                               Post.arel_table[:id]
+                                   .eq(Post.arel_table[:id].minimum)
+                             )
+    }
 
-  scope :last_posts, -> {
-    group(:conversation_id).having(
-                             Post.arel_table[:created_at]
-                                 .eq(Post.arel_table[:created_at].maximum)
-                           )
-                           .having(
-                             Post.arel_table[:id]
-                                 .eq(Post.arel_table[:id].maximum)
-                           )
-  }
+    scope :last_posts, -> {
+      group(:conversation_id).having(
+                               Post.arel_table[:created_at]
+                                   .eq(Post.arel_table[:created_at].maximum)
+                             )
+                             .having(
+                               Post.arel_table[:id]
+                                   .eq(Post.arel_table[:id].maximum)
+                             )
+    }
+  else
+    scope :first_posts, -> {
+      select(<<-SQL.squish)
+        first_value("posts"."id") AS id
+      OVER
+        (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" ASC)
+      SQL
+    }
+
+    scope :last_posts, -> {
+      select(<<-SQL.squish)
+        first_value("posts"."id") AS id
+      OVER
+        (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" DESC)
+      SQL
+    }
+  end
 
   scope :flood, -> {
     where Post.arel_table[:created_at].gteq(20.seconds.ago)
