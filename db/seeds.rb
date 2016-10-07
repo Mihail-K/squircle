@@ -19,7 +19,7 @@ unless Rails.env.test?
                  password: 'admin1234',
                  password_confirmation: 'admin1234',
                  date_of_birth: 20.years.ago,
-                 admin: true
+                 roles: [Role.find_by!(name: :admin)]
   end
 
   unless Section.exists?
