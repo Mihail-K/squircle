@@ -79,7 +79,7 @@ class Post < ApplicationRecord
   else
     scope :first_posts, -> {
       select(<<-SQL.squish)
-        first_value("posts"."id") AS id
+        first_value("posts"."id")
       OVER
         (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" ASC)
       SQL
@@ -87,7 +87,7 @@ class Post < ApplicationRecord
 
     scope :last_posts, -> {
       select(<<-SQL.squish)
-        first_value("posts"."id") AS id
+        first_value("posts"."id")
       OVER
         (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" DESC)
       SQL
