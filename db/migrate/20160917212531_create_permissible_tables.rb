@@ -7,7 +7,7 @@ class CreatePermissibleTables < ActiveRecord::Migration
     end
 
     create_table :permissible_model_permissions do |t|
-      t.references :permission, null: false, index: true, foreign_key: true
+      t.references :permission, null: false, index: true, foreign_key: { to_table: :permissible_permissions }
       t.references :permissible, null: false, index: { name: <<-NAME.squish }, polymorphic: true
         permissible_index_on_polymorphic_permissible
       NAME
@@ -19,7 +19,7 @@ class CreatePermissibleTables < ActiveRecord::Migration
     end
 
     create_table :permissible_implied_permissions do |t|
-      t.references :permission, null: false, index: true, foreign_key: true
+      t.references :permission, null: false, index: true, foreign_key: { to_table: :permissible_permissions }
       t.references :implied_by, null: false, index: true, foreign_key: { to_table: :permissible_permissions }, references: :permissible_permissions
       t.index      [:permission_id, :implied_by_id], unique: true, name: <<-NAME.squish
         permissible_index_on_permission_and_implied_by
