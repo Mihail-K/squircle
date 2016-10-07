@@ -12,7 +12,6 @@
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  posts_count         :integer          default(0), not null
-#  visible_posts_count :integer          default(0), not null
 #  deleted_by_id       :integer
 #  deleted_at          :datetime
 #
@@ -30,6 +29,6 @@ class Section < ApplicationRecord
   has_many :posts, through: :conversations
 
   validates :title, presence: true
-  validates :description, length: { in: 5..1000 }
+  validates :description, length: { maximum: 1000 }
   validates :creator, presence: true
 end

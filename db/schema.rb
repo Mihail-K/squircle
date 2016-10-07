@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161007134302) do
+ActiveRecord::Schema.define(version: 20161007145617) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                        null: false
@@ -165,6 +165,7 @@ ActiveRecord::Schema.define(version: 20161007134302) do
     t.datetime "deleted_at"
     t.index ["author_id"], name: "index_posts_on_author_id"
     t.index ["character_id"], name: "index_posts_on_character_id"
+    t.index ["conversation_id"], name: "index_posts_on_conversation_id"
     t.index ["conversation_id"], name: "index_posts_on_postable_type_and_conversation_id"
     t.index ["deleted_by_id"], name: "index_posts_on_deleted_by_id"
     t.index ["editor_id"], name: "index_posts_on_editor_id"
@@ -241,7 +242,6 @@ ActiveRecord::Schema.define(version: 20161007134302) do
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
     t.integer  "posts_count",         default: 0,     null: false
-    t.integer  "visible_posts_count", default: 0,     null: false
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
     t.index ["creator_id"], name: "index_sections_on_creator_id"

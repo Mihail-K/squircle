@@ -17,13 +17,5 @@ FactoryGirl.define do
         conversation.posts = build_list :post, e.post_count, conversation: conversation
       end
     end
-
-    after :create do |conversation|
-      result = Conversation.where(id: conversation)
-                           .pluck(:posts_count, :visible_posts_count)
-                           .first
-      conversation.posts_count = result[0]
-      conversation.visible_posts_count = result[1]
-    end
   end
 end

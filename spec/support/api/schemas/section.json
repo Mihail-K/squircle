@@ -47,9 +47,6 @@
         "posts_count": {
           "type": "integer"
         },
-        "visible_posts_count": {
-          "type": "integer"
-        },
         "conversations_count": {
           "type": "integer"
         },
@@ -93,7 +90,7 @@
         "id",
         "title",
         "description",
-        "visible_posts_count",
+        "posts_count",
         "deleted",
         "created_at",
         "updated_at"

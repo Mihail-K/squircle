@@ -36,8 +36,8 @@ class Conversation < ApplicationRecord
   has_many :post_authors, -> { distinct }, through: :posts, source: :author, class_name: 'User'
   has_many :post_characters, -> { distinct }, through: :posts, source: :character, class_name: 'Character'
 
-  has_one :first_post, -> { first_posts }, class_name: 'Post'
-  has_one :last_post, -> { last_posts }, class_name: 'Post'
+  has_one :first_post, -> { first_posts.visible }, class_name: 'Post'
+  has_one :last_post, -> { last_posts.visible }, class_name: 'Post'
 
   accepts_nested_attributes_for :posts, limit: 1, reject_if: :all_blank
 
@@ -50,8 +50,6 @@ class Conversation < ApplicationRecord
   before_validation :set_title_from_first_post, on: :create, unless: :title?
 
   before_save :set_locked_on_timestamp, if: -> { locked_changed?(to: true) }
-
-  after_create :set_visible_posts_count
 
   scope :hidden, -> {
     where(deleted: true).union(
@@ -88,9 +86,5 @@ private
 
   def set_locked_on_timestamp
     self.locked_on = Time.zone.now
-  end
-
-  def set_visible_posts_count
-    update_columns visible_posts_count: posts.visible.count
   end
 end

@@ -48,14 +48,8 @@ class Post < ApplicationRecord
 
   before_commit :update_author_posts_count
   before_commit :update_conversation_posts_count
-
-  after_create :update_visible_posts_count
-  after_update :update_visible_posts_count, if: :deleted_changed?
-  after_destroy :update_visible_posts_count
-
-  after_create :update_conversation_activity
-  after_update :update_conversation_activity, if: :deleted_changed?
-  after_destroy :update_conversation_activity
+  before_commit :update_section_posts_count
+  before_commit :update_conversation_activity
 
   if Rails.env.development? || Rails.env.test?
     scope :first_posts, -> {
@@ -119,17 +113,16 @@ class Post < ApplicationRecord
 
 private
 
-  def update_conversation_posts_count
-    conversation.update_columns(posts_count: conversation.posts.visible.count)
-  end
-
   def update_author_posts_count
     author.update_columns(posts_count: author.posts.visible.count)
   end
 
-  def update_visible_posts_count
-    section.update_columns posts_count: section.posts.count,
-                           visible_posts_count: section.posts.visible.count if section.present?
+  def update_conversation_posts_count
+    conversation.update_columns(posts_count: conversation.posts.visible.count)
+  end
+
+  def update_section_posts_count
+    section.update_columns(posts_count: section.posts.visible.count) if section.present?
   end
 
   def update_conversation_activity

@@ -11,8 +11,7 @@ class SectionSerializer < ActiveModel::Serializer
   #   object.logo.url
   # end
   attribute :conversations_count
-  attribute :posts_count, if: :can_view_deleted_posts?
-  attribute :visible_posts_count
+  attribute :posts_count
   attribute :deleted
 
   attribute :created_at
