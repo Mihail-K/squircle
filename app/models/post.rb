@@ -30,7 +30,7 @@
 class Post < ApplicationRecord
   include Formattable
 
-  belongs_to :author, class_name: 'User', counter_cache: :posts_count, inverse_of: :posts
+  belongs_to :author, class_name: 'User', inverse_of: :posts
   belongs_to :editor, class_name: 'User'
   belongs_to :character, counter_cache: :posts_count, inverse_of: :posts
 
@@ -46,6 +46,7 @@ class Post < ApplicationRecord
 
   formattable :body
 
+  before_commit :update_author_posts_count
   before_commit :update_conversation_posts_count
 
   after_create :update_visible_posts_count
@@ -122,8 +123,11 @@ private
     conversation.update_columns(posts_count: conversation.posts.visible.count)
   end
 
+  def update_author_posts_count
+    author.update_columns(posts_count: author.posts.visible.count)
+  end
+
   def update_visible_posts_count
-    author.update_columns visible_posts_count: author.posts.visible.count
     section.update_columns posts_count: section.posts.count,
                            visible_posts_count: section.posts.visible.count if section.present?
   end

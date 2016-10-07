@@ -19,7 +19,6 @@
 #  avatar                   :string
 #  deleted                  :boolean          default(FALSE), not null
 #  banned                   :boolean          default(FALSE), not null
-#  visible_posts_count      :integer          default(0), not null
 #  last_active_at           :datetime
 #  deleted_by_id            :integer
 #  deleted_at               :datetime
@@ -99,15 +98,15 @@ class User < ApplicationRecord
   }
 
   scope :most_active, -> {
-    not_banned.where(User.arel_table[:visible_posts_count].gt(0))
-              .order(visible_posts_count: :desc)
+    not_banned.where(User.arel_table[:posts_count].gt(0))
+              .order(posts_count: :desc)
   }
 
   scope :recently_active, -> {
     where User.arel_table[:last_active_at]
               .gteq(5.minutes.ago)
               .and(
-                User.arel_table[:visible_posts_count]
+                User.arel_table[:posts_count]
                     .gt(0)
               )
   }
