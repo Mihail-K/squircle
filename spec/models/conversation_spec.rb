@@ -13,53 +13,38 @@ RSpec.describe Conversation, type: :model do
 
   describe '.posts_count' do
     let :conversation do
-      create :conversation, :with_posts
+      create :conversation
     end
 
-    it 'matches the number of posts' do
-      expect(conversation.posts_count).not_to eq 0
-      expect(conversation.posts_count).to eq conversation.posts.count
+    it 'is 1 by default' do
+      expect(conversation.posts_count).to eq 1
     end
 
-    it 'increases when a post is created' do
-      old_count = conversation.posts_count
-      create :post, conversation: conversation
-      expect(conversation.posts_count).to be > old_count
-    end
-
-    it 'decreases when a post is destroyed' do
-      old_count = conversation.posts_count
-      conversation.posts.last.destroy!
-      expect(conversation.posts_count).to be < old_count
-    end
-  end
-
-  describe '.visible_posts_count' do
-    let :conversation do
-      create :conversation, :with_posts
-    end
-
-    it 'matches the number of posts' do
-      expect(conversation.visible_posts_count).not_to eq 0
-      expect(conversation.visible_posts_count).to eq conversation.posts.visible.count
+    it 'is equal to the number of visible posts' do
+      create_list :post, 3, conversation: conversation
+      expect(conversation.posts_count).to eq 4
     end
 
     it 'increases when a post is created' do
       expect do
         create :post, conversation: conversation
-      end.to change { conversation.visible_posts_count }.by(1)
+      end.to change { conversation.posts_count }.from(1).to(2)
+    end
+
+    it 'decreases when a post is deleted' do
+      post = create :post, conversation: conversation
+
+      expect do
+        post.update deleted: true, deleted_by: post.author
+      end.to change { conversation.posts_count }.from(2).to(1)
     end
 
     it 'decreases when a post is destroyed' do
-      expect do
-        conversation.posts.sample.destroy
-      end.to change { conversation.visible_posts_count }.by(-1)
-    end
+      post = create :post, conversation: conversation
 
-    it 'decreases when a post is marked deleted' do
       expect do
-        conversation.posts.sample.update deleted: true, deleted_by: create(:user)
-      end.to change { conversation.visible_posts_count }.by(-1)
+        post.destroy
+      end.to change { conversation.posts_count }.from(2).to(1)
     end
   end
 end

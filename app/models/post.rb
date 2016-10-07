@@ -34,7 +34,7 @@ class Post < ApplicationRecord
   belongs_to :editor, class_name: 'User'
   belongs_to :character, counter_cache: :posts_count, inverse_of: :posts
 
-  belongs_to :conversation, counter_cache: :posts_count, inverse_of: :posts
+  belongs_to :conversation, inverse_of: :posts
 
   has_one :section, through: :conversation
 
@@ -45,6 +45,8 @@ class Post < ApplicationRecord
   validates :body, presence: true, length: { in: 10 .. 10_000, if: :body? }
 
   formattable :body
+
+  before_commit :update_conversation_posts_count
 
   after_create :update_visible_posts_count
   after_update :update_visible_posts_count, if: :deleted_changed?
@@ -116,9 +118,12 @@ class Post < ApplicationRecord
 
 private
 
+  def update_conversation_posts_count
+    conversation.update_columns(posts_count: conversation.posts.visible.count)
+  end
+
   def update_visible_posts_count
     author.update_columns visible_posts_count: author.posts.visible.count
-    conversation.update_columns visible_posts_count: conversation.posts.visible.count
     section.update_columns posts_count: section.posts.count,
                            visible_posts_count: section.posts.visible.count if section.present?
   end

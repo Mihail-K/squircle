@@ -2,22 +2,21 @@
 #
 # Table name: conversations
 #
-#  id                  :integer          not null, primary key
-#  posts_count         :integer          default(0), not null
-#  deleted             :boolean          default(FALSE), not null
-#  author_id           :integer          not null
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  views_count         :integer          default(0), not null
-#  title               :string           not null
-#  locked              :boolean          default(FALSE), not null
-#  locked_on           :datetime
-#  locked_by_id        :integer
-#  visible_posts_count :integer          default(0), not null
-#  last_active_at      :datetime
-#  section_id          :integer          not null
-#  deleted_by_id       :integer
-#  deleted_at          :datetime
+#  id             :integer          not null, primary key
+#  posts_count    :integer          default(0), not null
+#  deleted        :boolean          default(FALSE), not null
+#  author_id      :integer          not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  views_count    :integer          default(0), not null
+#  title          :string           not null
+#  locked         :boolean          default(FALSE), not null
+#  locked_on      :datetime
+#  locked_by_id   :integer
+#  last_active_at :datetime
+#  section_id     :integer          not null
+#  deleted_by_id  :integer
+#  deleted_at     :datetime
 #
 # Indexes
 #

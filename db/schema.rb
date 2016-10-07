@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160917215329) do
+ActiveRecord::Schema.define(version: 20161007133247) do
 
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                        null: false
@@ -48,19 +48,18 @@ ActiveRecord::Schema.define(version: 20160917215329) do
   end
 
   create_table "conversations", force: :cascade do |t|
-    t.integer  "posts_count",         default: 0,     null: false
-    t.boolean  "deleted",             default: false, null: false
-    t.integer  "author_id",                           null: false
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
-    t.integer  "views_count",         default: 0,     null: false
-    t.string   "title",                               null: false
-    t.boolean  "locked",              default: false, null: false
+    t.integer  "posts_count",    default: 0,     null: false
+    t.boolean  "deleted",        default: false, null: false
+    t.integer  "author_id",                      null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.integer  "views_count",    default: 0,     null: false
+    t.string   "title",                          null: false
+    t.boolean  "locked",         default: false, null: false
     t.datetime "locked_on"
     t.integer  "locked_by_id"
-    t.integer  "visible_posts_count", default: 0,     null: false
     t.datetime "last_active_at"
-    t.integer  "section_id",                          null: false
+    t.integer  "section_id",                     null: false
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
     t.index ["author_id"], name: "index_conversations_on_author_id"
