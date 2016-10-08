@@ -26,14 +26,12 @@ class PostPolicy < ApplicationPolicy
   def permitted_attributes_for_create
     attributes  = %i(conversation_id character_id title body)
     attributes << :deleted if allowed_to?(:delete_conversations)
-    attributes << :editor_id if current_user.try(:admin?)
     attributes
   end
 
   def permitted_attributes_for_update
     attributes  = %i(character_id title body)
     attributes << :deleted if allowed_to?(:delete_conversations)
-    attributes << :editor_id if current_user.try(:admin?)
     attributes
   end
 

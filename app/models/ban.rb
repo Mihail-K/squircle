@@ -90,6 +90,8 @@ private
   end
 
   def apply_ban_to_user
-    user.roles << Role.find_by!(name: 'banned') if active? && !user.banned?
+    return unless active? && !user.banned?
+    user.roles << Role.find_by!(name: 'banned')
+    user.update_columns(banned: true)
   end
 end

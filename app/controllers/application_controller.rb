@@ -25,10 +25,6 @@ class ApplicationController < ActionController::API
 
   alias_method :current_user, :current_resource_owner
 
-  def admin?
-    current_user.try(:admin?)
-  end
-
   def forbid
     head :forbidden
   end

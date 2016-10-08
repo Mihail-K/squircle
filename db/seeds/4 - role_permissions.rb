@@ -37,6 +37,7 @@
     # - Conversations - #
     view_deleted_conversations: :allow,
     lock_conversations:         :allow,
+    move_conversations:         :allow,
     create_conversations:       :allow,
     update_conversations:       :allow,
     delete_conversations:       :allow,
@@ -63,6 +64,7 @@
     # - Conversations - #
     view_deleted_conversations: :allow,
     lock_conversations:         :allow,
+    move_conversations:         :allow,
     create_conversations:       :allow,
     update_conversations:       :allow,
     delete_conversations:       :allow,

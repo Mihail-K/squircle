@@ -107,6 +107,12 @@ Permissible::Permission.find_or_create_by! name: :lock_conversations do |permiss
   TEXT
 end
 
+Permissible::Permission.find_or_create_by! name: :move_conversations do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to move conversations between sections.
+  TEXT
+end
+
 Permissible::Permission.find_or_create_by! name: :create_conversations do |permission|
   permission.description = <<-TEXT.squish
     Permits the user to create new conversations.

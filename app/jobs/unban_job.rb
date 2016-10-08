@@ -4,6 +4,7 @@ class UnbanJob < ActiveJob::Base
   def perform
     User.banned.no_active_bans.find_each do |user|
       user.roles.delete(banned)
+      user.update_columns(banned: false)
     end
   end
 

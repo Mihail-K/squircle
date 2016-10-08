@@ -239,16 +239,6 @@ RSpec.describe PostsController, type: :controller do
       expect(response).to have_http_status :ok
     end
 
-    it 'allows admins to change the editor of a post' do
-      active_user.roles << Role.find_by!(name: 'admin')
-
-      expect do
-        patch :update, format: :json, params: { id: post.id, post: { editor_id: nil } }.merge(session)
-      end.not_to change { post.reload.editor }
-
-      expect(response).to have_http_status :ok
-    end
-
     it 'returns 404 when editing deleted posts' do
       post.update deleted: true, deleted_by: active_user
 

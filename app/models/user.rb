@@ -115,14 +115,6 @@ class User < ApplicationRecord
               )
   }
 
-  def admin?
-    @admin ||= roles.exists?(name: 'admin')
-  end
-
-  def banned?
-    roles.exists?(name: 'banned')
-  end
-
 private
 
   def set_last_active_at_timestamp
