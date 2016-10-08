@@ -5,7 +5,7 @@ class PostsController < ApplicationController
 
   before_action :set_conversation, only: :create
 
-  before_action :set_posts, except: :create
+  before_action :set_posts
   before_action :set_post, except: %i(index create)
   before_action :apply_pagination, only: :index
 
@@ -22,8 +22,9 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = Post.create! post_params do |post|
-      post.author = current_user
+    @post = @posts.create!(post_params) do |post|
+      post.author       = current_user
+      post.conversation = @conversation
     end
 
     render json: @post, status: :created
@@ -31,7 +32,7 @@ class PostsController < ApplicationController
 
   def update
     @post.editor = current_user
-    @post.update! post_params
+    @post.update!(post_params)
 
     render json: @post
   end
@@ -45,7 +46,7 @@ class PostsController < ApplicationController
 private
 
   def set_conversation
-    @conversation = policy_scope(Conversation).find(params[:conversation_id] || post_params[:conversation_id])
+    @conversation = policy_scope(Conversation).find(post_params[:conversation_id] || params[:conversation_id])
     forbid if @conversation.locked? unless allowed_to?(:lock_conversations)
   end
 
@@ -63,6 +64,6 @@ private
   end
 
   def set_post
-    @post = @posts.find params[:id]
+    @post = @posts.find(params[:id])
   end
 end

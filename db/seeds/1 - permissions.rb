@@ -181,6 +181,14 @@ Permissible::Permission.find_or_create_by! name: :delete_posts do |permission|
   TEXT
 end
 
+# - Role Permissions - #
+
+Permissible::Permission.find_or_create_by! name: :view_deleted_roles do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to view deleted roles.
+  TEXT
+end
+
 # - User Permissions - #
 
 Permissible::Permission.find_or_create_by! name: :view_deleted_users do |permission|

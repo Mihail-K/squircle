@@ -10,49 +10,53 @@ class PostPolicy < ApplicationPolicy
   end
 
   def create?
-    return true if current_user.try(:admin?)
-    authenticated? && !current_user.banned?
+    allowed_to?(:create_posts)
   end
 
   def update?
-    return true if current_user.try(:admin?)
-    authenticated? && !current_user.banned? && current_user_is_author? && conversation_active?
+    show? && can_modify? && (
+      allowed_to?(:update_posts) || (author? && allowed_to?(:update_owned_posts))
+    )
   end
 
   def destroy?
-    return true if current_user.try(:admin?)
-    authenticated? && !current_user.banned? && current_user_is_author? && conversation_active?
+    show? && can_modify? && (
+      allowed_to?(:delete_posts) || (author? && allowed_to?(:delete_owned_posts))
+    )
   end
 
   def permitted_attributes_for_create
     attributes  = %i(conversation_id character_id title body)
-    attributes += %i(deleted editor_id) if current_user.try(:admin?)
+    attributes << :deleted if allowed_to?(:delete_conversations)
+    attributes << :editor_id if current_user.try(:admin?)
     attributes
   end
 
   def permitted_attributes_for_update
     attributes  = %i(character_id title body)
-    attributes += %i(deleted editor_id) if current_user.try(:admin?)
+    attributes << :deleted if allowed_to?(:delete_conversations)
+    attributes << :editor_id if current_user.try(:admin?)
     attributes
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if current_user.try(:allowed_to?, :view_deleted_posts)
-        scope.all
-      else
-        scope.visible
+      scope.chain do |scope|
+        scope.not_deleted unless allowed_to?(:view_deleted_posts)
+      end.chain do |scope|
+        scope.joins(:conversation)
+             .merge(Conversation.visible) unless allowed_to?(:view_deleted_conversations)
       end
     end
   end
 
 private
 
-  def current_user_is_author?
-    post.author_id == current_user.id
+  def author?
+    post.author_id == current_user.try(:id)
   end
 
-  def conversation_active?
-    post.conversation.active?
+  def can_modify?
+    !post.conversation.locked? || allowed_to?(:lock_conversations)
   end
 end

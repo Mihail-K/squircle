@@ -80,11 +80,11 @@ RSpec.describe User, type: :model do
     end
 
     it 'is unbanned by the unban-job once all bans are expired' do
-      UnbanJob.perform
+      UnbanJob.perform_now
       expect(user.reload.banned?).to be true
 
       user.bans.update_all expires_at: 1.day.ago
-      UnbanJob.perform
+      UnbanJob.perform_now
       expect(user.reload.banned?).to be false
     end
   end

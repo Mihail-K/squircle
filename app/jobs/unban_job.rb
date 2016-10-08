@@ -1,7 +1,7 @@
-class UnbanJob
-  @queue = :medium
+class UnbanJob < ActiveJob::Base
+  queue_as :medium
 
-  def self.perform
+  def perform
     User.banned.no_active_bans.find_each do |user|
       user.roles.delete(banned)
     end
@@ -9,7 +9,7 @@ class UnbanJob
 
 private
 
-  def self.banned
+  def banned
     @banned ||= Role.find_by!(name: 'banned')
   end
 end

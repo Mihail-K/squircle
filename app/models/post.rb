@@ -35,10 +35,7 @@ class Post < ApplicationRecord
   belongs_to :character, counter_cache: :posts_count, inverse_of: :posts
 
   belongs_to :conversation, inverse_of: :posts
-
   has_one :section, through: :conversation
-
-  delegate :locked?, to: :conversation, allow_nil: true
 
   validates :author, presence: true
   validates :conversation, presence: true

@@ -18,7 +18,7 @@ class RolesController < ApplicationController
   end
 
   def create
-    @role = Role.create!(role_params)
+    @role = @roles.create!(role_params)
 
     render json: @role, status: :created
   end
@@ -30,7 +30,7 @@ class RolesController < ApplicationController
   end
 
   def destroy
-    @role.update deleted: true, deleted_by: current_user
+    @role.update! deleted: true, deleted_by: current_user
 
     head :no_content
   end
@@ -39,7 +39,7 @@ private
 
   def set_roles
     @roles = policy_scope(Role)
-    @roles = @roles.where(user: params[:user_id]) if params.key?(:user_id)
+    @roles = @roles.includes(:deleted_by) if allowed_to?(:view_deleted_roles)
   end
 
   def set_role

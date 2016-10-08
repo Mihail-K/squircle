@@ -32,6 +32,7 @@
     delete_characters:          :allow,
     # - Conversations - #
     view_deleted_conversations: :allow,
+    lock_conversations:         :allow,
     create_conversations:       :allow,
     update_conversations:       :allow,
     delete_conversations:       :allow,
@@ -53,6 +54,7 @@
     delete_characters:          :allow,
     # - Conversations - #
     view_deleted_conversations: :allow,
+    lock_conversations:         :allow,
     create_conversations:       :allow,
     update_conversations:       :allow,
     delete_conversations:       :allow,
@@ -61,6 +63,8 @@
     create_posts:               :allow,
     update_posts:               :allow,
     delete_posts:               :allow,
+    # - Roles - #
+    view_deleted_roles:         :allow,
     # - Users - #
     view_deleted_users:         :allow,
     view_users_personal_fields: :allow,
