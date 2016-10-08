@@ -51,14 +51,9 @@ class Conversation < ApplicationRecord
 
   before_save :set_locked_on_timestamp, if: -> { locked_changed?(to: true) }
 
-  scope :hidden, -> {
-    where(deleted: true).union(
-      joins(:section).merge(Section.hidden)
-    )
-  }
-
   scope :visible, -> {
-    where(deleted: false).joins(:section).merge(Section.visible)
+    not_deleted.joins(:section)
+               .merge(Section.visible)
   }
 
   scope :active, -> {

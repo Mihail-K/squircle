@@ -37,7 +37,7 @@ class ReportPolicy < ApplicationPolicy
       if current_user.try(:admin?)
         scope.all
       elsif authenticated?
-        scope.visible.where(creator: current_user)
+        scope.not_deleted.where(creator: current_user)
       else
         scope.none
       end

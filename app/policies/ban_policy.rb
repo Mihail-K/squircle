@@ -36,7 +36,7 @@ class BanPolicy < ApplicationPolicy
       return scope.none unless authenticated?
 
       scope.chain do |scope|
-        scope.visible unless allowed_to?(:view_deleted_bans)
+        scope.not_deleted unless allowed_to?(:view_deleted_bans)
       end.chain do |scope|
         scope.where(user: current_user) unless allowed_to?(:view_bans)
       end.chain do |scope|

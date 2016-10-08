@@ -31,4 +31,6 @@ class Section < ApplicationRecord
   validates :title, presence: true
   validates :description, length: { maximum: 1000 }
   validates :creator, presence: true
+
+  scope :visible, -> { not_deleted }
 end

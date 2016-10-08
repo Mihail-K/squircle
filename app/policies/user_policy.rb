@@ -42,7 +42,7 @@ class UserPolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     def resolve
       scope.chain do |scope|
-        scope.visible unless allowed_to?(:view_deleted_users)
+        scope.not_deleted unless allowed_to?(:view_deleted_users)
       end
     end
   end

@@ -95,15 +95,9 @@ class Post < ApplicationRecord
     where Post.arel_table[:created_at].gteq(20.seconds.ago)
   }
 
-  scope :hidden, -> {
-    where(deleted: true).union(
-      where(conversation_id: Conversation.hidden)
-    )
-  }
-
   scope :visible, -> {
-    where(deleted: false).joins(:conversation)
-                         .merge(Conversation.visible)
+    not_deleted.joins(:conversation)
+               .merge(Conversation.visible)
   }
 
   def editable_by?(user)
