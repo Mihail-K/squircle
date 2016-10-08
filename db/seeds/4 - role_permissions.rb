@@ -10,6 +10,7 @@
     delete_owned_characters:    :allow,
     # - Conversations - #
     view_conversations:         :allow,
+    create_conversations:       :allow,
     # - Posts - #
     view_posts:                 :allow,
     create_posts:               :allow,
@@ -30,6 +31,7 @@
     delete_characters:          :allow,
     # - Conversations - #
     view_deleted_conversations: :allow,
+    create_conversations:       :allow,
     # - Posts - #
     view_deleted_posts:         :allow,
     create_posts:               :allow,
@@ -46,6 +48,9 @@
     view_deleted_characters:    :allow,
     update_characters:          :allow,
     delete_characters:          :allow,
+    # - Conversations - #
+    view_deleted_conversations: :allow,
+    create_conversations:       :allow,
     # - Posts - #
     view_deleted_posts:         :allow,
     create_posts:               :allow,
@@ -67,7 +72,10 @@
     create_characters:          :forbid,
     update_characters:          :forbid,
     delete_characters:          :forbid,
+    # - Conversations - #
+    create_conversations:       :forbid,
     # - Users - #
+    create_users:               :forbid,
     update_users:               :forbid,
     delete_users:               :forbid,
     # - Posts - #

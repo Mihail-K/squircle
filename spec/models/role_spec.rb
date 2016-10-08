@@ -44,6 +44,10 @@ RSpec.describe Role, type: :model do
       expect(role).not_to be_allowed_to :view_deleted_posts
     end
 
+    it 'is allowed to create conversations' do
+      expect(role).to be_allowed_to :create_conversations
+    end
+
     it 'is allowed to create posts' do
       expect(role).to be_allowed_to :create_posts
     end
@@ -112,6 +116,10 @@ RSpec.describe Role, type: :model do
 
     it 'is forbidden to delete bans' do
       expect(role).to be_forbidden_to :delete_bans
+    end
+
+    it 'is forbidden to create new conversations' do
+      expect(role).to be_forbidden_to :create_conversations
     end
 
     it 'is forbidden to make new posts' do

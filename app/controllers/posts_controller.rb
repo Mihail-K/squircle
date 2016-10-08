@@ -46,7 +46,7 @@ private
 
   def set_conversation
     @conversation = policy_scope(Conversation).find(params[:conversation_id] || post_params[:conversation_id])
-    forbid if @conversation.locked? unless admin?
+    forbid if @conversation.locked? unless can_lock_conversations?
   end
 
   def set_posts
@@ -64,6 +64,10 @@ private
 
   def set_post
     @post = @posts.find params[:id]
+  end
+
+  def can_lock_conversations?
+    current_user.try(:allowed_to?, :create_conversations)
   end
 
   def can_view_deleted_posts?

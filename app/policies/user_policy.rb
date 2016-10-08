@@ -35,7 +35,7 @@ class UserPolicy < ApplicationPolicy
 
   def permitted_attributes_for_update
     attributes  = %i(email date_of_birth display_name first_name last_name password password_confirmation avatar)
-    attributes << %i(deleted) if allowed_to?(:delete_users)
+    attributes << :deleted if allowed_to?(:delete_users)
     attributes
   end
 

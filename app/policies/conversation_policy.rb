@@ -10,8 +10,7 @@ class ConversationPolicy < ApplicationPolicy
   end
 
   def create?
-    return true if current_user.try(:admin?)
-    authenticated? && !current_user.banned?
+    index? && allowed_to?(:create_conversations)
   end
 
   def update?
