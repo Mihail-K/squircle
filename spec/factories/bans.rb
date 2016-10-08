@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :ban do
-    association :user
-    association :creator, factory: :user, role: :admin
+    association :user, strategy: :build
+    association :creator, factory: :user, role: :admin, strategy: :build
 
     reason { Faker::Hipster.paragraph }
     expires_at { Faker::Date.between(1.day.from_now, 1.year.from_now) }

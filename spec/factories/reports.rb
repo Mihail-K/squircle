@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :report do
-    association :creator, factory: :user
+    association :creator, factory: :user, strategy: :build
     association :reportable, factory: :user, strategy: :build
 
     description { Faker::Lorem.paragraph }

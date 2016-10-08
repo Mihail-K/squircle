@@ -86,7 +86,7 @@ class Ban < ApplicationRecord
 private
 
   def creator_is_not_user
-    errors.add :base, 'you cannot ban yourself' if user_id == creator_id
+    errors.add :base, 'you cannot ban yourself' if user == creator
   end
 
   def apply_ban_to_user

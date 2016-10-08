@@ -85,20 +85,7 @@ class User < ApplicationRecord
   }
 
   scope :no_active_bans, -> {
-    joins(
-      User.arel_table
-          .outer_join(Ban.arel_table)
-          .on(
-            Ban.arel_table[:user_id]
-               .eq(User.arel_table[:id])
-               .and(
-                 Ban.arel_table[:expires_at]
-                    .gteq(Time.zone.now)
-               )
-          )
-          .join_sources
-    )
-    .where bans: { id: nil }
+    left_joins(:bans).where(bans: { id: nil })
   }
 
   scope :most_active, -> {

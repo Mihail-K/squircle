@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :character do
-    association :creator, factory: :user
+    association :creator, factory: :user, strategy: :build
 
     name { Faker::Pokemon.name }
     title { Faker::Name.title }
