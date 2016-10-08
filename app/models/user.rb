@@ -38,7 +38,7 @@
 class User < ApplicationRecord
   include Permissible::Model
 
-  has_and_belongs_to_many :roles
+  has_and_belongs_to_many :roles, -> { not_deleted }
   has_many :role_permissions, through: :roles
 
   inherits_permissions_from :roles
