@@ -90,6 +90,9 @@
             }
           ]
         },
+        "lockable": {
+          "type": "boolean"
+        },
         "editable": {
           "type": "boolean"
         },

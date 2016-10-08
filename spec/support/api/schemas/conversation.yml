@@ -50,6 +50,8 @@ definitions:
         - type: 'null'
         - type: string
           format: date-time
+      lockable:
+        type: boolean
       editable:
         type: boolean
       deletable:
