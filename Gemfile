@@ -2,7 +2,6 @@ source 'https://rubygems.org'
 ruby '2.3.0'
 
 gem 'active_model_serializers', '~> 0.10.0'
-gem 'active_record_union'
 gem 'awesome_print'
 gem 'bcrypt', '~> 3.1.7'
 gem 'carrierwave', github: 'carrierwaveuploader/carrierwave'
@@ -12,6 +11,7 @@ gem 'kaminari'
 gem 'mini_magick'
 gem 'permissible', github: 'mihail-k/permissible'
 gem 'pg'
+gem 'puma'
 gem 'pundit'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails'
@@ -46,5 +46,4 @@ end
 
 group :production do
   gem 'fog-aws'
-  gem 'puma'
 end
