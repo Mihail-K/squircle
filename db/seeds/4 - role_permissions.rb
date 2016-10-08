@@ -68,6 +68,8 @@
     # - Sections - #
     view_deleted_sections:      :allow,
     create_sections:            :allow,
+    update_sections:            :allow,
+    delete_sections:            :allow,
     # - Users - #
     view_deleted_users:         :allow,
     view_users_personal_fields: :allow,

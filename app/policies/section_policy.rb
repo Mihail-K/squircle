@@ -14,11 +14,11 @@ class SectionPolicy < ApplicationPolicy
   end
 
   def update?
-    current_user.try(:admin?)
+    allowed_to?(:update_sections)
   end
 
   def destroy?
-    current_user.try(:admin?)
+    allowed_to?(:delete_sections)
   end
 
   def permitted_attributes

@@ -203,6 +203,18 @@ Permissible::Permission.find_or_create_by! name: :create_sections do |permission
   TEXT
 end
 
+Permissible::Permission.find_or_create_by! name: :update_sections do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to edit forum sections.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :delete_sections do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to delete forum sections.
+  TEXT
+end
+
 # - User Permissions - #
 
 Permissible::Permission.find_or_create_by! name: :view_deleted_users do |permission|
