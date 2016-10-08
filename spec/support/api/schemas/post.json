@@ -60,9 +60,6 @@
         "formatted_body": {
           "type": "string"
         },
-        "editable": {
-          "type": "boolean"
-        },
         "deleted": {
           "type": "boolean"
         },
@@ -84,6 +81,12 @@
               "format": "date-time"
             }
           ]
+        },
+        "editable": {
+          "type": "boolean"
+        },
+        "deletable": {
+          "type": "boolean"
         },
         "author": {
           "$ref": "user.json#/definitions/user"

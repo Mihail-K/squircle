@@ -79,11 +79,6 @@ class Post < ApplicationRecord
     not_deleted.where(conversation: Conversation.visible)
   }
 
-  def editable_by?(user)
-    return true if user.try(:allowed_to?, :update_posts)
-    author_id == user.try(:id) && user.try(:allowed_to?, :update_owned_posts)
-  end
-
 private
 
   def update_author_posts_count

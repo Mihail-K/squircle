@@ -14,15 +14,13 @@ class PostPolicy < ApplicationPolicy
   end
 
   def update?
-    show? && can_modify? && (
-      allowed_to?(:update_posts) || (author? && allowed_to?(:update_owned_posts))
-    )
+    return false if post.conversation.locked? unless allowed_to?(:lock_conversations)
+    (author? && allowed_to?(:update_owned_posts)) || allowed_to?(:update_posts)
   end
 
   def destroy?
-    show? && can_modify? && (
-      allowed_to?(:delete_posts) || (author? && allowed_to?(:delete_owned_posts))
-    )
+    return false if post.conversation.locked? unless allowed_to?(:lock_conversations)
+    (author? && allowed_to?(:delete_owned_posts)) || allowed_to?(:delete_posts)
   end
 
   def permitted_attributes_for_create
@@ -54,9 +52,5 @@ private
 
   def author?
     post.author_id == current_user.try(:id)
-  end
-
-  def can_modify?
-    !post.conversation.locked? || allowed_to?(:lock_conversations)
   end
 end

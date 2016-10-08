@@ -23,10 +23,10 @@ class UserSerializer < ApplicationSerializer
   attribute :deleted
 
   attribute :editable do
-    (current_user == object && allowed_to?(:update_self)) || allowed_to?(:update_users)
+    policy.update? || false
   end
   attribute :deletable do
-    (current_user == object && allowed_to?(:delete_self)) || allowed_to?(:delete_users)
+    policy.destroy? || false
   end
 
   attribute :avatar_url, if: -> { object.avatar.file.present? } do

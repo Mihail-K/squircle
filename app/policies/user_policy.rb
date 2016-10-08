@@ -18,15 +18,11 @@ class UserPolicy < ApplicationPolicy
   end
 
   def update?
-    return false unless show?
-    return true if allowed_to?(:update_users)
-    user.id == current_user.id && allowed_to?(:update_self)
+    (current_user == user && allowed_to?(:update_self)) || allowed_to?(:update_users)
   end
 
   def destroy?
-    return false unless show?
-    return true if allowed_to?(:delete_users)
-    user.id == current_user.id && allowed_to?(:delete_self)
+    (current_user == user && allowed_to?(:delete_self)) || allowed_to?(:delete_users)
   end
 
   def permitted_attributes_for_create

@@ -1,4 +1,4 @@
-class PostSerializer < ActiveModel::Serializer
+class PostSerializer < ApplicationSerializer
   cache expires_in: 1.hour
 
   attribute :id
@@ -11,12 +11,16 @@ class PostSerializer < ActiveModel::Serializer
   attribute :title
   attribute :body
   attribute :formatted_body
-  attribute :editable do
-    object.editable_by?(current_user)
-  end
   attribute :deleted
   attribute :created_at
   attribute :updated_at
+
+  attribute :editable do
+    policy.update? || false
+  end
+  attribute :deletable do
+    policy.destroy? || false
+  end
 
   belongs_to :author, serializer: UserSerializer
   belongs_to :editor, serializer: UserSerializer

@@ -31,8 +31,6 @@ definitions:
         type: string
       formatted_body:
         type: string
-      editable:
-        type: boolean
       deleted:
         type: boolean
       created_at:
@@ -46,6 +44,10 @@ definitions:
         - type: 'null'
         - type: string
           format: date-time
+      editable:
+        type: boolean
+      deletable:
+        type: boolean
       author:
         $ref: user.json#/definitions/user
       editor:
