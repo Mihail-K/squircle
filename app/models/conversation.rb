@@ -56,18 +56,10 @@ class Conversation < ApplicationRecord
                .merge(Section.visible)
   }
 
-  scope :active, -> {
-    visible.where(locked: false)
-  }
-
   scope :recently_active, -> {
     order(last_active_at: :desc).where Conversation.arel_table[:last_active_at]
                                                    .gteq(1.day.ago)
   }
-
-  def active?
-    !locked? && !deleted? && !section.try(:deleted?)
-  end
 
 private
 
