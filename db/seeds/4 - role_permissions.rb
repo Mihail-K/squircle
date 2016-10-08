@@ -65,6 +65,9 @@
     delete_posts:               :allow,
     # - Roles - #
     view_deleted_roles:         :allow,
+    # - Sections - #
+    view_deleted_sections:      :allow,
+    create_sections:            :allow,
     # - Users - #
     view_deleted_users:         :allow,
     view_users_personal_fields: :allow,

@@ -189,6 +189,20 @@ Permissible::Permission.find_or_create_by! name: :view_deleted_roles do |permiss
   TEXT
 end
 
+# - Section Permissions - #
+
+Permissible::Permission.find_or_create_by! name: :view_deleted_sections do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to view deleted forum sections.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :create_sections do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to create new forum sections.
+  TEXT
+end
+
 # - User Permissions - #
 
 Permissible::Permission.find_or_create_by! name: :view_deleted_users do |permission|

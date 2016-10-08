@@ -40,6 +40,10 @@ definitions:
         - type: 'null'
         - type: string
           format: date-time
+      editable:
+        type: boolean
+      deletable:
+        type: boolean
       creator:
         $ref: user.json#/definitions/user
       deleted_by:

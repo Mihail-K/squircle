@@ -41,10 +41,11 @@ class ConversationPolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if current_user.try(:admin?)
-        scope.all
-      else
-        scope.visible
+      scope.chain do |scope|
+        scope.not_deleted unless allowed_to?(:view_deleted_conversations)
+      end.chain do |scope|
+        scope.joins(:section)
+             .merge(Section.not_deleted) unless allowed_to?(:view_deleted_sections)
       end
     end
   end

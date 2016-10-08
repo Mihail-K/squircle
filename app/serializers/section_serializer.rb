@@ -1,4 +1,4 @@
-class SectionSerializer < ActiveModel::Serializer
+class SectionSerializer < ApplicationSerializer
   cache expires_in: 6.hours
 
   attribute :id
@@ -17,6 +17,13 @@ class SectionSerializer < ActiveModel::Serializer
   attribute :created_at
   attribute :updated_at
   attribute :deleted_at, if: :can_view_deleted_sections?
+
+  attribute :editable do
+    policy.update? || false
+  end
+  attribute :deletable do
+    policy.destroy? || false
+  end
 
   belongs_to :creator, serializer: UserSerializer, if: :can_view_creator?
   belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted_sections?

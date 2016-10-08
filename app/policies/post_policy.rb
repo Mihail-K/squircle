@@ -43,7 +43,10 @@ class PostPolicy < ApplicationPolicy
         scope.not_deleted unless allowed_to?(:view_deleted_posts)
       end.chain do |scope|
         scope.joins(:conversation)
-             .merge(Conversation.visible) unless allowed_to?(:view_deleted_conversations)
+             .merge(Conversation.not_deleted) unless allowed_to?(:view_deleted_conversations)
+      end.chain do |scope|
+        scope.joins(:section)
+             .merge(Section.not_deleted) unless allowed_to?(:view_deleted_sections)
       end
     end
   end
