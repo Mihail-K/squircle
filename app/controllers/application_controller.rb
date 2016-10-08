@@ -65,6 +65,14 @@ class ApplicationController < ActionController::API
     end
   end
 
+  def allowed_to?(permission)
+    current_user.try(:allowed_to?, permission)
+  end
+
+  def forbidden_to?(permission)
+    current_user.try(:forbidden_to?, permission)
+  end
+
 private
 
   def pundit_object
