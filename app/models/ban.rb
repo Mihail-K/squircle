@@ -39,33 +39,19 @@ class Ban < ApplicationRecord
   after_create :apply_ban_to_user, if: :active?
 
   scope :active, -> {
-    where Ban.arel_table[:deleted]
-             .eq(false)
-             .and(
-               Ban.arel_table[:expires_at]
-                  .eq(nil)
-                  .or(
-                    Ban.arel_table[:expires_at]
-                       .gteq(Time.zone.now)
-                  )
-             )
+    not_deleted.not_expired
   }
 
   scope :inactive, -> {
-    where Ban.arel_table[:deleted]
-             .eq(true)
-             .or(
-               Ban.arel_table[:expires_at]
-                  .not_eq(nil)
-                  .and(
-                    Ban.arel_table[:expires_at]
-                       .lt(Time.zone.now)
-                  )
-             )
+    deleted.or(expired)
   }
 
-  scope :permanent, -> {
-    where expires_at: nil
+  scope :expired, -> {
+    where.not(expires_at: nil).where(arel_table[:expires_at].lt(Time.zone.now))
+  }
+
+  scope :not_expired, -> {
+    where(expires_at: nil).or(where(arel_table[:expires_at].gt(Time.zone.now)))
   }
 
   def active?
