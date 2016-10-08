@@ -6,7 +6,7 @@ class ReportPolicy < ApplicationPolicy
   end
 
   def show?
-    scope.exists?(id: report.id)
+    scope.exists?(id: report)
   end
 
   def create?

@@ -6,6 +6,6 @@ class RolePolicy < ApplicationPolicy
   end
 
   def show?
-    scope.exists?(id: role.id)
+    scope.exists?(id: role)
   end
 end

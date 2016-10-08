@@ -6,11 +6,11 @@ class ConversationPolicy < ApplicationPolicy
   end
 
   def show?
-    scope.exists?(id: conversation.id)
+    scope.exists?(id: conversation)
   end
 
   def create?
-    index? && allowed_to?(:create_conversations)
+    allowed_to?(:create_conversations)
   end
 
   def update?

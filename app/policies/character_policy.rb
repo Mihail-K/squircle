@@ -6,7 +6,7 @@ class CharacterPolicy < ApplicationPolicy
   end
 
   def show?
-    scope.exists?(id: character.id)
+    scope.exists?(id: character)
   end
 
   def create?

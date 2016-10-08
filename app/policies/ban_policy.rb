@@ -6,7 +6,7 @@ class BanPolicy < ApplicationPolicy
   end
 
   def show?
-    scope.exists?(id: ban.id)
+    scope.exists?(id: ban)
   end
 
   def create?

@@ -6,7 +6,7 @@ class PostPolicy < ApplicationPolicy
   end
 
   def show?
-    index? && scope.exists?(id: post.id)
+    scope.exists?(id: post)
   end
 
   def create?
