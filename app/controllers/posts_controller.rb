@@ -67,7 +67,7 @@ private
   end
 
   def can_lock_conversations?
-    current_user.try(:allowed_to?, :create_conversations)
+    current_user.try(:allowed_to?, :lock_conversations)
   end
 
   def can_view_deleted_posts?

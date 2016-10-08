@@ -9,7 +9,7 @@ end
 
 Permissible::Permission.find_or_create_by! name: :view_bans do |permission|
   permission.description = <<-TEXT.squish
-    Permits the user to view other users' bans.
+    Permits the user to view visible bans.
   TEXT
 end
 
@@ -33,7 +33,7 @@ end
 
 Permissible::Permission.find_or_create_by! name: :update_bans do |permission|
   permission.description = <<-TEXT.squish
-    Permits the user to the details of a ban.
+    Permits the user to edit the details of a ban.
   TEXT
 end
 
@@ -65,7 +65,7 @@ end
 
 Permissible::Permission.find_or_create_by! name: :update_characters do |permission|
   permission.description = <<-TEXT.squish
-    Permits the user to edit any character.
+    Permits the user to edit all characters.
   TEXT
 end
 
@@ -77,7 +77,7 @@ end
 
 Permissible::Permission.find_or_create_by! name: :delete_characters do |permission|
   permission.description = <<-TEXT.squish
-    Permits the user to delete any character.
+    Permits the user to delete all characters.
   TEXT
 end
 
@@ -113,6 +113,30 @@ Permissible::Permission.find_or_create_by! name: :create_conversations do |permi
   TEXT
 end
 
+Permissible::Permission.find_or_create_by! name: :update_conversations do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to update all conversations.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :update_owned_conversations do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to update their own conversations.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :delete_conversations do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to delete all conversations.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :delete_owned_conversations do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to delete their own conversations.
+  TEXT
+end
+
 # - Post Permissions - #
 
 Permissible::Permission.find_or_create_by! name: :view_deleted_posts do |permission|
@@ -123,7 +147,7 @@ end
 
 Permissible::Permission.find_or_create_by! name: :view_posts do |permission|
   permission.description = <<-TEXT.squish
-    Permits the user to view other users' posts.
+    Permits the user to view visible posts.
   TEXT
 end
 
@@ -141,7 +165,7 @@ end
 
 Permissible::Permission.find_or_create_by! name: :update_posts do |permission|
   permission.description = <<-TEXT.squish
-    Permits the user to edit other users' posts.
+    Permits the user to edit all posts.
   TEXT
 end
 
@@ -153,7 +177,7 @@ end
 
 Permissible::Permission.find_or_create_by! name: :delete_posts do |permission|
   permission.description = <<-TEXT.squish
-    Permits the user to delete other users' posts.
+    Permits the user to delete all posts.
   TEXT
 end
 
@@ -167,7 +191,7 @@ end
 
 Permissible::Permission.find_or_create_by! name: :view_users do |permission|
   permission.description = <<-TEXT.squish
-    Permits the user to view users.
+    Permits the user to view visible users.
   TEXT
 end
 
@@ -185,7 +209,7 @@ end
 
 Permissible::Permission.find_or_create_by! name: :update_users do |permission|
   permission.description = <<-TEXT.squish
-    Permits the user to update other users' accounts.
+    Permits the user to update all accounts.
   TEXT
 end
 
@@ -197,7 +221,7 @@ end
 
 Permissible::Permission.find_or_create_by! name: :delete_users do |permission|
   permission.description = <<-TEXT.squish
-    Permits the user to delete other users' accounts.
+    Permits the user to delete all accounts.
   TEXT
 end
 

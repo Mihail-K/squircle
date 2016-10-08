@@ -14,12 +14,17 @@ class ConversationPolicy < ApplicationPolicy
   end
 
   def update?
-    return true if current_user.try(:admin?)
-    authenticated? && author? && !current_user.banned? && !locked?
+    show? && modifiable? && (
+      allowed_to?(:update_conversations) ||
+      (author? && allowed_to?(:update_owned_conversations))
+    )
   end
 
   def destroy?
-    current_user.try(:admin?)
+    show? && modifiable? && (
+      allowed_to?(:delete_conversations) ||
+      (author? && allowed_to?(:delete_owned_conversations))
+    )
   end
 
   def permitted_attributes_for_create
@@ -50,7 +55,7 @@ protected
     current_user.try(:id) == conversation.author_id
   end
 
-  def locked?
-    conversation.locked?
+  def modifiable?
+    !conversation.locked? || allowed_to?(:lock_conversations)
   end
 end

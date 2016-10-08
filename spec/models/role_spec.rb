@@ -40,12 +40,72 @@ RSpec.describe Role, type: :model do
       expect(role).not_to be_allowed_to :create_bans
     end
 
-    it 'is not allowed to view deleted posts' do
-      expect(role).not_to be_allowed_to :view_deleted_posts
+    it 'is not allowed to update bans' do
+      expect(role).not_to be_allowed_to :update_bans
+    end
+
+    it 'is not allowed to delete bans' do
+      expect(role).not_to be_allowed_to :delete_bans
+    end
+
+    it 'is allowed to view characters' do
+      expect(role).to be_allowed_to :view_characters
+    end
+
+    it 'is not allowed to view deleted characters' do
+      expect(role).not_to be_allowed_to :view_deleted_characters
+    end
+
+    it 'is allowed to create characters' do
+      expect(role).to be_allowed_to :create_characters
+    end
+
+    it 'is allowed to update owned characters' do
+      expect(role).to be_allowed_to :update_owned_characters
+    end
+
+    it 'is not allowed to update other characters' do
+      expect(role).not_to be_allowed_to :update_characters
+    end
+
+    it 'is allowed to delete owned characters' do
+      expect(role).to be_allowed_to :delete_owned_characters
+    end
+
+    it 'is not allowed to delete other characters' do
+      expect(role).not_to be_allowed_to :delete_characters
+    end
+
+    it 'is allowed to view conversations' do
+      expect(role).to be_allowed_to :view_conversations
+    end
+
+    it 'is not allowed to view deleted conversations' do
+      expect(role).not_to be_allowed_to :view_deleted_conversations
     end
 
     it 'is allowed to create conversations' do
       expect(role).to be_allowed_to :create_conversations
+    end
+
+    it 'is allowed to update owned conversations' do
+      expect(role).to be_allowed_to :update_owned_conversations
+    end
+
+    it 'is not allowed to update conversations' do
+      expect(role).not_to be_allowed_to :update_conversations
+    end
+
+    it 'is not allowed to delete owned conversations' do
+      expect(role).not_to be_allowed_to :delete_owned_conversations
+    end
+
+    it 'is allowed to view posts' do
+      expect(role).to be_allowed_to :view_posts
+    end
+
+    it 'is not allowed to view deleted posts' do
+      expect(role).not_to be_allowed_to :view_deleted_posts
     end
 
     it 'is allowed to create posts' do
@@ -71,11 +131,19 @@ RSpec.describe Role, type: :model do
 
   describe 'moderator' do
     let :role do
-      Role.where name: 'moderator'
+      Role.find_by(name: 'moderator')
     end
 
     it 'exists' do
-      expect(role).to exist
+      expect(role).to be_present
+    end
+
+    it 'is allowed to update all conversations' do
+      expect(role).to be_allowed_to :update_conversations
+    end
+
+    it 'is allowed to delete all conversations' do
+      expect(role).to be_allowed_to :delete_conversations
     end
   end
 
@@ -118,8 +186,28 @@ RSpec.describe Role, type: :model do
       expect(role).to be_forbidden_to :delete_bans
     end
 
+    it 'is forbidden to create characters' do
+      expect(role).to be_forbidden_to :create_characters
+    end
+
+    it 'is forbidden to update characters' do
+      expect(role).to be_forbidden_to :update_characters
+    end
+
+    it 'is forbidden to delete characters' do
+      expect(role).to be_forbidden_to :delete_characters
+    end
+
     it 'is forbidden to create new conversations' do
       expect(role).to be_forbidden_to :create_conversations
+    end
+
+    it 'is forbidden to update conversations' do
+      expect(role).to be_forbidden_to :update_conversations
+    end
+
+    it 'is forbidden to delete conversations' do
+      expect(role).to be_forbidden_to :delete_conversations
     end
 
     it 'is forbidden to make new posts' do
