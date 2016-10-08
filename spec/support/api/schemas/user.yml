@@ -47,6 +47,10 @@ definitions:
         type: boolean
       deleted:
         type: boolean
+      editable:
+        type: boolean
+      deletable:
+        type: boolean
       avatar_url:
         type: string
       avatar_medium_url:
@@ -72,6 +76,8 @@ definitions:
     - last_active_at
     - banned
     - deleted
+    - editable
+    - deletable
     additionalProperties: false
 type: object
 properties:

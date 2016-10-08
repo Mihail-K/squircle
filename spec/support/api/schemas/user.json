@@ -82,6 +82,12 @@
         "deleted": {
           "type": "boolean"
         },
+        "editable": {
+          "type": "boolean"
+        },
+        "deletable": {
+          "type": "boolean"
+        },
         "avatar_url": {
           "type": "string"
         },
@@ -122,7 +128,9 @@
         "created_at",
         "last_active_at",
         "banned",
-        "deleted"
+        "deleted",
+        "editable",
+        "deletable"
       ],
       "additionalProperties": false
     }

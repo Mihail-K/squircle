@@ -1,4 +1,4 @@
-class UserSerializer < ActiveModel::Serializer
+class UserSerializer < ApplicationSerializer
   cache expires_in: 3.hours
 
   attribute :id
@@ -21,6 +21,13 @@ class UserSerializer < ActiveModel::Serializer
 
   attribute :banned
   attribute :deleted
+
+  attribute :editable do
+    (current_user == object && allowed_to?(:update_self)) || allowed_to?(:update_users)
+  end
+  attribute :deletable do
+    (current_user == object && allowed_to?(:delete_self)) || allowed_to?(:delete_users)
+  end
 
   attribute :avatar_url, if: -> { object.avatar.file.present? } do
     object.avatar.url
