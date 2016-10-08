@@ -2,23 +2,23 @@ class BanPolicy < ApplicationPolicy
   alias_method :ban, :record
 
   def index?
-    authenticated? && allowed_to?(:view_owned_bans)
+    allowed_to?(:view_owned_bans)
   end
 
   def show?
-    index? && scope.exists?(id: ban.id)
+    scope.exists?(id: ban.id)
   end
 
   def create?
-    index? && allowed_to?(:create_bans)
+    allowed_to?(:create_bans)
   end
 
   def update?
-    show? && allowed_to?(:update_bans)
+    allowed_to?(:update_bans)
   end
 
   def destroy?
-    show? && allowed_to?(:delete_bans)
+    allowed_to?(:delete_bans)
   end
 
   def permitted_attributes_for_create

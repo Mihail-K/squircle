@@ -1,4 +1,4 @@
-class CharacterSerializer < ActiveModel::Serializer
+class CharacterSerializer < ApplicationSerializer
   cache expires_in: 1.hour
 
   attribute :id
@@ -19,6 +19,13 @@ class CharacterSerializer < ActiveModel::Serializer
   end
   attribute :gallery_image_urls do
     object.gallery_images.map(&:url)
+  end
+
+  attribute :editable do
+    policy.update? || false
+  end
+  attribute :deletable do
+    policy.destroy? || false
   end
 
   belongs_to :user

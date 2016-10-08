@@ -29,6 +29,10 @@ definitions:
         - type: 'null'
         - type: string
           format: date-time
+      editable:
+        type: boolean
+      deletable:
+        type: boolean
       deleted_by:
         oneOf:
         - type: 'null'

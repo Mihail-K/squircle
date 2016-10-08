@@ -10,7 +10,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def show?
-    index? && scope.exists?(id: user.id)
+    scope.exists?(id: user.id)
   end
 
   def create?

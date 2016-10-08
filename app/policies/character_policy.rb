@@ -6,23 +6,19 @@ class CharacterPolicy < ApplicationPolicy
   end
 
   def show?
-    index? && scope.exists?(id: character.id)
+    scope.exists?(id: character.id)
   end
 
   def create?
-    index? && allowed_to?(:create_characters)
+    allowed_to?(:create_characters)
   end
 
   def update?
-    return false unless show?
-    return true if allowed_to?(:update_characters)
-    character.user_id == current_user.id && allowed_to?(:update_owned_characters)
+    (creator? && allowed_to?(:update_owned_characters)) || allowed_to?(:update_characters)
   end
 
   def destroy?
-    return false unless show?
-    return true if allowed_to?(:delete_characters)
-    character.user_id == current_user.id && allowed_to?(:delete_owned_characters)
+    (creator? && allowed_to?(:delete_owned_characters)) || allowed_to?(:delete_characters)
   end
 
   def permitted_attributes
@@ -37,5 +33,11 @@ class CharacterPolicy < ApplicationPolicy
         scope.not_deleted unless allowed_to?(:view_deleted_characters)
       end
     end
+  end
+
+private
+
+  def creator?
+    current_user.try(:id) == character.user_id
   end
 end

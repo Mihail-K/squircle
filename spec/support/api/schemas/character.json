@@ -78,6 +78,12 @@
             }
           ]
         },
+        "editable": {
+          "type": "boolean"
+        },
+        "deletable": {
+          "type": "boolean"
+        },
         "user": {
           "oneOf": [
             {

@@ -2,24 +2,23 @@ class ReportPolicy < ApplicationPolicy
   alias_method :report, :record
 
   def index?
-    authenticated?
+    allowed_to?(:view_owned_reports)
   end
 
   def show?
-    index? && scope.exists?(id: report.id)
+    scope.exists?(id: report.id)
   end
 
   def create?
-    authenticated? && !current_user.banned?
+    allowed_to?(:create_reports)
   end
 
   def update?
-    return true if current_user.try(:admin?)
-    authenticated? && !current_user.banned? && report.creator_id == current_user.id && report.open?
+    (creator? && allowed_to?(:update_owned_reports)) || allowed_to?(:update_reports)
   end
 
   def destroy?
-    current_user.try(:admin?)
+    (creator? && allowed_to?(:delete_owned_reports)) || allowed_to?(:delete_reports)
   end
 
   def permitted_attributes_for_create
@@ -34,13 +33,19 @@ class ReportPolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if current_user.try(:admin?)
-        scope.all
-      elsif authenticated?
-        scope.not_deleted.where(creator: current_user)
-      else
-        scope.none
+      scope.chain do |scope|
+        scope.not_deleted unless allowed_to?(:view_deleted_reports)
+      end.chain do |scope|
+        scope.where(creator: current_user) unless allowed_to?(:view_reports)
+      end.chain do |scope|
+        scope.none unless allowed_to?(:view_owned_reports)
       end
     end
+  end
+
+private
+
+  def creator?
+    current_user.try(:id) == report.creator_id
   end
 end

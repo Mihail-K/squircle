@@ -85,6 +85,12 @@
             }
           ]
         },
+        "editable": {
+          "type": "boolean"
+        },
+        "deletable": {
+          "type": "boolean"
+        },
         "reportable": {
           "oneOf": [
             {

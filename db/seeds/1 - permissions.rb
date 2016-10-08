@@ -181,6 +181,56 @@ Permissible::Permission.find_or_create_by! name: :delete_posts do |permission|
   TEXT
 end
 
+# - Report Permissions - #
+
+Permissible::Permission.find_or_create_by! name: :view_deleted_reports do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to view deleted reports.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :view_reports do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to view all visible reports.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :view_owned_reports do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to view their own reports.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :create_reports do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to create reports.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :update_reports do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to edit all reports.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :update_owned_reports do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to edit their own reports.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :delete_reports do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to delete all reports.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :delete_owned_reports do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to delete their own reports.
+  TEXT
+end
+
 # - Role Permissions - #
 
 Permissible::Permission.find_or_create_by! name: :view_deleted_roles do |permission|

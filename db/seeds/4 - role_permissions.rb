@@ -17,6 +17,10 @@
     create_posts:               :allow,
     update_owned_posts:         :allow,
     delete_owned_posts:         :allow,
+    # - Reports - #
+    view_owned_reports:         :allow,
+    create_reports:             :allow,
+    update_owned_reports:       :allow,
     # - Users - #
     view_users:                 :allow,
     update_self:                :allow,
@@ -40,7 +44,11 @@
     view_deleted_posts:         :allow,
     create_posts:               :allow,
     update_posts:               :allow,
-    delete_posts:               :allow
+    delete_posts:               :allow,
+    # - Reports - #
+    view_reports:               :allow,
+    create_reports:             :allow,
+    update_reports:             :allow
   },
   admin: {
     # - Bans - #
@@ -63,6 +71,11 @@
     create_posts:               :allow,
     update_posts:               :allow,
     delete_posts:               :allow,
+    # - Reports - #
+    view_deleted_reports:       :allow,
+    create_reports:             :allow,
+    update_reports:             :allow,
+    delete_reports:             :allow,
     # - Roles - #
     view_deleted_roles:         :allow,
     # - Sections - #
@@ -94,6 +107,10 @@
     create_posts:               :forbid,
     update_posts:               :forbid,
     delete_posts:               :forbid,
+    # - Reports - #
+    create_reports:             :forbid,
+    update_reports:             :forbid,
+    delete_reports:             :forbid,
     # - Users - #
     create_users:               :forbid,
     update_users:               :forbid,

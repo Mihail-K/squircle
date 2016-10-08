@@ -50,6 +50,10 @@ definitions:
         - type: 'null'
         - type: string
           format: date-time
+      editable:
+        type: boolean
+      deletable:
+        type: boolean
       reportable:
         oneOf:
         - type: object

@@ -44,6 +44,10 @@ definitions:
         - type: 'null'
         - type: string
           format: date-time
+      editable:
+        type: boolean
+      deletable:
+        type: boolean
       user:
         oneOf:
         - type: 'null'
