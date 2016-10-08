@@ -48,6 +48,8 @@ class Post < ApplicationRecord
   validates :conversation, presence: true
   validates :body, presence: true, length: { in: 10 .. 10_000, if: :body? }
 
+  validate :character_owned_by_author, if: %i(character_id? character_id_changed?)
+
   formattable :body
 
   before_commit :update_author_posts_count
@@ -81,12 +83,16 @@ class Post < ApplicationRecord
 
 private
 
+  def character_owned_by_author
+    errors.add :character, 'cannot be used in posts' if character.user_id != author_id
+  end
+
   def update_author_posts_count
     author.update_columns(posts_count: author.posts.visible.count)
   end
 
   def update_conversation_posts_count
-    conversation.update_columns(posts_count: conversation.posts.visible.count)
+    conversation.update_columns(posts_count: conversation.posts.not_deleted.count)
   end
 
   def update_section_posts_count
@@ -94,7 +100,7 @@ private
   end
 
   def update_conversation_activity
-    last_activity = conversation.posts.visible.maximum(:updated_at)
+    last_activity = conversation.posts.not_deleted.maximum(:updated_at)
     conversation.update_columns(last_active_at: last_activity)
   end
 end
