@@ -68,6 +68,7 @@
     delete_conversations:       :allow,
     # - Posts - #
     view_deleted_posts:         :allow,
+    ignore_flood_limit:         :allow,
     create_posts:               :allow,
     update_posts:               :allow,
     delete_posts:               :allow,

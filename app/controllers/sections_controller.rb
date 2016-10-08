@@ -41,7 +41,8 @@ private
 
   def set_sections
     @sections = policy_scope(Section)
-    @sections = @sections.includes(:creator, :deleted_by) if admin?
+    @sections = @sections.includes(:creator) if allowed_to?(:create_sections)
+    @sections = @sections.includes(:deleted_by) if allowed_to?(:view_deleted_sections)
   end
 
   def set_section

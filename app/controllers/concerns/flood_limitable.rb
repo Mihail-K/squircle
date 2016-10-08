@@ -2,7 +2,9 @@ module FloodLimitable
   extend ActiveSupport::Concern
 
   included do
-    before_action :check_flood_limit, only: :create, unless: :admin?
+    before_action :check_flood_limit, only: :create, unless: -> {
+      current_user.try(:allowed_to?, :ignore_flood_limit)
+    }
   end
 
   def check_flood_limit

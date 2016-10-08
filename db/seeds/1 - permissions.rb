@@ -151,6 +151,12 @@ Permissible::Permission.find_or_create_by! name: :view_posts do |permission|
   TEXT
 end
 
+Permissible::Permission.find_or_create_by! name: :ignore_flood_limit do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to ignore the flood limit.
+  TEXT
+end
+
 Permissible::Permission.find_or_create_by! name: :create_posts do |permission|
   permission.description = <<-TEXT.squish
     Permits the user to create new posts.

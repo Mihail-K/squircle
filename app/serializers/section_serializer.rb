@@ -29,10 +29,10 @@ class SectionSerializer < ApplicationSerializer
   belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted_sections?
 
   def can_view_creator?
-    current_user.try(:admin?)
+    allowed_to?(:create_sections)
   end
 
   def can_view_deleted_sections?
-    current_user.try(:admin?)
+    allowed_to?(:view_deleted_sections)
   end
 end

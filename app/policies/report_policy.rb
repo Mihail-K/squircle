@@ -27,7 +27,8 @@ class ReportPolicy < ApplicationPolicy
 
   def permitted_attributes_for_update
     attributes  = %i(description)
-    attributes += %i(status deleted) if current_user.try(:admin?)
+    attributes << :status  if allowed_to?(:update_reports)
+    attributes << :deleted if allowed_to?(:delete_reports)
     attributes
   end
 
