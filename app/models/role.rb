@@ -17,6 +17,10 @@
 #  index_roles_on_deleted_by_id  (deleted_by_id)
 #  index_roles_on_name           (name) UNIQUE
 #
+# Foreign Keys
+#
+#  fk_rails_9dfc4563d8  (deleted_by_id => users.id)
+#
 
 class Role < ApplicationRecord
   include Permissible::Model

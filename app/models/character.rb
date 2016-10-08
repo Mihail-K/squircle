@@ -24,6 +24,12 @@
 #  index_characters_on_name           (name)
 #  index_characters_on_user_id        (user_id)
 #
+# Foreign Keys
+#
+#  fk_rails_53a8ea746c  (user_id => users.id)
+#  fk_rails_b2c2114869  (creator_id => users.id)
+#  fk_rails_b84e8f3791  (deleted_by_id => users.id)
+#
 
 class Character < ApplicationRecord
   belongs_to :user, counter_cache: :characters_count, inverse_of: :characters

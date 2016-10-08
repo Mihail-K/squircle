@@ -25,6 +25,13 @@
 #  index_conversations_on_locked_by_id   (locked_by_id)
 #  index_conversations_on_section_id     (section_id)
 #
+# Foreign Keys
+#
+#  fk_rails_23b24f1951  (locked_by_id => users.id)
+#  fk_rails_a10f02b3e3  (deleted_by_id => users.id)
+#  fk_rails_add3e5cc0c  (section_id => sections.id)
+#  fk_rails_c9ec5eb09c  (author_id => users.id)
+#
 
 class Conversation < ApplicationRecord
   belongs_to :author, class_name: 'User'
@@ -52,8 +59,7 @@ class Conversation < ApplicationRecord
   before_save :set_locked_on_timestamp, if: -> { locked_changed?(to: true) }
 
   scope :visible, -> {
-    not_deleted.joins(:section)
-               .merge(Section.visible)
+    not_deleted.where(section: Section.visible)
   }
 
   scope :recently_active, -> {

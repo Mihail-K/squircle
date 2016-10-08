@@ -12,6 +12,9 @@
 
 ActiveRecord::Schema.define(version: 20161007145617) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "bans", force: :cascade do |t|
     t.string   "reason",                        null: false
     t.datetime "expires_at"
@@ -22,9 +25,9 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.boolean  "deleted",       default: false, null: false
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
-    t.index ["creator_id"], name: "index_bans_on_creator_id"
-    t.index ["deleted_by_id"], name: "index_bans_on_deleted_by_id"
-    t.index ["user_id"], name: "index_bans_on_user_id"
+    t.index ["creator_id"], name: "index_bans_on_creator_id", using: :btree
+    t.index ["deleted_by_id"], name: "index_bans_on_deleted_by_id", using: :btree
+    t.index ["user_id"], name: "index_bans_on_user_id", using: :btree
   end
 
   create_table "characters", force: :cascade do |t|
@@ -41,10 +44,10 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.string   "gallery_images"
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
-    t.index ["creator_id"], name: "index_characters_on_creator_id"
-    t.index ["deleted_by_id"], name: "index_characters_on_deleted_by_id"
-    t.index ["name"], name: "index_characters_on_name"
-    t.index ["user_id"], name: "index_characters_on_user_id"
+    t.index ["creator_id"], name: "index_characters_on_creator_id", using: :btree
+    t.index ["deleted_by_id"], name: "index_characters_on_deleted_by_id", using: :btree
+    t.index ["name"], name: "index_characters_on_name", using: :btree
+    t.index ["user_id"], name: "index_characters_on_user_id", using: :btree
   end
 
   create_table "conversations", force: :cascade do |t|
@@ -62,10 +65,10 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.integer  "section_id",                     null: false
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
-    t.index ["author_id"], name: "index_conversations_on_author_id"
-    t.index ["deleted_by_id"], name: "index_conversations_on_deleted_by_id"
-    t.index ["locked_by_id"], name: "index_conversations_on_locked_by_id"
-    t.index ["section_id"], name: "index_conversations_on_section_id"
+    t.index ["author_id"], name: "index_conversations_on_author_id", using: :btree
+    t.index ["deleted_by_id"], name: "index_conversations_on_deleted_by_id", using: :btree
+    t.index ["locked_by_id"], name: "index_conversations_on_locked_by_id", using: :btree
+    t.index ["section_id"], name: "index_conversations_on_section_id", using: :btree
   end
 
   create_table "oauth_access_grants", force: :cascade do |t|
@@ -77,7 +80,7 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.datetime "created_at",        null: false
     t.datetime "revoked_at"
     t.string   "scopes"
-    t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true
+    t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true, using: :btree
   end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
@@ -90,9 +93,9 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.datetime "created_at",                          null: false
     t.string   "scopes"
     t.string   "previous_refresh_token", default: "", null: false
-    t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
-    t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
-    t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
+    t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true, using: :btree
+    t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id", using: :btree
+    t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true, using: :btree
   end
 
   create_table "oauth_applications", force: :cascade do |t|
@@ -103,15 +106,15 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.string   "scopes",       default: "", null: false
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
-    t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+    t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
   end
 
   create_table "permissible_implied_permissions", force: :cascade do |t|
     t.integer "permission_id", null: false
     t.integer "implied_by_id", null: false
-    t.index ["implied_by_id"], name: "index_permissible_implied_permissions_on_implied_by_id"
-    t.index ["permission_id", "implied_by_id"], name: "permissible_index_on_permission_and_implied_by", unique: true
-    t.index ["permission_id"], name: "index_permissible_implied_permissions_on_permission_id"
+    t.index ["implied_by_id"], name: "index_permissible_implied_permissions_on_implied_by_id", using: :btree
+    t.index ["permission_id", "implied_by_id"], name: "permissible_index_on_permission_and_implied_by", unique: true, using: :btree
+    t.index ["permission_id"], name: "index_permissible_implied_permissions_on_permission_id", using: :btree
   end
 
   create_table "permissible_model_permissions", force: :cascade do |t|
@@ -121,10 +124,10 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.string   "value",            default: "allow", null: false
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
-    t.index ["permissible_type", "permissible_id"], name: "permissible_index_on_polymorphic_permissible"
-    t.index ["permission_id", "permissible_id", "permissible_type"], name: "permissible_index_on_id_and_polymorphic_permissible", unique: true
-    t.index ["permission_id"], name: "index_permissible_model_permissions_on_permission_id"
-    t.index ["value"], name: "index_permissible_model_permissions_on_value"
+    t.index ["permissible_type", "permissible_id"], name: "permissible_index_on_polymorphic_permissible", using: :btree
+    t.index ["permission_id", "permissible_id", "permissible_type"], name: "permissible_index_on_id_and_polymorphic_permissible", unique: true, using: :btree
+    t.index ["permission_id"], name: "index_permissible_model_permissions_on_permission_id", using: :btree
+    t.index ["value"], name: "index_permissible_model_permissions_on_value", using: :btree
   end
 
   create_table "permissible_permissions", force: :cascade do |t|
@@ -132,7 +135,7 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.text     "description", default: "", null: false
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
-    t.index ["name"], name: "index_permissible_permissions_on_name", unique: true
+    t.index ["name"], name: "index_permissible_permissions_on_name", unique: true, using: :btree
   end
 
   create_table "permissions", force: :cascade do |t|
@@ -144,10 +147,10 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
     t.integer  "implied_by_id"
-    t.index ["deleted"], name: "index_permissions_on_deleted"
-    t.index ["deleted_by_id"], name: "index_permissions_on_deleted_by_id"
-    t.index ["implied_by_id"], name: "index_permissions_on_implied_by_id"
-    t.index ["name"], name: "index_permissions_on_name", unique: true
+    t.index ["deleted"], name: "index_permissions_on_deleted", using: :btree
+    t.index ["deleted_by_id"], name: "index_permissions_on_deleted_by_id", using: :btree
+    t.index ["implied_by_id"], name: "index_permissions_on_implied_by_id", using: :btree
+    t.index ["name"], name: "index_permissions_on_name", unique: true, using: :btree
   end
 
   create_table "posts", force: :cascade do |t|
@@ -163,13 +166,12 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.text     "formatted_body"
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
-    t.index ["author_id"], name: "index_posts_on_author_id"
-    t.index ["character_id"], name: "index_posts_on_character_id"
-    t.index ["conversation_id"], name: "index_posts_on_conversation_id"
-    t.index ["conversation_id"], name: "index_posts_on_postable_type_and_conversation_id"
-    t.index ["deleted_by_id"], name: "index_posts_on_deleted_by_id"
-    t.index ["editor_id"], name: "index_posts_on_editor_id"
-    t.index ["title"], name: "index_posts_on_title"
+    t.index ["author_id"], name: "index_posts_on_author_id", using: :btree
+    t.index ["character_id"], name: "index_posts_on_character_id", using: :btree
+    t.index ["conversation_id"], name: "index_posts_on_conversation_id", using: :btree
+    t.index ["deleted_by_id"], name: "index_posts_on_deleted_by_id", using: :btree
+    t.index ["editor_id"], name: "index_posts_on_editor_id", using: :btree
+    t.index ["title"], name: "index_posts_on_title", using: :btree
   end
 
   create_table "reports", force: :cascade do |t|
@@ -185,12 +187,12 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.integer  "closed_by_id"
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
-    t.index ["closed_by_id"], name: "index_reports_on_closed_by_id"
-    t.index ["creator_id"], name: "index_reports_on_creator_id"
-    t.index ["deleted"], name: "index_reports_on_deleted"
-    t.index ["deleted_by_id"], name: "index_reports_on_deleted_by_id"
-    t.index ["reportable_type", "reportable_id"], name: "index_reports_on_reportable_type_and_reportable_id"
-    t.index ["status"], name: "index_reports_on_status"
+    t.index ["closed_by_id"], name: "index_reports_on_closed_by_id", using: :btree
+    t.index ["creator_id"], name: "index_reports_on_creator_id", using: :btree
+    t.index ["deleted"], name: "index_reports_on_deleted", using: :btree
+    t.index ["deleted_by_id"], name: "index_reports_on_deleted_by_id", using: :btree
+    t.index ["reportable_type", "reportable_id"], name: "index_reports_on_reportable_type_and_reportable_id", using: :btree
+    t.index ["status"], name: "index_reports_on_status", using: :btree
   end
 
   create_table "role_permissions", force: :cascade do |t|
@@ -202,11 +204,11 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.boolean  "deleted",       default: false,   null: false
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
-    t.index ["deleted_by_id"], name: "index_role_permissions_on_deleted_by_id"
-    t.index ["permission_id"], name: "index_role_permissions_on_permission_id"
-    t.index ["role_id", "permission_id"], name: "index_role_permissions_on_role_id_and_permission_id", unique: true
-    t.index ["role_id"], name: "index_role_permissions_on_role_id"
-    t.index ["value"], name: "index_role_permissions_on_value"
+    t.index ["deleted_by_id"], name: "index_role_permissions_on_deleted_by_id", using: :btree
+    t.index ["permission_id"], name: "index_role_permissions_on_permission_id", using: :btree
+    t.index ["role_id", "permission_id"], name: "index_role_permissions_on_role_id_and_permission_id", unique: true, using: :btree
+    t.index ["role_id"], name: "index_role_permissions_on_role_id", using: :btree
+    t.index ["value"], name: "index_role_permissions_on_value", using: :btree
   end
 
   create_table "roles", force: :cascade do |t|
@@ -217,9 +219,9 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.datetime "deleted_at"
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
-    t.index ["deleted"], name: "index_roles_on_deleted"
-    t.index ["deleted_by_id"], name: "index_roles_on_deleted_by_id"
-    t.index ["name"], name: "index_roles_on_name", unique: true
+    t.index ["deleted"], name: "index_roles_on_deleted", using: :btree
+    t.index ["deleted_by_id"], name: "index_roles_on_deleted_by_id", using: :btree
+    t.index ["name"], name: "index_roles_on_name", unique: true, using: :btree
   end
 
   create_table "roles_users", force: :cascade do |t|
@@ -227,9 +229,9 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.integer  "user_id",    null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["role_id", "user_id"], name: "index_roles_users_on_role_id_and_user_id", unique: true
-    t.index ["role_id"], name: "index_roles_users_on_role_id"
-    t.index ["user_id"], name: "index_roles_users_on_user_id"
+    t.index ["role_id", "user_id"], name: "index_roles_users_on_role_id_and_user_id", unique: true, using: :btree
+    t.index ["role_id"], name: "index_roles_users_on_role_id", using: :btree
+    t.index ["user_id"], name: "index_roles_users_on_user_id", using: :btree
   end
 
   create_table "sections", force: :cascade do |t|
@@ -244,9 +246,9 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.integer  "posts_count",         default: 0,     null: false
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
-    t.index ["creator_id"], name: "index_sections_on_creator_id"
-    t.index ["deleted_by_id"], name: "index_sections_on_deleted_by_id"
-    t.index ["title"], name: "index_sections_on_title"
+    t.index ["creator_id"], name: "index_sections_on_creator_id", using: :btree
+    t.index ["deleted_by_id"], name: "index_sections_on_deleted_by_id", using: :btree
+    t.index ["title"], name: "index_sections_on_title", using: :btree
   end
 
   create_table "users", force: :cascade do |t|
@@ -269,10 +271,44 @@ ActiveRecord::Schema.define(version: 20161007145617) do
     t.datetime "last_active_at"
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
-    t.index ["deleted_by_id"], name: "index_users_on_deleted_by_id"
-    t.index ["display_name"], name: "index_users_on_display_name", unique: true
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["email_token"], name: "index_users_on_email_token", unique: true
+    t.index ["deleted_by_id"], name: "index_users_on_deleted_by_id", using: :btree
+    t.index ["display_name"], name: "index_users_on_display_name", unique: true, using: :btree
+    t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
+    t.index ["email_token"], name: "index_users_on_email_token", unique: true, using: :btree
   end
 
+  add_foreign_key "bans", "users"
+  add_foreign_key "bans", "users", column: "creator_id"
+  add_foreign_key "bans", "users", column: "deleted_by_id"
+  add_foreign_key "characters", "users"
+  add_foreign_key "characters", "users", column: "creator_id"
+  add_foreign_key "characters", "users", column: "deleted_by_id"
+  add_foreign_key "conversations", "sections"
+  add_foreign_key "conversations", "users", column: "author_id"
+  add_foreign_key "conversations", "users", column: "deleted_by_id"
+  add_foreign_key "conversations", "users", column: "locked_by_id"
+  add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
+  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
+  add_foreign_key "permissible_implied_permissions", "permissible_permissions", column: "implied_by_id"
+  add_foreign_key "permissible_implied_permissions", "permissible_permissions", column: "permission_id"
+  add_foreign_key "permissible_model_permissions", "permissible_permissions", column: "permission_id"
+  add_foreign_key "permissions", "permissions", column: "implied_by_id"
+  add_foreign_key "permissions", "users", column: "deleted_by_id"
+  add_foreign_key "posts", "characters"
+  add_foreign_key "posts", "conversations"
+  add_foreign_key "posts", "users", column: "author_id"
+  add_foreign_key "posts", "users", column: "deleted_by_id"
+  add_foreign_key "posts", "users", column: "editor_id"
+  add_foreign_key "reports", "users", column: "closed_by_id"
+  add_foreign_key "reports", "users", column: "creator_id"
+  add_foreign_key "reports", "users", column: "deleted_by_id"
+  add_foreign_key "role_permissions", "permissions"
+  add_foreign_key "role_permissions", "roles"
+  add_foreign_key "role_permissions", "users", column: "deleted_by_id"
+  add_foreign_key "roles", "users", column: "deleted_by_id"
+  add_foreign_key "roles_users", "roles"
+  add_foreign_key "roles_users", "users"
+  add_foreign_key "sections", "users", column: "creator_id"
+  add_foreign_key "sections", "users", column: "deleted_by_id"
+  add_foreign_key "users", "users", column: "deleted_by_id"
 end

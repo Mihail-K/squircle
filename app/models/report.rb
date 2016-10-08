@@ -25,6 +25,12 @@
 #  index_reports_on_reportable_type_and_reportable_id  (reportable_type,reportable_id)
 #  index_reports_on_status                             (status)
 #
+# Foreign Keys
+#
+#  fk_rails_0fcc82136b  (deleted_by_id => users.id)
+#  fk_rails_b493e55f53  (creator_id => users.id)
+#  fk_rails_db90b47c42  (closed_by_id => users.id)
+#
 
 class Report < ApplicationRecord
   belongs_to :reportable, polymorphic: true

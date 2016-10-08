@@ -30,6 +30,10 @@
 #  index_users_on_email          (email) UNIQUE
 #  index_users_on_email_token    (email_token) UNIQUE
 #
+# Foreign Keys
+#
+#  fk_rails_205180732b  (deleted_by_id => users.id)
+#
 
 class User < ApplicationRecord
   include Permissible::Model

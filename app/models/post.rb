@@ -18,13 +18,20 @@
 #
 # Indexes
 #
-#  index_posts_on_author_id                          (author_id)
-#  index_posts_on_character_id                       (character_id)
-#  index_posts_on_conversation_id                    (conversation_id)
-#  index_posts_on_deleted_by_id                      (deleted_by_id)
-#  index_posts_on_editor_id                          (editor_id)
-#  index_posts_on_postable_type_and_conversation_id  (conversation_id)
-#  index_posts_on_title                              (title)
+#  index_posts_on_author_id        (author_id)
+#  index_posts_on_character_id     (character_id)
+#  index_posts_on_conversation_id  (conversation_id)
+#  index_posts_on_deleted_by_id    (deleted_by_id)
+#  index_posts_on_editor_id        (editor_id)
+#  index_posts_on_title            (title)
+#
+# Foreign Keys
+#
+#  fk_rails_10b14ebdc2  (author_id => users.id)
+#  fk_rails_5736a68073  (deleted_by_id => users.id)
+#  fk_rails_9108cfb061  (conversation_id => conversations.id)
+#  fk_rails_9a8220b37a  (character_id => characters.id)
+#  fk_rails_9db77e9c1f  (editor_id => users.id)
 #
 
 class Post < ApplicationRecord
@@ -48,53 +55,28 @@ class Post < ApplicationRecord
   before_commit :update_section_posts_count
   before_commit :update_conversation_activity
 
-  if Rails.env.development? || Rails.env.test?
-    scope :first_posts, -> {
-      group(:conversation_id).having(
-                               Post.arel_table[:created_at]
-                                   .eq(Post.arel_table[:created_at].minimum)
-                             )
-                             .having(
-                               Post.arel_table[:id]
-                                   .eq(Post.arel_table[:id].minimum)
-                             )
-    }
+  scope :first_posts, -> {
+    select(<<-SQL.squish)
+      first_value("posts"."id")
+    OVER
+      (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" ASC)
+    SQL
+  }
 
-    scope :last_posts, -> {
-      group(:conversation_id).having(
-                               Post.arel_table[:created_at]
-                                   .eq(Post.arel_table[:created_at].maximum)
-                             )
-                             .having(
-                               Post.arel_table[:id]
-                                   .eq(Post.arel_table[:id].maximum)
-                             )
-    }
-  else
-    scope :first_posts, -> {
-      select(<<-SQL.squish)
-        first_value("posts"."id")
-      OVER
-        (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" ASC)
-      SQL
-    }
-
-    scope :last_posts, -> {
-      select(<<-SQL.squish)
-        first_value("posts"."id")
-      OVER
-        (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" DESC)
-      SQL
-    }
-  end
+  scope :last_posts, -> {
+    select(<<-SQL.squish)
+      first_value("posts"."id")
+    OVER
+      (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" DESC)
+    SQL
+  }
 
   scope :flood, -> {
     where Post.arel_table[:created_at].gteq(20.seconds.ago)
   }
 
   scope :visible, -> {
-    not_deleted.joins(:conversation)
-               .merge(Conversation.visible)
+    not_deleted.where(conversation: Conversation.visible)
   }
 
   def editable_by?(user)

@@ -19,6 +19,12 @@
 #  index_bans_on_deleted_by_id  (deleted_by_id)
 #  index_bans_on_user_id        (user_id)
 #
+# Foreign Keys
+#
+#  fk_rails_070022cd76  (user_id => users.id)
+#  fk_rails_1bb4452a95  (deleted_by_id => users.id)
+#  fk_rails_7e7295a4fe  (creator_id => users.id)
+#
 
 class Ban < ApplicationRecord
   belongs_to :user, inverse_of: :bans

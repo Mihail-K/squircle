@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :conversation do
     association :author, factory: :user, strategy: :build
-    section
+    association :section, strategy: :build
     deleted false
 
     trait :with_posts do

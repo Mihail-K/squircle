@@ -11,6 +11,7 @@ gem 'doorkeeper'
 gem 'kaminari'
 gem 'mini_magick'
 gem 'permissible', github: 'mihail-k/permissible'
+gem 'pg'
 gem 'pundit'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails'
@@ -41,11 +42,9 @@ group :development, :test do
   gem 'faker'
   gem 'rspec'
   gem 'rspec-rails'
-  gem 'sqlite3'
 end
 
 group :production do
   gem 'fog-aws'
-  gem 'pg'
   gem 'puma'
 end

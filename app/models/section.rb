@@ -21,6 +21,11 @@
 #  index_sections_on_deleted_by_id  (deleted_by_id)
 #  index_sections_on_title          (title)
 #
+# Foreign Keys
+#
+#  fk_rails_477a079ad2  (deleted_by_id => users.id)
+#  fk_rails_f190a7bfc1  (creator_id => users.id)
+#
 
 class Section < ApplicationRecord
   belongs_to :creator, class_name: 'User'
