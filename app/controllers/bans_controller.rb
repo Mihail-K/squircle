@@ -1,7 +1,7 @@
 class BansController < ApplicationController
   before_action :doorkeeper_authorize!
 
-  before_action :set_bans, except: :create
+  before_action :set_bans
   before_action :set_ban, except: %i(index create)
   before_action :apply_pagination, only: :index
 
@@ -18,7 +18,7 @@ class BansController < ApplicationController
   end
 
   def create
-    @ban = Ban.create! ban_params do |ban|
+    @ban = @bans.create!(ban_params) do |ban|
       ban.creator = current_user
     end
 
@@ -26,7 +26,7 @@ class BansController < ApplicationController
   end
 
   def update
-    @ban.update! ban_params
+    @ban.update!(ban_params)
 
     render json: @ban
   end
@@ -41,28 +41,16 @@ private
 
   def set_bans
     @bans = policy_scope(Ban).includes(:user)
-    @bans = @bans.where(user: params[:user_id]) if can_view_bans? && params.key?(:user_id)
-    @bans = @bans.includes(:creator) if can_view_ban_creator?
-    @bans = @bans.includes(:deleted_by) if can_view_deleted_bans?
+    @bans = @bans.where(user_id: params[:user_id]) if allowed_to?(:view_bans) && params.key?(:user_id)
+    @bans = @bans.includes(:creator) if allowed_to?(:view_ban_creator)
+    @bans = @bans.includes(:deleted_by) if allowed_to?(:view_deleted_bans)
   end
 
   def set_ban
-    @ban = @bans.find params[:id]
+    @ban = @bans.find(params[:id])
   end
 
   def apply_pagination
     @bans = @bans.page(params[:page]).per(params[:count])
-  end
-
-  def can_view_bans?
-    current_user.try(:allowed_to?, :view_bans)
-  end
-
-  def can_view_ban_creator?
-    current_user.try(:allowed_to?, :view_ban_creator)
-  end
-
-  def can_view_deleted_bans?
-    current_user.try(:allowed_to?, :view_deleted_bans)
   end
 end

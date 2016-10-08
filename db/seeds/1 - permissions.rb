@@ -57,6 +57,12 @@ Permissible::Permission.find_or_create_by! name: :view_characters do |permission
   TEXT
 end
 
+Permissible::Permission.find_or_create_by! name: :use_characters do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to make posts as characters.
+  TEXT
+end
+
 Permissible::Permission.find_or_create_by! name: :create_characters do |permission|
   permission.description = <<-TEXT.squish
     Permits the user to create new characters.

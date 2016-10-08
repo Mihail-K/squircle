@@ -5,6 +5,7 @@
     view_owned_bans:            :allow,
     # - Characters - #
     view_characters:            :allow,
+    use_characters:             :allow,
     create_characters:          :allow,
     update_owned_characters:    :allow,
     delete_owned_characters:    :allow,
