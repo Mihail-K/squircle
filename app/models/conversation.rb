@@ -53,10 +53,9 @@ class Conversation < ApplicationRecord
   validates :locked_by, presence: true, if: :locked?
   validates :section, presence: true
 
-  before_validation :set_first_post_author, on: :create
-  before_validation :set_title_from_first_post, on: :create, unless: :title?
-
   before_save :set_locked_on_timestamp, if: -> { locked_changed?(to: true) }
+
+  after_save :set_posts_counts, if: -> { deleted_changed? }
 
   scope :visible, -> {
     not_deleted.where(section: Section.visible)
@@ -69,15 +68,17 @@ class Conversation < ApplicationRecord
 
 private
 
-  def set_first_post_author
-    posts.first.author = author if posts.first.present?
-  end
-
-  def set_title_from_first_post
-    self.title = posts.first.title if posts.first.present?
-  end
-
   def set_locked_on_timestamp
     self.locked_on = Time.zone.now
+  end
+
+  def set_posts_counts
+    section.update_columns(posts_count: section.posts.visible.count)
+    post_authors.find_each do |author|
+      author.update_columns(posts_count: author.posts.visible.count)
+    end
+    post_characters.find_each do |character|
+      character.update_columns(posts_count: character.posts.visible.count)
+    end
   end
 end

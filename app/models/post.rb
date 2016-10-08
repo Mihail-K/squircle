@@ -39,7 +39,7 @@ class Post < ApplicationRecord
 
   belongs_to :author, class_name: 'User', inverse_of: :posts
   belongs_to :editor, class_name: 'User'
-  belongs_to :character, counter_cache: :posts_count, inverse_of: :posts
+  belongs_to :character, inverse_of: :posts
 
   belongs_to :conversation, inverse_of: :posts
   has_one :section, through: :conversation
@@ -52,10 +52,11 @@ class Post < ApplicationRecord
 
   formattable :body
 
-  before_commit :update_author_posts_count
-  before_commit :update_conversation_posts_count
-  before_commit :update_section_posts_count
-  before_commit :update_conversation_activity
+  before_validation :set_author, on: :create, if: -> { author.nil? && conversation.present? }
+  before_validation :set_conversation_title, on: :create, if: -> { conversation.present? }
+
+  before_commit :set_posts_counts
+  before_commit :set_conversation_last_activity
 
   scope :first_posts, -> {
     where(id: select(<<-SQL.squish))
@@ -87,19 +88,22 @@ private
     errors.add :character, 'cannot be used in posts' if character.user_id != author_id
   end
 
-  def update_author_posts_count
+  def set_author
+    self.author = conversation.author if conversation.new_record?
+  end
+
+  def set_conversation_title
+    conversation.title = title if conversation.new_record?
+  end
+
+  def set_posts_counts
     author.update_columns(posts_count: author.posts.visible.count)
-  end
-
-  def update_conversation_posts_count
+    character.update_columns(posts_count: character.posts.visible.count) if character.present?
     conversation.update_columns(posts_count: conversation.posts.not_deleted.count)
-  end
-
-  def update_section_posts_count
     section.update_columns(posts_count: section.posts.visible.count) if section.present?
   end
 
-  def update_conversation_activity
+  def set_conversation_last_activity
     last_activity = conversation.posts.not_deleted.maximum(:updated_at)
     conversation.update_columns(last_active_at: last_activity)
   end
