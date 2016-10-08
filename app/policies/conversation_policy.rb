@@ -14,17 +14,13 @@ class ConversationPolicy < ApplicationPolicy
   end
 
   def update?
-    show? && modifiable? && (
-      allowed_to?(:update_conversations) ||
-      (author? && allowed_to?(:update_owned_conversations))
-    )
+    return false if conversation.locked? unless allowed_to?(:lock_conversations)
+    (author? && allowed_to?(:update_owned_conversations)) || allowed_to?(:update_conversations)
   end
 
   def destroy?
-    show? && modifiable? && (
-      allowed_to?(:delete_conversations) ||
-      (author? && allowed_to?(:delete_owned_conversations))
-    )
+    return false if conversation.locked? unless allowed_to?(:lock_conversations)
+    (author? && allowed_to?(:delete_owned_conversations)) || allowed_to?(:delete_conversations)
   end
 
   def permitted_attributes_for_create
@@ -44,7 +40,7 @@ class ConversationPolicy < ApplicationPolicy
       scope.chain do |scope|
         scope.not_deleted unless allowed_to?(:view_deleted_conversations)
       end.chain do |scope|
-        scope.joins(:section)
+        scope.left_joins(:section)
              .merge(Section.not_deleted) unless allowed_to?(:view_deleted_sections)
       end
     end
@@ -54,9 +50,5 @@ protected
 
   def author?
     current_user.try(:id) == conversation.author_id
-  end
-
-  def modifiable?
-    !conversation.locked? || allowed_to?(:lock_conversations)
   end
 end

@@ -56,7 +56,7 @@ class Post < ApplicationRecord
   before_commit :update_conversation_activity
 
   scope :first_posts, -> {
-    select(<<-SQL.squish)
+    where(id: select(<<-SQL.squish))
       first_value("posts"."id")
     OVER
       (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" ASC)
@@ -64,7 +64,7 @@ class Post < ApplicationRecord
   }
 
   scope :last_posts, -> {
-    select(<<-SQL.squish)
+    where(id: select(<<-SQL.squish))
       first_value("posts"."id")
     OVER
       (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" DESC)

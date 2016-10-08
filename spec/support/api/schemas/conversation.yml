@@ -50,6 +50,10 @@ definitions:
         - type: 'null'
         - type: string
           format: date-time
+      editable:
+        type: boolean
+      deletable:
+        type: boolean
       author:
         $ref: user.json#/definitions/user
       section:
@@ -63,9 +67,13 @@ definitions:
         - type: 'null'
         - $ref: user.json#/definitions/user
       first_post:
-        $ref: post.json#/definitions/post
+        oneOf:
+        - type: 'null'
+        - $ref: post.json#/definitions/post
       last_post:
-        $ref: post.json#/definitions/post
+        oneOf:
+        - type: 'null'
+        - $ref: post.json#/definitions/post
     required:
     - id
     - author_id
@@ -80,6 +88,8 @@ definitions:
     - last_active_at
     - locked
     - locked_on
+    - editable
+    - deletable
     additionalProperties: false
 type: object
 properties:

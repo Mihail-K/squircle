@@ -7,7 +7,6 @@ class ConversationsController < ApplicationController
   before_action :set_conversation, except: %i(index create)
 
   before_action :apply_pagination, only: :index
-  before_action :load_first_posts, :load_last_posts, only: :index
   before_action :load_participated, only: :index, if: -> { current_user.present? }
 
   before_action :enforce_policy!
@@ -17,8 +16,6 @@ class ConversationsController < ApplicationController
   def index
     render json: @conversations,
            each_serializer: ConversationSerializer,
-           first_posts: @first_posts,
-           last_posts: @last_posts,
            participated: @participated,
            meta: meta_for(@conversations)
   end
@@ -53,7 +50,8 @@ class ConversationsController < ApplicationController
 private
 
   def set_conversations
-    @conversations = policy_scope(Conversation).includes(:author, :section)
+    @conversations = policy_scope(Conversation)
+    @conversations = @conversations.includes(:author, :section, first_post: :conversation, last_post: :conversation)
     @conversations = @conversations.where(author: params[:author_id]) if params.key?(:author_id)
     @conversations = @conversations.where(character: params[:character_id]) if params.key?(:character_id)
     @conversations = @conversations.where(section: params[:section_id]) if params.key?(:section_id)
@@ -64,24 +62,6 @@ private
 
   def apply_pagination
     @conversations = @conversations.page(params[:page]).per(params[:count])
-  end
-
-  def load_first_posts
-    # Load a list of first posts for the list of conversations.
-    @first_posts = policy_scope(Post).first_posts.where(conversation: @conversations)
-    @first_posts = Post.where(id: @first_posts)
-
-    # Re-map the first posts to a Hash keyed by the posts' conversation ids.
-    @first_posts = @first_posts.map { |post| [ post.conversation_id, post ] }.to_h
-  end
-
-  def load_last_posts
-    # Load a list of last posts for the list of conversations.
-    @last_posts = policy_scope(Post).last_posts.where(conversation: @conversations)
-    @last_posts = Post.where(id: @last_posts)
-
-    # Re-map the last posts to a Hash keyed by the posts' conversation ids.
-    @last_posts = @last_posts.map { |post| [ post.conversation_id, post ] }.to_h
   end
 
   def load_participated

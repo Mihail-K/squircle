@@ -1,4 +1,4 @@
-class ConversationSerializer < ActiveModel::Serializer
+class ConversationSerializer < ApplicationSerializer
   cache expires_in: 1.hour
 
   attribute :id
@@ -19,16 +19,22 @@ class ConversationSerializer < ActiveModel::Serializer
   attribute :locked
   attribute :locked_on
 
+  attribute :editable do
+    policy.update? || false
+  end
+  attribute :deletable do
+    policy.destroy? || false
+  end
+
   belongs_to :author, serializer: UserSerializer
   belongs_to :locked_by, serializer: UserSerializer, if: :can_view_locking_user?
   belongs_to :section
   belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted?
 
-  has_one :first_post, serializer: PostSerializer, if: :include_first_post?
-  has_one :last_post, serializer: PostSerializer, if: :include_last_post?
+  belongs_to :first_post, serializer: PostSerializer
+  belongs_to :last_post, serializer: PostSerializer
 
   def can_view_locking_user?
-    object.locked_by_id == current_user.try(:id) ||
     current_user.try(:allowed_to?, :lock_conversations)
   end
 
@@ -40,24 +46,8 @@ class ConversationSerializer < ActiveModel::Serializer
     instance_options[:participated].is_a?(Hash)
   end
 
-  def include_first_post?
-    instance_options[:first_posts].is_a?(Hash)
-  end
-
-  def include_last_post?
-    instance_options[:last_posts].is_a?(Hash)
-  end
-
   def participated
     instance_options[:participated][object.id].present? &&
     instance_options[:participated][object.id] > 0
-  end
-
-  def first_post
-    instance_options[:first_posts][object.id]
-  end
-
-  def last_post
-    instance_options[:last_posts][object.id]
   end
 end
