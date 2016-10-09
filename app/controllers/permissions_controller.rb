@@ -8,12 +8,12 @@ class PermissionsController < ApplicationController
   def index
     render json: @permissions,
            each_serializer: PermissionSerializer,
-           meta: meta_for(@permissions)
+           meta: meta_for(@permissions) if stale?(@permissions)
   end
 
   def show
     render json: @permission,
-           serializer: PermissionSerializer
+           serializer: PermissionSerializer if stale?(@permission)
   end
 
 private

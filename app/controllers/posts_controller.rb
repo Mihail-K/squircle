@@ -14,11 +14,11 @@ class PostsController < ApplicationController
   def index
     render json: @posts,
            each_serializer: PostSerializer,
-           meta: meta_for(@posts)
+           meta: meta_for(@posts) if stale?(@posts)
   end
 
   def show
-    render json: @post
+    render json: @post if stale?(@post)
   end
 
   def create

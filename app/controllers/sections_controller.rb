@@ -10,11 +10,11 @@ class SectionsController < ApplicationController
   def index
     render json: @sections,
            each_serializer: SectionSerializer,
-           meta: meta_for(@sections)
+           meta: meta_for(@sections) if stale?(@sections)
   end
 
   def show
-    render json: @section
+    render json: @section if stale?(@section)
   end
 
   def create

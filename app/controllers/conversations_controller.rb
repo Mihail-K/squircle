@@ -5,7 +5,6 @@ class ConversationsController < ApplicationController
 
   before_action :set_conversations, except: :create
   before_action :set_conversation, except: %i(index create)
-
   before_action :apply_pagination, only: :index
   before_action :load_participated, only: :index, if: -> { current_user.present? }
 
@@ -17,11 +16,11 @@ class ConversationsController < ApplicationController
     render json: @conversations,
            each_serializer: ConversationSerializer,
            participated: @participated,
-           meta: meta_for(@conversations)
+           meta: meta_for(@conversations) if stale?(@conversations)
   end
 
   def show
-    render json: @conversation
+    render json: @conversation if stale?(@conversation)
   end
 
   def create

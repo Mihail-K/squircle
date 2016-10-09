@@ -8,17 +8,17 @@ class UsersController < ApplicationController
   before_action :enforce_policy!
 
   def me
-    render json: current_user
+    render json: current_user if stale?(current_user)
   end
 
   def index
     render json: @users,
            each_serializer: UserSerializer,
-           meta: meta_for(@users)
+           meta: meta_for(@users) if stale?(@users)
   end
 
   def show
-    render json: @user
+    render json: @user if stale?(@user)
   end
 
   def create

@@ -29,6 +29,10 @@ class ApplicationRecord < ActiveRecord::Base
     update!(deleted: false)
   end
 
+  def self.chain(&block)
+    all.chain(&block)
+  end
+
 private
 
   def set_deleted_at_timestamp

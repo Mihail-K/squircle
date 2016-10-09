@@ -69,9 +69,6 @@ GEM
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     builder (3.2.2)
-    bullet (5.4.0)
-      activesupport (>= 3.0.0)
-      uniform_notifier (~> 1.10.0)
     byebug (9.0.6)
     carrierwave_backgrounder (0.4.2)
     concurrent-ruby (1.0.2)
@@ -259,7 +256,6 @@ GEM
     timeliness (0.3.8)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    uniform_notifier (1.10.0)
     validates_timeliness (4.0.2)
       timeliness (~> 0.3.7)
     vegas (0.1.11)
@@ -281,7 +277,6 @@ DEPENDENCIES
   annotate
   awesome_print
   bcrypt (~> 3.1.7)
-  bullet
   byebug
   carrierwave!
   carrierwave_backgrounder

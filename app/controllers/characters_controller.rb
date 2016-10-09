@@ -42,7 +42,7 @@ private
 
   def set_characters
     @characters = policy_scope(Character).includes(:user, :creator)
-    @characters = @characters.where(user: params[:user_id]) if params.key?(:user_id)
+    @characters = @characters.where(user_id: params[:user_id]) if params.key?(:user_id)
   end
 
   def apply_pagination

@@ -10,11 +10,11 @@ class ReportsController < ApplicationController
   def index
     render json: @reports,
            each_serializer: ReportSerializer,
-           meta: meta_for(@reports)
+           meta: meta_for(@reports) if stale?(Report.where(id: @reports))
   end
 
   def show
-    render json: @report
+    render json: @report if stale?(@report)
   end
 
   def create

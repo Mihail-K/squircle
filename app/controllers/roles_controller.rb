@@ -10,11 +10,11 @@ class RolesController < ApplicationController
   def index
     render json: @roles,
            each_serializer: RoleSerializer,
-           meta: meta_for(@roles)
+           meta: meta_for(@roles) if stale?(@roles)
   end
 
   def show
-    render json: @role
+    render json: @role if stale?(@role)
   end
 
   def create

@@ -43,7 +43,7 @@ class ConversationPolicy < ApplicationPolicy
       scope.chain do |scope|
         scope.not_deleted unless allowed_to?(:view_deleted_conversations)
       end.chain do |scope|
-        scope.left_joins(:section)
+        scope.joins(:section)
              .merge(Section.not_deleted) unless allowed_to?(:view_deleted_sections)
       end
     end

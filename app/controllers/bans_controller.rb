@@ -10,11 +10,11 @@ class BansController < ApplicationController
   def index
     render json: @bans,
            each_serializer: BanSerializer,
-           meta: meta_for(@bans)
+           meta: meta_for(@bans) if stale?(@bans)
   end
 
   def show
-    render json: @ban
+    render json: @ban if stale?(@ban)
   end
 
   def create
