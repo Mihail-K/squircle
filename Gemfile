@@ -40,6 +40,7 @@ group :development, :test do
   gem 'dotenv-rails'
   gem 'factory_girl_rails'
   gem 'faker'
+  gem 'parallel_tests'
   gem 'rspec'
   gem 'rspec-rails'
 end

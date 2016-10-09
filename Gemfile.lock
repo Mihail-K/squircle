@@ -137,6 +137,9 @@ GEM
     nio4r (1.2.1)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
+    parallel (1.9.0)
+    parallel_tests (2.9.0)
+      parallel
     pg (0.19.0)
     puma (3.6.0)
     pundit (1.1.0)
@@ -288,6 +291,7 @@ DEPENDENCIES
   json-schema
   kaminari
   mini_magick
+  parallel_tests
   permissible!
   pg
   puma
