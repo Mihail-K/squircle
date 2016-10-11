@@ -32,7 +32,7 @@ class BansController < ApplicationController
   end
 
   def destroy
-    @ban.update! deleted: true, deleted_by: current_user
+    @ban.delete!(current_user)
 
     head :no_content
   end

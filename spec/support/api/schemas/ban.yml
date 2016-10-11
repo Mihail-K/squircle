@@ -61,6 +61,8 @@ definitions:
     - deleted
     - created_at
     - updated_at
+    - editable
+    - deletable
     additionalProperties: false
 type: object
 properties:
