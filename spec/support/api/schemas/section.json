@@ -72,6 +72,9 @@
             }
           ]
         },
+        "postable": {
+          "type": "boolean"
+        },
         "editable": {
           "type": "boolean"
         },

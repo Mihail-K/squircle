@@ -18,6 +18,9 @@ class SectionSerializer < ApplicationSerializer
   attribute :updated_at
   attribute :deleted_at, if: :can_view_deleted_sections?
 
+  attribute :postable do
+    allowed_to?(:create_conversations)
+  end
   attribute :editable do
     policy.update? || false
   end
