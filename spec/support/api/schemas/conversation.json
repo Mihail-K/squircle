@@ -90,6 +90,9 @@
             }
           ]
         },
+        "postable": {
+          "type": "boolean"
+        },
         "lockable": {
           "type": "boolean"
         },

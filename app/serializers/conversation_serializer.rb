@@ -19,6 +19,9 @@ class ConversationSerializer < ApplicationSerializer
   attribute :locked
   attribute :locked_on
 
+  attribute :postable do
+    allowed_to?(:create_posts) && (!object.locked? || allowed_to?(:lock_conversations))
+  end
   attribute :lockable do
     allowed_to?(:lock_conversations)
   end
