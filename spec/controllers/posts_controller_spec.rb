@@ -111,10 +111,10 @@ RSpec.describe PostsController, type: :controller do
         post :create, format: :json, params: {
           post: attributes_for(:post, conversation_id: conversation.id)
         }.merge(session)
-      end.to change { Post.count }.by(1)
 
-      expect(response).to have_http_status :created
-      expect(response).to match_response_schema :post
+        expect(response).to have_http_status :created
+        expect(response).to match_response_schema :post
+      end.to change { Post.count }.by(1)
     end
 
     it 'does not allow banned users to create posts' do
@@ -124,9 +124,9 @@ RSpec.describe PostsController, type: :controller do
         post :create, format: :json, params: {
           post: attributes_for(:post, conversation_id: conversation.id)
         }.merge(session)
-      end.not_to change { Post.count }
 
-      expect(response).to have_http_status :forbidden
+        expect(response).to have_http_status :forbidden
+      end.not_to change { Post.count }
     end
 
     it 'does not allow posting in deleted conversations' do
@@ -156,6 +156,36 @@ RSpec.describe PostsController, type: :controller do
     it_behaves_like 'flood_limitable' do
       let :attributes do
         { post: attributes_for(:post, conversation_id: conversation.id) }.merge(session)
+      end
+    end
+
+    context 'with a character' do
+      let :character do
+        create :character, user: active_user
+      end
+
+      it 'creates a post with the character' do
+        expect do
+          post :create, format: :json, params: {
+            post: attributes_for(:post, conversation_id: conversation.id, character_id: character.id)
+          }.merge(session)
+
+          expect(response).to have_http_status :created
+        end.to change { Post.count }.by(1)
+
+        expect(Post.last.character).to eq character
+      end
+
+      it 'does not allow posting with a character than is not owned by the author' do
+        character.update user: create(:user)
+
+        expect do
+          post :create, format: :json, params: {
+            post: attributes_for(:post, conversation_id: conversation.id, character_id: character.id)
+          }.merge(session)
+
+          expect(response).to have_http_status :not_found
+        end.not_to change { Post.count }
       end
     end
   end

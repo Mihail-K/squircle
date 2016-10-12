@@ -136,6 +136,43 @@ RSpec.describe ConversationsController, type: :controller do
         }.merge(session)
       end
     end
+
+    context 'with a character' do
+      let :character do
+        create :character, user: active_user
+      end
+
+      it 'creates a conversation with the character' do
+        expect do
+          post :create, format: :json, params: {
+            conversation: {
+              section_id: section.id,
+              posts_attributes: [ attributes_for(:post, character_id: character.id) ]
+            }
+          }.merge(session)
+
+          expect(response).to have_http_status :created
+        end.to change { Conversation.count }.by(1)
+
+        expect(Conversation.last.posts).not_to be_empty
+        expect(Conversation.last.posts.first.character).to eq character
+      end
+
+      it 'does not allow posting with a character that is not owned by the author' do
+        character.update user: create(:user)
+
+        expect do
+          post :create, format: :json, params: {
+            conversation: {
+              section_id: section.id,
+              posts_attributes: [ attributes_for(:post, character_id: character.id) ]
+            }
+          }.merge(session)
+
+          expect(response).to have_http_status :not_found
+        end.not_to change { Conversation.count }
+      end
+    end
   end
 
   describe '#PATCH update' do

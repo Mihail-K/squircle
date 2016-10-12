@@ -48,8 +48,6 @@ class Post < ApplicationRecord
   validates :conversation, presence: true
   validates :body, presence: true, length: { in: 10 .. 10_000, if: :body? }
 
-  validate :character_owned_by_author, if: %i(character_id? character_id_changed?)
-
   formattable :body
 
   before_validation :set_author, on: :create, if: -> { author.nil? && conversation.present? }

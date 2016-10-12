@@ -3,6 +3,8 @@ class ConversationsController < ApplicationController
 
   before_action :doorkeeper_authorize!, except: %i(index show)
 
+  before_action :set_character, only: :create
+
   before_action :set_conversations, except: :create
   before_action :set_conversation, except: %i(index create)
   before_action :apply_pagination, only: :index
@@ -41,12 +43,23 @@ class ConversationsController < ApplicationController
   end
 
   def destroy
-    @conversation.update! deleted: true, deleted_by: current_user
+    @conversation.delete!(current_user)
 
     head :no_content
   end
 
 private
+
+  def character_id
+    conversation_params[:posts_attributes].present? &&
+    conversation_params[:posts_attributes].first.present? &&
+    conversation_params[:posts_attributes].first[:character_id]
+  end
+
+  def set_character
+    return if character_id.blank?
+    policy_scope(Character).where(user: current_user).find(character_id)
+  end
 
   def set_conversations
     @conversations = policy_scope(Conversation)
@@ -56,7 +69,7 @@ private
     @conversations = @conversations.where(section: params[:section_id]) if params.key?(:section_id)
     @conversations = @conversations.order(last_active_at: :desc)
     @conversations = @conversations.recently_active if params.key?(:recently_active)
-    @conversations = @conversations.includes(:deleted_by) if can_view_deleted_conversations?
+    @conversations = @conversations.includes(:deleted_by) if allowed_to?(:view_deleted_conversations)
   end
 
   def apply_pagination
@@ -78,9 +91,5 @@ private
 
   def increment_views_count
     @conversation.increment!(:views_count)
-  end
-
-  def can_view_deleted_conversations?
-    current_user.try(:allowed_to?, :view_deleted_conversations)
   end
 end

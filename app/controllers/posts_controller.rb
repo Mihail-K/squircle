@@ -4,6 +4,7 @@ class PostsController < ApplicationController
   before_action :doorkeeper_authorize!, except: %i(index show)
 
   before_action :set_conversation, only: :create
+  before_action :set_character, only: %i(create update)
 
   before_action :set_posts
   before_action :set_post, except: %i(index create)
@@ -38,7 +39,7 @@ class PostsController < ApplicationController
   end
 
   def destroy
-    @post.update! deleted: true, deleted_by: current_user
+    @post.delete!(current_user)
 
     head :no_content
   end
@@ -48,6 +49,11 @@ private
   def set_conversation
     @conversation = policy_scope(Conversation).find(post_params[:conversation_id] || params[:conversation_id])
     forbid if @conversation.locked? unless allowed_to?(:lock_conversations)
+  end
+
+  def set_character
+    return unless post_params.key?(:character_id)
+    policy_scope(Character).where(user: current_user).find(post_params[:character_id])
   end
 
   def set_posts
