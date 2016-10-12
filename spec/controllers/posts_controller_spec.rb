@@ -13,7 +13,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'returns a list of posts' do
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'posts'
@@ -26,7 +26,7 @@ RSpec.describe PostsController, type: :controller do
         post.update deleted: true, deleted_by: active_user
       end
 
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :ok
       expect(json[:posts].count).to eq posts.count - deleted_posts.count
@@ -38,7 +38,7 @@ RSpec.describe PostsController, type: :controller do
         post.update deleted: true, deleted_by: active_user
       end
 
-      get :index, format: :json, params: session
+      get :index, params: session
 
       expect(response).to have_http_status :ok
       expect(json[:posts].count).to eq posts.count
@@ -51,7 +51,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'returns the requested post' do
-      get :show, format: :json, params: { id: post.id }
+      get :show, params: { id: post.id }
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'post'
@@ -60,7 +60,7 @@ RSpec.describe PostsController, type: :controller do
     it 'returns 404 for posts that are deleted' do
       post.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: post.id }
+      get :show, params: { id: post.id }
 
       expect(response).to have_http_status :not_found
     end
@@ -69,7 +69,7 @@ RSpec.describe PostsController, type: :controller do
       post.update deleted: true, deleted_by: active_user
       active_user.roles << Role.find_by!(name: 'admin')
 
-      get :show, format: :json, params: { id: post.id }.merge(session)
+      get :show, params: { id: post.id }.merge(session)
 
       expect(response).to have_http_status :ok
     end
@@ -77,7 +77,7 @@ RSpec.describe PostsController, type: :controller do
     it 'returns 404 for posts in a deleted conversation' do
       post.conversation.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: post.id }
+      get :show, params: { id: post.id }
 
       expect(response).to have_http_status :not_found
     end
@@ -85,7 +85,7 @@ RSpec.describe PostsController, type: :controller do
     it 'returns 404 for posts in a deleted section' do
       post.conversation.section.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: post.id }
+      get :show, params: { id: post.id }
 
       expect(response).to have_http_status :not_found
     end
@@ -98,7 +98,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           post: attributes_for(:post, conversation_id: conversation.id)
         }
       end.not_to change { Post.count }
@@ -108,7 +108,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'creates a new post in a conversation' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           post: attributes_for(:post, conversation_id: conversation.id)
         }.merge(session)
 
@@ -121,7 +121,7 @@ RSpec.describe PostsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'banned')
 
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           post: attributes_for(:post, conversation_id: conversation.id)
         }.merge(session)
 
@@ -133,7 +133,7 @@ RSpec.describe PostsController, type: :controller do
       conversation.update deleted: true, deleted_by: active_user
 
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           post: attributes_for(:post, conversation_id: conversation.id)
         }.merge(session)
 
@@ -145,7 +145,7 @@ RSpec.describe PostsController, type: :controller do
       conversation.update locked: true, locked_by: create(:user, role: :admin)
 
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           post: attributes_for(:post, conversation_id: conversation.id)
         }.merge(session)
 
@@ -166,7 +166,7 @@ RSpec.describe PostsController, type: :controller do
 
       it 'creates a post with the character' do
         expect do
-          post :create, format: :json, params: {
+          post :create, params: {
             post: attributes_for(:post, conversation_id: conversation.id, character_id: character.id)
           }.merge(session)
 
@@ -180,7 +180,7 @@ RSpec.describe PostsController, type: :controller do
         character.update user: create(:user)
 
         expect do
-          post :create, format: :json, params: {
+          post :create, params: {
             post: attributes_for(:post, conversation_id: conversation.id, character_id: character.id)
           }.merge(session)
 
@@ -197,7 +197,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }
+        patch :update, params: { id: post.id, post: attributes_for(:post) }
       end.not_to change { post.reload.attributes }
 
       expect(response).to have_http_status :unauthorized
@@ -205,7 +205,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'updates the attributes of a post' do
       expect do
-        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }.merge(session)
+        patch :update, params: { id: post.id, post: attributes_for(:post) }.merge(session)
       end.to change { post.reload.attributes }
 
       expect(response).to have_http_status :ok
@@ -214,7 +214,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'sets the editor when a post is modified' do
       expect do
-        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }.merge(session)
+        patch :update, params: { id: post.id, post: attributes_for(:post) }.merge(session)
       end.to change { post.reload.editor }.from(nil).to(active_user)
 
       expect(response).to have_http_status :ok
@@ -224,7 +224,7 @@ RSpec.describe PostsController, type: :controller do
       post.update author: create(:user)
 
       expect do
-        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }.merge(session)
+        patch :update, params: { id: post.id, post: attributes_for(:post) }.merge(session)
       end.not_to change { post.reload.attributes }
 
       expect(response).to have_http_status :forbidden
@@ -235,7 +235,7 @@ RSpec.describe PostsController, type: :controller do
       post.update author: create(:user)
 
       expect do
-        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }.merge(session)
+        patch :update, params: { id: post.id, post: attributes_for(:post) }.merge(session)
       end.to change { post.reload.attributes }
 
       expect(response).to have_http_status :ok
@@ -244,7 +244,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'prevents users from editing the deleted state of a post' do
       expect do
-        patch :update, format: :json, params: { id: post.id, post: { deleted: true } }.merge(session)
+        patch :update, params: { id: post.id, post: { deleted: true } }.merge(session)
       end.not_to change { post.reload.deleted? }
 
       expect(response).to have_http_status :ok
@@ -255,7 +255,7 @@ RSpec.describe PostsController, type: :controller do
       post.update deleted: true, deleted_by: active_user
 
       expect do
-        patch :update, format: :json, params: { id: post.id, post: { deleted: false } }.merge(session)
+        patch :update, params: { id: post.id, post: { deleted: false } }.merge(session)
       end.to change { post.reload.deleted? }.from(true).to(false)
 
       expect(response).to have_http_status :ok
@@ -263,7 +263,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'prevents users from changing the editor of a post' do
       expect do
-        patch :update, format: :json, params: { id: post.id, post: { editor_id: nil } }.merge(session)
+        patch :update, params: { id: post.id, post: { editor_id: nil } }.merge(session)
       end.to change { post.reload.editor }.from(nil).to(active_user)
 
       expect(response).to have_http_status :ok
@@ -273,7 +273,7 @@ RSpec.describe PostsController, type: :controller do
       post.update deleted: true, deleted_by: active_user
 
       expect do
-        patch :update, format: :json, params: { id: post.id, post: attributes_for(:post) }.merge(session)
+        patch :update, params: { id: post.id, post: attributes_for(:post) }.merge(session)
       end.not_to change { post.reload.attributes }
 
       expect(response).to have_http_status :not_found
@@ -281,7 +281,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'returns errors if the post is invalid' do
       expect do
-        patch :update, format: :json, params: { id: post.id, post: { body: nil } }.merge(session)
+        patch :update, params: { id: post.id, post: { body: nil } }.merge(session)
       end.not_to change { post.reload.body }
 
       expect(response).to have_http_status :unprocessable_entity
@@ -298,7 +298,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        delete :destroy, format: :json, params: { id: post.id }
+        delete :destroy, params: { id: post.id }
       end.not_to change { post.reload.deleted? }
 
       expect(response).to have_http_status :unauthorized
@@ -306,7 +306,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'marks a post as deleted' do
       expect do
-        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+        delete :destroy, params: { id: post.id }.merge(session)
       end.to change { post.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content
@@ -316,7 +316,7 @@ RSpec.describe PostsController, type: :controller do
       post.update author: create(:user)
 
       expect do
-        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+        delete :destroy, params: { id: post.id }.merge(session)
       end.not_to change { post.reload.deleted? }
 
       expect(response).to have_http_status :forbidden
@@ -327,7 +327,7 @@ RSpec.describe PostsController, type: :controller do
       post.update author: create(:user)
 
       expect do
-        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+        delete :destroy, params: { id: post.id }.merge(session)
       end.to change { post.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content
@@ -337,7 +337,7 @@ RSpec.describe PostsController, type: :controller do
       post.conversation.update locked: true, locked_by: create(:user, role: :admin)
 
       expect do
-        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+        delete :destroy, params: { id: post.id }.merge(session)
       end.not_to change { post.reload.deleted? }
 
       expect(response).to have_http_status :forbidden
@@ -348,7 +348,7 @@ RSpec.describe PostsController, type: :controller do
       post.conversation.update locked: true, locked_by: create(:user, role: :admin)
 
       expect do
-        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+        delete :destroy, params: { id: post.id }.merge(session)
       end.to change { post.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content
@@ -358,7 +358,7 @@ RSpec.describe PostsController, type: :controller do
       post.update deleted: true, deleted_by: active_user
 
       expect do
-        delete :destroy, format: :json, params: { id: post.id }.merge(session)
+        delete :destroy, params: { id: post.id }.merge(session)
       end.not_to change { post.reload.deleted? }
 
       expect(response).to have_http_status :not_found

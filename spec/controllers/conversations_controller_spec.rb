@@ -9,7 +9,7 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'returns a list of conversations' do
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'conversations'
@@ -21,7 +21,7 @@ RSpec.describe ConversationsController, type: :controller do
         conversation.update deleted: true, deleted_by: active_user
       end
 
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :ok
       expect(json[:conversations].count).to eq conversations.count - deleted_conversations.count
@@ -33,7 +33,7 @@ RSpec.describe ConversationsController, type: :controller do
         conversation.update deleted: true, deleted_by: active_user
       end
 
-      get :index, format: :json, params: session
+      get :index, params: session
 
       expect(response).to have_http_status :ok
       expect(json[:conversations].count).to eq conversations.count
@@ -46,7 +46,7 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'returns the requested conversation' do
-      get :show, format: :json, params: { id: conversation.id }
+      get :show, params: { id: conversation.id }
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'conversation'
@@ -55,7 +55,7 @@ RSpec.describe ConversationsController, type: :controller do
     it 'returns 404 for conversations that are deleted' do
       conversation.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: conversation.id }
+      get :show, params: { id: conversation.id }
 
       expect(response).to have_http_status :not_found
     end
@@ -64,7 +64,7 @@ RSpec.describe ConversationsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
       conversation.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: conversation.id }.merge(session)
+      get :show, params: { id: conversation.id }.merge(session)
 
       expect(response).to have_http_status :ok
     end
@@ -72,7 +72,7 @@ RSpec.describe ConversationsController, type: :controller do
     it 'returns 404 for conversations in a deleted section' do
       conversation.section.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: conversation.id }
+      get :show, params: { id: conversation.id }
 
       expect(response).to have_http_status :not_found
     end
@@ -85,7 +85,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post) ] }
         }
       end.not_to change { Conversation.count }
@@ -95,7 +95,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'creates a new conversation' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post) ] }
         }.merge(session)
       end.to change { Conversation.count }.by(1)
@@ -108,7 +108,7 @@ RSpec.describe ConversationsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'banned')
 
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post) ] }
         }.merge(session)
       end.not_to change { Conversation.count }
@@ -118,7 +118,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'returns errors if the conversation is invalid' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post, body: nil) ] }
         }.merge(session)
       end.not_to change { Conversation.count }
@@ -144,7 +144,7 @@ RSpec.describe ConversationsController, type: :controller do
 
       it 'creates a conversation with the character' do
         expect do
-          post :create, format: :json, params: {
+          post :create, params: {
             conversation: {
               section_id: section.id,
               posts_attributes: [ attributes_for(:post, character_id: character.id) ]
@@ -162,7 +162,7 @@ RSpec.describe ConversationsController, type: :controller do
         character.update user: create(:user)
 
         expect do
-          post :create, format: :json, params: {
+          post :create, params: {
             conversation: {
               section_id: section.id,
               posts_attributes: [ attributes_for(:post, character_id: character.id) ]
@@ -182,7 +182,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: conversation.id, conversation: { locked: true }
         }
       end.not_to change { conversation.reload.locked? }
@@ -192,7 +192,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'only allows admins to mark conversations as locked' do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: conversation.id, conversation: { locked: true }
         }.merge(session)
       end.not_to change { conversation.reload.locked? }
@@ -204,7 +204,7 @@ RSpec.describe ConversationsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: conversation.id, conversation: { locked: true }
         }.merge(session)
       end.to change { conversation.reload.locked? }.from(false).to(true)
@@ -217,7 +217,7 @@ RSpec.describe ConversationsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: conversation.id, conversation: { section_id: nil }
         }.merge(session)
       end.not_to change { conversation.reload.title }
@@ -236,7 +236,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        delete :destroy, format: :json, params: { id: conversation.id }
+        delete :destroy, params: { id: conversation.id }
       end.not_to change { conversation.reload.deleted? }
 
       expect(response).to have_http_status :unauthorized
@@ -244,7 +244,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'only allows admins to mark conversations as deleted' do
       expect do
-        delete :destroy, format: :json, params: { id: conversation.id }.merge(session)
+        delete :destroy, params: { id: conversation.id }.merge(session)
       end.not_to change { conversation.reload.deleted? }
 
       expect(response).to have_http_status :forbidden
@@ -254,7 +254,7 @@ RSpec.describe ConversationsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        delete :destroy, format: :json, params: { id: conversation.id }.merge(session)
+        delete :destroy, params: { id: conversation.id }.merge(session)
       end.to change { conversation.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content
