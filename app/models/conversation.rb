@@ -36,7 +36,7 @@
 class Conversation < ApplicationRecord
   belongs_to :author, class_name: 'User'
   belongs_to :locked_by, class_name: 'User'
-  belongs_to :section, inverse_of: :conversations, counter_cache: :conversations_count
+  belongs_to :section, inverse_of: :conversations
 
   has_many :posts, inverse_of: :conversation
 
@@ -55,7 +55,8 @@ class Conversation < ApplicationRecord
 
   before_save :set_locked_on_timestamp, if: -> { locked_changed?(to: true) }
 
-  after_save :set_posts_counts, if: -> { deleted_changed? }
+  before_commit :set_posts_counts, if: -> { previous_changes.key?(:deleted) }
+  before_commit :set_conversations_count, if: -> { previous_changes.key?(:deleted) }
 
   scope :visible, -> {
     not_deleted.where(section: Section.visible)
@@ -80,5 +81,9 @@ private
     post_characters.find_each do |character|
       character.update_columns(posts_count: character.posts.visible.count)
     end
+  end
+
+  def set_conversations_count
+    section.update_columns(conversations_count: section.conversations.not_deleted.count)
   end
 end
