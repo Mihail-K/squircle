@@ -25,4 +25,12 @@ RSpec.describe Section, type: :model do
     section.creator = nil
     expect(section).not_to be_valid
   end
+
+  it "queues a job to update posts counts when it's deleted" do
+    section = create :section
+
+    expect do
+      section.delete
+    end.to have_enqueued_job(SectionPostsCountJob).on_queue('low')
+  end
 end

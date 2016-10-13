@@ -7,10 +7,11 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 if Rails.env.test?
   require 'simplecov'
   SimpleCov.start 'rails' do
-    add_filter 'app/uploaders'
-    add_group  'Policies', 'app/policies'
-    add_group  'Serializers', 'app/serializers'
-    add_group  'Services', 'app/services'
+    track_files false
+    add_filter  'app/uploaders'
+    add_group   'Policies', 'app/policies'
+    add_group   'Serializers', 'app/serializers'
+    add_group   'Services', 'app/services'
   end
 end
 
@@ -58,6 +59,8 @@ end
 # Checks for pending migration and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
+
+ActiveJob::Base.queue_adapter = :test
 
 RSpec.configure do |config|
   config.include JsonHelper, type: :request

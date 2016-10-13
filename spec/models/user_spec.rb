@@ -133,4 +133,36 @@ RSpec.describe User, type: :model do
       expect(user).to be_allowed_to child_permission.name
     end
   end
+
+  describe '.posts_count' do
+    let :user do
+      create :user
+    end
+
+    it 'is zero by default' do
+      expect(user.posts_count).to be_zero
+    end
+
+    it 'increases when the user creates a post' do
+      expect do
+        create :post, author: user
+      end.to change { user.posts_count }.by(1)
+    end
+
+    it 'decreases when a post is deleted' do
+      post = create :post, author: user
+
+      expect do
+        post.delete
+      end.to change { user.posts_count }.by(-1)
+    end
+
+    it 'decreases when a conversation is deleted' do
+      post = create :post, author: user
+
+      expect do
+        post.conversation.delete
+      end.to change { user.reload.posts_count }.by(-1)
+    end
+  end
 end

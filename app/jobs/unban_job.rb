@@ -1,4 +1,4 @@
-class UnbanJob < ActiveJob::Base
+class UnbanJob < ApplicationJob
   queue_as :medium
 
   def perform

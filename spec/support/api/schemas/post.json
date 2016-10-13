@@ -55,21 +55,26 @@
           ]
         },
         "body": {
-          "type": "string"
+          "type": "string",
+          "description": "Contains the original post body, in unprocessed form."
         },
         "formatted_body": {
-          "type": "string"
+          "type": "string",
+          "description": "Contains a processed, HTML-safe version of the post body."
         },
         "deleted": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Indicates whether this post is deleted."
         },
         "created_at": {
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "description": "Stores a timestamp of when this post was created."
         },
         "updated_at": {
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "description": "Stores a timestamp of when this post was last modified."
         },
         "deleted_at": {
           "oneOf": [
@@ -80,13 +85,16 @@
               "type": "string",
               "format": "date-time"
             }
-          ]
+          ],
+          "description": "Stores a timestamp of when this post was deleted."
         },
         "editable": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Indicates if the current user can edit this post."
         },
         "deletable": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Indicates if the current user can delete this post."
         },
         "author": {
           "$ref": "user.json#/definitions/user"

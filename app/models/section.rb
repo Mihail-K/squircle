@@ -33,9 +33,20 @@ class Section < ApplicationRecord
   has_many :conversations, inverse_of: :section
   has_many :posts, through: :conversations
 
+  has_many :post_authors, -> { distinct }, through: :conversations
+  has_many :post_characters, -> { distinct }, through: :conversations
+
   validates :title, presence: true
   validates :description, length: { maximum: 1000 }
   validates :creator, presence: true
 
+  before_commit :queue_posts_counts_jobs, on: :update, if: -> { previous_changes.key?(:deleted) }
+
   scope :visible, -> { not_deleted }
+
+private
+
+  def queue_posts_counts_jobs
+    SectionPostsCountJob.perform_later(id)
+  end
 end
