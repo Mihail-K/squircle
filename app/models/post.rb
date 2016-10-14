@@ -97,11 +97,12 @@ private
   def set_posts_counts
     author.update_columns(posts_count: author.posts.visible.count)
     character.update_columns(posts_count: character.posts.visible.count) if character.present?
-    conversation.update_columns(posts_count: conversation.posts.not_deleted.count)
+    conversation.update_columns(posts_count: conversation.posts.not_deleted.count) unless conversation.destroyed?
     section.update_columns(posts_count: section.posts.visible.count) if section.present?
   end
 
   def set_conversation_last_activity
+    return if conversation.destroyed?
     last_activity = conversation.posts.not_deleted.maximum(:updated_at)
     conversation.update_columns(last_active_at: last_activity)
   end

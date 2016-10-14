@@ -38,7 +38,7 @@ class Conversation < ApplicationRecord
   belongs_to :locked_by, class_name: 'User'
   belongs_to :section, inverse_of: :conversations
 
-  has_many :posts, inverse_of: :conversation
+  has_many :posts, inverse_of: :conversation, dependent: :destroy
 
   has_many :post_authors, -> { distinct }, through: :posts, source: :author, class_name: 'User'
   has_many :post_characters, -> { distinct }, through: :posts, source: :character, class_name: 'Character'
@@ -55,8 +55,8 @@ class Conversation < ApplicationRecord
 
   before_save :set_locked_on_timestamp, if: -> { locked_changed?(to: true) }
 
-  before_commit :set_posts_counts, if: -> { previous_changes.key?(:deleted) }
-  before_commit :set_conversations_count, if: -> { previous_changes.key?(:deleted) }
+  before_commit :set_posts_counts
+  before_commit :set_conversations_count
 
   scope :visible, -> {
     not_deleted.where(section: Section.visible)
@@ -74,7 +74,7 @@ private
   end
 
   def set_posts_counts
-    section.update_columns(posts_count: section.posts.visible.count)
+    section.update_columns(posts_count: section.posts.visible.count) unless section.destroyed?
     post_authors.find_each do |author|
       author.update_columns(posts_count: author.posts.visible.count)
     end
@@ -84,6 +84,6 @@ private
   end
 
   def set_conversations_count
-    section.update_columns(conversations_count: section.conversations.not_deleted.count)
+    section.update_columns(conversations_count: section.conversations.not_deleted.count) unless section.destroyed?
   end
 end

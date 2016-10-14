@@ -62,7 +62,7 @@ RSpec.describe BansController, type: :controller do
       get :show, params: { id: ban.id }.merge(session)
 
       expect(response).to have_http_status :ok
-      expect(response).to match_response_schema 'ban'
+      expect(response).to match_response_schema :ban
     end
 
     it 'prevents users from accessing bans that do not belong to them' do
