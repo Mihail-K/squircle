@@ -41,6 +41,7 @@ class Section < ApplicationRecord
   validates :creator, presence: true
 
   before_commit :queue_posts_counts_jobs, on: :update, if: -> { previous_changes.key?(:deleted) }
+  before_commit :queue_posts_counts_jobs, on: :destroy
 
   scope :visible, -> { not_deleted }
 
