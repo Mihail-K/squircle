@@ -66,6 +66,7 @@ GEM
     arel (7.1.1)
     awesome_print (1.7.0)
     bcrypt (3.1.11)
+    bcrypt (3.1.11-x64-mingw32)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     builder (3.2.2)
@@ -137,10 +138,13 @@ GEM
     nio4r (1.2.1)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
+    nokogiri (1.6.8.1-x64-mingw32)
+      mini_portile2 (~> 2.1.0)
     parallel (1.9.0)
     parallel_tests (2.9.0)
       parallel
     pg (0.19.0)
+    pg (0.19.0-x64-mingw32)
     puma (3.6.0)
     pundit (1.1.0)
       activesupport (>= 3.0.0)
@@ -259,6 +263,8 @@ GEM
     timeliness (0.3.8)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    tzinfo-data (1.2016.7)
+      tzinfo (>= 1.0.0)
     validates_timeliness (4.0.2)
       timeliness (~> 0.3.7)
     vegas (0.1.11)
@@ -274,6 +280,7 @@ GEM
 
 PLATFORMS
   ruby
+  x64-mingw32
 
 DEPENDENCIES
   active_model_serializers (~> 0.10.0)
@@ -309,11 +316,12 @@ DEPENDENCIES
   sass-rails (~> 5.0)
   simplecov
   spring
+  tzinfo-data
   validates_timeliness
   web-console (~> 2.0)
 
 RUBY VERSION
-   ruby 2.3.0p0
+   ruby 2.3.1p112
 
 BUNDLED WITH
-   1.13.2
+   1.13.5
