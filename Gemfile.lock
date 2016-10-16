@@ -1,4 +1,19 @@
 GIT
+  remote: git://github.com/Mihail-K/fog-azure-rm.git
+  revision: f2e4a0c1e68abf518501113475902bcfb7d184e9
+  specs:
+    fog-azure-rm (0.0.9)
+      azure-storage (~> 0.11.1.preview)
+      azure_mgmt_compute (~> 0.6.0)
+      azure_mgmt_dns (~> 0.6.0)
+      azure_mgmt_network (~> 0.6.0)
+      azure_mgmt_resources (~> 0.6.0)
+      azure_mgmt_storage (~> 0.6.0)
+      azure_mgmt_traffic_manager (~> 0.6.0)
+      fog-core (~> 1.43.0)
+      rest-client (~> 2.0.0)
+
+GIT
   remote: git://github.com/carrierwaveuploader/carrierwave.git
   revision: ec850831eeaf0f2f45c002bcec9b90698b78d0d8
   specs:
@@ -129,16 +144,6 @@ GEM
       http-cookie (~> 1.0.0)
     faraday_middleware (0.10.0)
       faraday (>= 0.7.4, < 0.10)
-    fog-azure-rm (0.0.9)
-      azure-storage (~> 0.11.1.preview)
-      azure_mgmt_compute (~> 0.6.0)
-      azure_mgmt_dns (~> 0.6.0)
-      azure_mgmt_network (~> 0.6.0)
-      azure_mgmt_resources (~> 0.6.0)
-      azure_mgmt_storage (~> 0.6.0)
-      azure_mgmt_traffic_manager (~> 0.6.0)
-      fog-core (~> 1.43.0)
-      rest-client (~> 2.0.0)
     fog-core (1.43.0)
       builder
       excon (~> 0.49)
@@ -358,7 +363,7 @@ DEPENDENCIES
   dotenv-rails
   factory_girl_rails
   faker
-  fog-azure-rm
+  fog-azure-rm!
   json-schema
   kaminari
   mini_magick
