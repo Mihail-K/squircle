@@ -1,4 +1,5 @@
 
+# frozen_string_literal: true
 # - Ban Permissions - #
 
 Permissible::Permission.find_or_create_by! name: :view_deleted_bans do |permission|

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.shared_context 'authentication', shared_context: :metadata do
   let! :active_user do
     create :user

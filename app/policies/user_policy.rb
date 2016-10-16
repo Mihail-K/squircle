@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 class UserPolicy < ApplicationPolicy
-  alias_method :user, :record
+  alias user record
 
   def me?
     authenticated?
@@ -30,7 +31,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def permitted_attributes_for_update
-    attributes  = %i(email date_of_birth display_name first_name last_name password password_confirmation avatar)
+    attributes =  %i(email date_of_birth display_name first_name last_name password password_confirmation avatar)
     attributes << :deleted if allowed_to?(:delete_users)
     attributes
   end

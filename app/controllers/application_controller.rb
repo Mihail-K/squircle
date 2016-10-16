@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ApplicationController < ActionController::API
   include Pundit
 
@@ -23,7 +24,7 @@ class ApplicationController < ActionController::API
     @current_resource_owner ||= User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
   end
 
-  alias_method :current_user, :current_resource_owner
+  alias current_user current_resource_owner
 
   def forbid
     head :forbidden
@@ -73,8 +74,8 @@ private
 
   def pundit_object
     instance_variable_get("@#{pundit_object_singular_name}") ||
-    instance_variable_get("@#{pundit_object_plural_name}") ||
-    pundit_model
+      instance_variable_get("@#{pundit_object_plural_name}") ||
+      pundit_model
   end
 
   def pundit_object_singular_name

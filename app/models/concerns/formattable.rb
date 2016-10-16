@@ -1,18 +1,19 @@
+# frozen_string_literal: true
 module Formattable
   extend ActiveSupport::Concern
 
   included do
     def self.formattable(*properties)
       @formattable ||= Set.new
-      @formattable += properties
+      @formattable  += properties
     end
 
     def self.formattable_properties
-      @formattable || [ ]
+      @formattable || []
     end
 
     before_save :apply_formatting, if: -> {
-      self.class.formattable_properties.any? { |property| changes.key? property }
+      self.class.formattable_properties.any? { |property| changes.key?(property) }
     }
   end
 
@@ -20,12 +21,12 @@ protected
 
   def apply_formatting
     self.class.formattable_properties.each do |property|
-      self.format_property property
+      format_property(property)
     end
   end
 
   def format_property(property)
-    result = Formatter.render send(property)
+    result = Formatter.new(send(property)).render
     self["formatted_#{property}"] = result
   end
 end

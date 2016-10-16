@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 class PostPolicy < ApplicationPolicy
-  alias_method :post, :record
+  alias post record
 
   def index?
     guest? || allowed_to?(:view_posts)
@@ -24,14 +25,14 @@ class PostPolicy < ApplicationPolicy
   end
 
   def permitted_attributes_for_create
-    attributes  = %i(conversation_id title body)
+    attributes =  %i(conversation_id title body)
     attributes << :character_id if allowed_to?(:use_characters)
     attributes << :deleted      if allowed_to?(:delete_conversations)
     attributes
   end
 
   def permitted_attributes_for_update
-    attributes  = %i(title body)
+    attributes =  %i(title body)
     attributes << :character_id if allowed_to?(:use_characters)
     attributes << :deleted      if allowed_to?(:delete_conversations)
     attributes

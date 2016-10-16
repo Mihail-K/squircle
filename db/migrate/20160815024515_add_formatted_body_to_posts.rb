@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class AddFormattedBodyToPosts < ActiveRecord::Migration[5.0]
   def change
     add_column :posts, :formatted_body, :text

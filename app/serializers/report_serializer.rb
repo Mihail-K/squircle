@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ReportSerializer < ApplicationSerializer
   attribute :id
   attribute :reportable_id

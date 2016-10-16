@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 namespace :schema do
   task :deploy do
     Dir[Rails.root.join('spec/support/api/schemas/**/*.{json,yml}')].each do |file|

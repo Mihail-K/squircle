@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # == Schema Information
 #
 # Table name: reports
@@ -57,7 +58,7 @@ class Report < ApplicationRecord
     status != 'open'
   end
 
-  alias_method :closed, :closed?
+  alias closed closed?
 
   def set_closed_at_timestamp
     self.closed_at = Time.zone.now

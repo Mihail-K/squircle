@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class AddPostsCountToUsersAndCharacters < ActiveRecord::Migration[5.0]
   def change
     add_column :users, :posts_count, :integer, null: false, default: 0

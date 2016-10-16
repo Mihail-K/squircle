@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 class SectionPolicy < ApplicationPolicy
-  alias_method :section, :record
+  alias section record
 
   def index?
     true

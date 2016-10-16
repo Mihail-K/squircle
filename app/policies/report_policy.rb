@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 class ReportPolicy < ApplicationPolicy
-  alias_method :report, :record
+  alias report record
 
   def index?
     allowed_to?(:view_owned_reports)
@@ -26,7 +27,7 @@ class ReportPolicy < ApplicationPolicy
   end
 
   def permitted_attributes_for_update
-    attributes  = %i(description)
+    attributes =  %i(description)
     attributes << :status  if allowed_to?(:update_reports)
     attributes << :deleted if allowed_to?(:delete_reports)
     attributes

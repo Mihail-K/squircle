@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # == Schema Information
 #
 # Table name: users
@@ -94,12 +95,12 @@ class User < ApplicationRecord
   }
 
   scope :recently_active, -> {
-    where User.arel_table[:last_active_at]
+    where(User.arel_table[:last_active_at]
               .gteq(5.minutes.ago)
               .and(
                 User.arel_table[:posts_count]
                     .gt(0)
-              )
+              ))
   }
 
 private

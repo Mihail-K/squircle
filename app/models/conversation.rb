@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # == Schema Information
 #
 # Table name: conversations
@@ -63,8 +64,8 @@ class Conversation < ApplicationRecord
   }
 
   scope :recently_active, -> {
-    order(last_active_at: :desc).where Conversation.arel_table[:last_active_at]
-                                                   .gteq(1.day.ago)
+    order(last_active_at: :desc).where(Conversation.arel_table[:last_active_at]
+                                                   .gteq(1.day.ago))
   }
 
 private
@@ -74,10 +75,22 @@ private
   end
 
   def set_posts_counts
+    set_section_post_count
+    set_author_post_counts
+    set_character_post_counts
+  end
+
+  def set_section_post_count
     section.update_columns(posts_count: section.posts.visible.count) unless section.destroyed?
+  end
+
+  def set_author_post_counts
     post_authors.find_each do |author|
       author.update_columns(posts_count: author.posts.visible.count)
     end
+  end
+
+  def set_character_post_counts
     post_characters.find_each do |character|
       character.update_columns(posts_count: character.posts.visible.count)
     end

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 FactoryGirl.define do
   factory :application, class: Doorkeeper::Application do
     name { Faker::Company.name }

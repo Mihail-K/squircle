@@ -1,0 +1,74 @@
+---
+AllCops:
+  DisplayCopNames: true
+  Exclude:
+  - bin/*
+  - db/schema.rb
+  TargetRubyVersion: 2.3
+
+Metrics/AbcSize:
+  Exclude:
+  - db/migrate/*
+
+Metrics/BlockLength:
+  Exclude:
+  - config/routes.rb
+  - db/migrate/*
+  - db/seeds/*
+  - Rakefile
+  - '**/*.rake'
+  - spec/**/*.rb
+
+Metrics/LineLength:
+  Max: 120
+
+Metrics/MethodLength:
+  CountComments: false
+  Exclude:
+  - db/migrate/*
+
+Rails:
+  Enabled: true
+
+Rails/HasAndBelongsToMany:
+  Enabled: false
+
+Style/AccessModifierIndentation:
+  EnforcedStyle: outdent
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/ExtraSpacing:
+  AllowForAlignment: true
+
+Style/FileName:
+  Exclude:
+  - db/seeds/*
+
+Style/IfUnlessModifierOfIfUnless:
+  Enabled: false
+
+Style/IndentationConsistency:
+  EnforcedStyle: rails
+
+Style/Lambda:
+  EnforcedStyle: literal
+
+Style/MultilineBlockChain:
+  Enabled: false
+
+Style/MultilineMethodCallIndentation:
+  EnforcedStyle: aligned
+
+Style/MultilineOperationIndentation:
+  EnforcedStyle: aligned
+
+Style/NestedModifier:
+  Enabled: false
+
+Style/RescueModifier:
+  Enabled: false

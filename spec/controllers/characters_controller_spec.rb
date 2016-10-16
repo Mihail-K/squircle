@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 RSpec.describe CharactersController, type: :controller do
@@ -9,7 +10,7 @@ RSpec.describe CharactersController, type: :controller do
     end
 
     it 'returns a list of characters' do
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'characters'
@@ -18,23 +19,19 @@ RSpec.describe CharactersController, type: :controller do
     end
 
     it 'only returns visible characters' do
-      deleted_characters = characters.sample(3).each do |character|
-        character.update deleted: true, deleted_by: active_user
-      end
+      characters.sample(3).each(&:delete)
 
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :ok
-      expect(json[:characters].count).to eq characters.count - deleted_characters.count
+      expect(json[:characters].count).to eq characters.count - 3
     end
 
     it 'includes deleted characters when called by an admin' do
       active_user.roles << Role.find_by!(name: 'admin')
-      deleted_characters = characters.sample(3).each do |character|
-        character.update deleted: true, deleted_by: active_user
-      end
+      characters.sample(3).each(&:delete)
 
-      get :index, format: :json, params: session
+      get :index, params: session
 
       expect(response).to have_http_status :ok
       expect(json[:characters].count).to eq characters.count
@@ -47,7 +44,7 @@ RSpec.describe CharactersController, type: :controller do
     end
 
     it 'returns the requested character' do
-      get :show, format: :json, params: { id: character.id }
+      get :show, params: { id: character.id }
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'character'
@@ -56,7 +53,7 @@ RSpec.describe CharactersController, type: :controller do
     it 'returns 404 if the character is deleted' do
       character.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: character.id }
+      get :show, params: { id: character.id }
 
       expect(response).to have_http_status :not_found
     end
@@ -65,7 +62,7 @@ RSpec.describe CharactersController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
       character.update deleted: true
 
-      get :show, format: :json, params: { id: character.id }.merge(session)
+      get :show, params: { id: character.id }.merge(session)
 
       expect(response).to have_http_status :ok
     end
@@ -74,7 +71,7 @@ RSpec.describe CharactersController, type: :controller do
   describe '#POST create' do
     it 'requires an authenticated user' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           character: attributes_for(:character)
         }
       end.not_to change { Character.count }
@@ -84,7 +81,7 @@ RSpec.describe CharactersController, type: :controller do
 
     it 'creates a character when called by an authenticated user' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           character: attributes_for(:character)
         }.merge(session)
       end.to change { Character.count }.by(1)
@@ -97,7 +94,7 @@ RSpec.describe CharactersController, type: :controller do
       active_user.roles << Role.find_by!(name: 'banned')
 
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           character: attributes_for(:character)
         }.merge(session)
       end.not_to change { Character.count }
@@ -107,7 +104,7 @@ RSpec.describe CharactersController, type: :controller do
 
     it 'returns errors if the character is invalid' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           character: attributes_for(:character, name: nil)
         }.merge(session)
       end.not_to change { Character.count }
@@ -126,7 +123,7 @@ RSpec.describe CharactersController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: character.id, character: attributes_for(:character)
         }
       end.not_to change { character.reload.attributes }
@@ -136,7 +133,7 @@ RSpec.describe CharactersController, type: :controller do
 
     it 'allows the owner to update character attributes' do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: character.id, character: attributes_for(:character)
         }.merge(session)
       end.to change { character.reload.attributes }
@@ -149,7 +146,7 @@ RSpec.describe CharactersController, type: :controller do
       character.update user: create(:user)
 
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: character.id, character: attributes_for(:character)
         }.merge(session)
       end.not_to change { character.reload.attributes }
@@ -162,7 +159,7 @@ RSpec.describe CharactersController, type: :controller do
       character.update user: create(:user)
 
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: character.id, character: attributes_for(:character)
         }.merge(session)
       end.to change { character.reload.attributes }
@@ -172,7 +169,7 @@ RSpec.describe CharactersController, type: :controller do
 
     it 'returns errors if the character is invalid' do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: character.id, character: attributes_for(:character, name: nil)
         }.merge(session)
       end.not_to change { character.reload.attributes }
@@ -191,7 +188,7 @@ RSpec.describe CharactersController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        delete :destroy, format: :json, params: { id: character.id }
+        delete :destroy, params: { id: character.id }
       end.not_to change { character.reload.deleted? }
 
       expect(response).to have_http_status :unauthorized
@@ -199,7 +196,7 @@ RSpec.describe CharactersController, type: :controller do
 
     it 'allows users to delete a character they own' do
       expect do
-        delete :destroy, format: :json, params: { id: character.id }.merge(session)
+        delete :destroy, params: { id: character.id }.merge(session)
       end.to change { character.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content
@@ -209,7 +206,7 @@ RSpec.describe CharactersController, type: :controller do
       character.update user: create(:user)
 
       expect do
-        delete :destroy, format: :json, params: { id: character.id }.merge(session)
+        delete :destroy, params: { id: character.id }.merge(session)
       end.not_to change { character.reload.deleted? }
 
       expect(response).to have_http_status :forbidden
@@ -220,7 +217,7 @@ RSpec.describe CharactersController, type: :controller do
       character.update user: create(:user)
 
       expect do
-        delete :destroy, format: :json, params: { id: character.id }.merge(session)
+        delete :destroy, params: { id: character.id }.merge(session)
       end.to change { character.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content

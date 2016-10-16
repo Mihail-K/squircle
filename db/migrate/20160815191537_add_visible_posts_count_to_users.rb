@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class AddVisiblePostsCountToUsers < ActiveRecord::Migration[5.0]
   class User < ActiveRecord::Base
     has_many :posts, -> { where(deleted: false) }, foreign_key: :author_id

@@ -1,4 +1,5 @@
 
+# frozen_string_literal: true
 Role.find_or_create_by! name: 'user' do |role|
   role.description = <<-TEXT.squish
     The default role for all users.

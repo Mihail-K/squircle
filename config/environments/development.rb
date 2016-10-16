@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -40,12 +41,20 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 
   ActiveSupport::Notifications.subscribe 'cache_write.active_support' do |*args|
-    event = ActiveSupport::Notifications::Event.new *args
-    Rails.logger.debug "[#{event.payload[:namespace]}] Cache Write => #{event.payload[:key].split('/')[0].camelize rescue 'Object'} (#{event.payload[:key]})".red
+    event = ActiveSupport::Notifications::Event.new(*args)
+    Rails.logger.debug(<<-TEXT.squish.red)
+      [#{event.payload[:namespace]}] Cache Write =>
+      #{event.payload[:key].split('/')[0].camelize rescue 'Object'}
+      (#{event.payload[:key]})
+    TEXT
   end
 
   ActiveSupport::Notifications.subscribe 'cache_fetch_hit.active_support' do |*args|
-    event = ActiveSupport::Notifications::Event.new *args
-    Rails.logger.debug "[#{event.payload[:namespace]}] Cache Hit => #{event.payload[:key].split('/')[0].camelize rescue 'Object'} (#{event.payload[:key]})".green
+    event = ActiveSupport::Notifications::Event.new(*args)
+    Rails.logger.debug(<<-TEXT.squish.green)
+      [#{event.payload[:namespace]}] Cache Hit =>
+      #{event.payload[:key].split('/')[0].camelize rescue 'Object'}
+      (#{event.payload[:key]})
+    TEXT
   end
 end

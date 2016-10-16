@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 class CharacterPolicy < ApplicationPolicy
-  alias_method :character, :record
+  alias character record
 
   def index?
     guest? || allowed_to?(:view_characters)
@@ -22,7 +23,7 @@ class CharacterPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    attributes  = %i(name title description avatar)
+    attributes =  %i(name title description avatar)
     attributes << :user_id if allowed_to?(:update_characters)
     attributes
   end

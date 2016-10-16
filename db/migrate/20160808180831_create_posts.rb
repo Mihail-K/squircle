@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CreatePosts < ActiveRecord::Migration[5.0]
   def change
     create_table :posts do |t|
@@ -6,7 +7,7 @@ class CreatePosts < ActiveRecord::Migration[5.0]
       t.references :poster,    foreign_key: { to_table: :users }, index: true, null: false
       t.references :editor,    foreign_key: { to_table: :users }, index: true
       t.references :character, foreign_key: true, index: true
-      t.timestamps  null: false
+      t.timestamps null: false
     end
   end
 end

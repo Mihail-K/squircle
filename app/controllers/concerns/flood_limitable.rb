@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module FloodLimitable
   extend ActiveSupport::Concern
 
@@ -8,11 +9,9 @@ module FloodLimitable
   end
 
   def check_flood_limit
-    if Post.flood.exists?(author: current_user)
-      # Prevent posts from being made more than once per 20 seconds.
-      raise ActiveRecord::RecordInvalid, @post = Post.new { |post|
-        post.errors.add :base, 'you can only post once every 20 seconds'
-      }
-    end
+    return unless Post.flood.exists?(author: current_user)
+    # Prevent posts from being made more than once per 20 seconds.
+    @post = Post.new { |post| post.errors.add :base, 'you can only post once every 20 seconds' }
+    raise ActiveRecord::RecordInvalid, @post
   end
 end

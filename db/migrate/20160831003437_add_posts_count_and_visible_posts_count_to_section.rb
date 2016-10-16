@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class AddPostsCountAndVisiblePostsCountToSection < ActiveRecord::Migration[5.0]
   def change
     add_column :sections, :posts_count, :integer, null: false, default: 0

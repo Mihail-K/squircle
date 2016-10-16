@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class UnbanJob < ApplicationJob
   queue_as :medium
 

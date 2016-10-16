@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
@@ -22,7 +23,7 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'GET #index' do
     let! :users do
-      create_list(:user, 4) + [ active_user ]
+      create_list(:user, 4) + [active_user]
     end
 
     it 'responds with 200' do
@@ -60,7 +61,7 @@ RSpec.describe UsersController, type: :controller do
 
       expect(response).to have_http_status :ok
       expect(json[:users].count).to eq recently_active.count
-      expect(json[:users].map { |user| user[:id] }).to contain_exactly *recently_active.map(&:id)
+      expect(json[:users].map { |user| user[:id] }).to contain_exactly(*recently_active.map(&:id))
     end
 
     it 'returns a list of the most active users' do

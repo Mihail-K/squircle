@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CharactersController < ApplicationController
   before_action :doorkeeper_authorize!, except: %i(index show)
 

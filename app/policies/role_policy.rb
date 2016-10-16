@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 class RolePolicy < ApplicationPolicy
-  alias_method :role, :record
+  alias role record
 
   def index?
     authenticated?

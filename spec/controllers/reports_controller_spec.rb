@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 RSpec.describe ReportsController, type: :controller do
@@ -9,13 +10,13 @@ RSpec.describe ReportsController, type: :controller do
     end
 
     it 'requires an authenticated user' do
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :unauthorized
     end
 
     it 'returns a list of reports created by the current user' do
-      get :index, format: :json, params: session
+      get :index, params: session
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'reports'
@@ -29,7 +30,7 @@ RSpec.describe ReportsController, type: :controller do
         report.update creator: other_user
       end
 
-      get :index, format: :json, params: session
+      get :index, params: session
 
       expect(response).to have_http_status :ok
       expect(json[:reports].count).to eq reports.count - other_reports.count
@@ -40,7 +41,7 @@ RSpec.describe ReportsController, type: :controller do
         report.update deleted: true, deleted_by: active_user
       end
 
-      get :index, format: :json, params: session
+      get :index, params: session
 
       expect(response).to have_http_status :ok
       expect(json[:reports].count).to eq reports.count - deleted_reports.count
@@ -49,12 +50,12 @@ RSpec.describe ReportsController, type: :controller do
     it 'returns all reports for admin users' do
       active_user.roles << Role.find_by!(name: 'admin')
 
-      other_user    = create(:user)
-      other_reports = reports.sample(3).each do |report|
+      other_user = create(:user)
+      reports.sample(3).each do |report|
         report.update creator: other_user
       end
 
-      get :index, format: :json, params: session
+      get :index, params: session
 
       expect(response).to have_http_status :ok
       expect(json[:reports].count).to eq reports.count
@@ -65,7 +66,7 @@ RSpec.describe ReportsController, type: :controller do
         report.update status: 'resolved', closed_by: active_user
       end
 
-      get :index, format: :json, params: { status: 'resolved' }.merge(session)
+      get :index, params: { status: 'resolved' }.merge(session)
 
       expect(response).to have_http_status :ok
       expect(json[:reports].count).to eq closed_reports.count
@@ -78,13 +79,13 @@ RSpec.describe ReportsController, type: :controller do
     end
 
     it 'requires an authenticated user' do
-      get :show, format: :json, params: { id: report.id }
+      get :show, params: { id: report.id }
 
       expect(response).to have_http_status :unauthorized
     end
 
     it 'returns the requested report' do
-      get :show, format: :json, params: { id: report.id }.merge(session)
+      get :show, params: { id: report.id }.merge(session)
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'report'
@@ -93,7 +94,7 @@ RSpec.describe ReportsController, type: :controller do
     it 'prevents users from viewing reports that they do not own' do
       report.update creator: create(:user)
 
-      get :show, format: :json, params: { id: report.id }.merge(session)
+      get :show, params: { id: report.id }.merge(session)
 
       expect(response).to have_http_status :not_found
     end
@@ -101,7 +102,7 @@ RSpec.describe ReportsController, type: :controller do
     it 'prevents users from viewing deleted reports' do
       report.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: report.id }.merge(session)
+      get :show, params: { id: report.id }.merge(session)
 
       expect(response).to have_http_status :not_found
     end
@@ -110,7 +111,7 @@ RSpec.describe ReportsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
       report.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: report.id }.merge(session)
+      get :show, params: { id: report.id }.merge(session)
 
       expect(response).to have_http_status :ok
     end
@@ -119,7 +120,7 @@ RSpec.describe ReportsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
       report.update creator: create(:user)
 
-      get :show, format: :json, params: { id: report.id }.merge(session)
+      get :show, params: { id: report.id }.merge(session)
 
       expect(response).to have_http_status :ok
     end
@@ -132,7 +133,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           report: attributes_for(:report, reportable_id: user.id, reportable_type: user.model_name.name)
         }
       end.not_to change { Report.count }
@@ -142,7 +143,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'creates a report' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           report: attributes_for(:report, reportable_id: user.id, reportable_type: user.model_name.name)
         }.merge(session)
       end.to change { Report.count }.by(1)
@@ -155,7 +156,7 @@ RSpec.describe ReportsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'banned')
 
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           report: attributes_for(:report, reportable_id: user.id, reportable_type: user.model_name.name)
         }.merge(session)
       end.not_to change { Report.count }
@@ -165,7 +166,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'returns errors if the report is invalid' do
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           report: attributes_for(:report, reportable_id: nil, reportable_type: user.model_name.name)
         }.merge(session)
       end.not_to change { Report.count }
@@ -184,7 +185,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: report.id, report: attributes_for(:report)
         }
       end.not_to change { report.reload.attributes }
@@ -194,7 +195,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'allows the creator to update the attributes of a report' do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: report.id, report: attributes_for(:report)
         }.merge(session)
       end.to change { report.reload.attributes }
@@ -207,7 +208,7 @@ RSpec.describe ReportsController, type: :controller do
       report.update creator: create(:user)
 
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: report.id, report: attributes_for(:report)
         }.merge(session)
       end.not_to change { report.reload.attributes }
@@ -217,7 +218,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'prevents users from changing the status of a report' do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: report.id, report: { status: 'resolved' }
         }.merge(session)
       end.not_to change { report.reload.status }
@@ -229,7 +230,7 @@ RSpec.describe ReportsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: report.id, report: { status: 'resolved' }
         }.merge(session)
       end.to change { report.reload.status }.from('open').to('resolved')
@@ -240,7 +241,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'returns errors if the report is invalid' do
       expect do
-        patch :update, format: :json, params: {
+        patch :update, params: {
           id: report.id, report: { description: nil }
         }.merge(session)
       end.not_to change { report.reload.attributes }
@@ -259,7 +260,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        delete :destroy, format: :json, params: { id: report.id }
+        delete :destroy, params: { id: report.id }
       end.not_to change { report.reload.deleted? }
 
       expect(response).to have_http_status :unauthorized
@@ -267,7 +268,7 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'prevents users from deleting reports' do
       expect do
-        delete :destroy, format: :json, params: { id: report.id }.merge(session)
+        delete :destroy, params: { id: report.id }.merge(session)
       end.not_to change { report.reload.deleted? }
 
       expect(response).to have_http_status :forbidden
@@ -277,7 +278,7 @@ RSpec.describe ReportsController, type: :controller do
       report.update creator: create(:user)
 
       expect do
-        delete :destroy, format: :json, params: { id: report.id }.merge(session)
+        delete :destroy, params: { id: report.id }.merge(session)
       end.not_to change { report.reload.deleted? }
 
       expect(response).to have_http_status :not_found
@@ -287,7 +288,7 @@ RSpec.describe ReportsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        delete :destroy, format: :json, params: { id: report.id }.merge(session)
+        delete :destroy, params: { id: report.id }.merge(session)
       end.to change { report.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content

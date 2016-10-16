@@ -1,4 +1,5 @@
 
+# frozen_string_literal: true
 {
   # - Bans - #
   view_deleted_bans:          :view_bans,
@@ -27,11 +28,11 @@
   view_deleted_users:         :view_users,
   update_users:               :update_self,
   delete_users:               :delete_self
-}.each do |name, implied|
+}.each do |name, implied_names|
   permission = Permissible::Permission.find_by!(name: name)
 
-  Array.wrap(implied).each do |name|
-    implied = Permissible::Permission.find_by!(name: implied)
+  Array.wrap(implied_names).each do |implied_name|
+    implied = Permissible::Permission.find_by!(name: implied_name)
     next if permission.implied_permissions.exists?(id: implied)
 
     permission.implied_permissions << implied

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CarrierWave::Uploader::Base
   module Extensions
     def url

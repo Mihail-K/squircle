@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class PostsController < ApplicationController
   include FloodLimitable
 
@@ -58,7 +59,7 @@ private
 
   def set_posts
     @posts = policy_scope(Post).includes(:author, :editor, :character, :conversation)
-    @posts = @posts.where(author: params[:user_id] || params[:author_id]) if params.key?(:user_id) || params.key?(:author_id)
+    @posts = @posts.where(author: params[:user_id]) if params.key?(:user_id)
     @posts = @posts.where(character: params[:character_id]) if params.key?(:character_id)
     @posts = @posts.where(conversation: params[:conversation_id]) if params.key?(:conversation_id)
     @posts = @posts.order(created_at: :asc)

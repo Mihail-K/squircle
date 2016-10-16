@@ -1,11 +1,12 @@
+# frozen_string_literal: true
 FactoryGirl.define do
   factory :user do
     email { Faker::Internet.email }
     date_of_birth { Faker::Date.between(50.years.ago, 13.years.ago) }
 
-    display_name {
+    display_name do
       Faker::Internet.user_name + Faker::Number.number(Faker::Number.between(0, 4)).to_s
-    }
+    end
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
 

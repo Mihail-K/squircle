@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # == Schema Information
 #
 # Table name: bans
@@ -66,8 +67,8 @@ class Ban < ApplicationRecord
     expires_at.nil?
   end
 
-  alias_method :expired, :expired?
-  alias_method :permanent, :permanent?
+  alias expired expired?
+  alias permanent permanent?
 
 private
 

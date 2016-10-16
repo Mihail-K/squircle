@@ -1,11 +1,18 @@
+# frozen_string_literal: true
 class Formatter
-  def self.render(*input)
-    markdown.render *input
+  attr_reader :input
+
+  def initialize(*input)
+    @input = input
+  end
+
+  def render
+    markdown.render(*input)
   end
 
 private
 
-  def self.markdown
+  def markdown
     @markdown ||= Redcarpet::Markdown.new(
       renderer,
       tables: true,
@@ -18,7 +25,7 @@ private
     )
   end
 
-  def self.renderer
+  def renderer
     @renderer ||= Redcarpet::Render::HTML.new(
       escape_html: true, safe_links_only: true, link_attributes: { target: '_blank' }
     )

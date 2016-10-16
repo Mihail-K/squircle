@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class SectionSerializer < ApplicationSerializer
   cache expires_in: 6.hours
 

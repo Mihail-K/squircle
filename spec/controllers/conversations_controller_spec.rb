@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 RSpec.describe ConversationsController, type: :controller do
@@ -17,21 +18,17 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'only returns visible conversations' do
-      deleted_conversations = conversations.sample(3).each do |conversation|
-        conversation.update deleted: true, deleted_by: active_user
-      end
+      conversations.sample(3).each(&:delete)
 
       get :index
 
       expect(response).to have_http_status :ok
-      expect(json[:conversations].count).to eq conversations.count - deleted_conversations.count
+      expect(json[:conversations].count).to eq conversations.count - 3
     end
 
     it 'returns all conversations for admin users' do
       active_user.roles << Role.find_by!(name: 'admin')
-      deleted_conversations = conversations.sample(3).each do |conversation|
-        conversation.update deleted: true, deleted_by: active_user
-      end
+      conversations.sample(3).each(&:delete)
 
       get :index, params: session
 
@@ -86,7 +83,7 @@ RSpec.describe ConversationsController, type: :controller do
     it 'requires an authenticated user' do
       expect do
         post :create, params: {
-          conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post) ] }
+          conversation: { section_id: section.id, posts_attributes: [attributes_for(:post)] }
         }
       end.not_to change { Conversation.count }
 
@@ -96,7 +93,7 @@ RSpec.describe ConversationsController, type: :controller do
     it 'creates a new conversation' do
       expect do
         post :create, params: {
-          conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post) ] }
+          conversation: { section_id: section.id, posts_attributes: [attributes_for(:post)] }
         }.merge(session)
       end.to change { Conversation.count }.by(1)
 
@@ -109,7 +106,7 @@ RSpec.describe ConversationsController, type: :controller do
 
       expect do
         post :create, params: {
-          conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post) ] }
+          conversation: { section_id: section.id, posts_attributes: [attributes_for(:post)] }
         }.merge(session)
       end.not_to change { Conversation.count }
 
@@ -119,7 +116,7 @@ RSpec.describe ConversationsController, type: :controller do
     it 'returns errors if the conversation is invalid' do
       expect do
         post :create, params: {
-          conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post, body: nil) ] }
+          conversation: { section_id: section.id, posts_attributes: [attributes_for(:post, body: nil)] }
         }.merge(session)
       end.not_to change { Conversation.count }
 
@@ -132,7 +129,7 @@ RSpec.describe ConversationsController, type: :controller do
     it_behaves_like 'flood_limitable' do
       let :attributes do
         {
-          conversation: { section_id: section.id, posts_attributes: [ attributes_for(:post) ] }
+          conversation: { section_id: section.id, posts_attributes: [attributes_for(:post)] }
         }.merge(session)
       end
     end
@@ -147,7 +144,7 @@ RSpec.describe ConversationsController, type: :controller do
           post :create, params: {
             conversation: {
               section_id: section.id,
-              posts_attributes: [ attributes_for(:post, character_id: character.id) ]
+              posts_attributes: [attributes_for(:post, character_id: character.id)]
             }
           }.merge(session)
 
@@ -165,7 +162,7 @@ RSpec.describe ConversationsController, type: :controller do
           post :create, params: {
             conversation: {
               section_id: section.id,
-              posts_attributes: [ attributes_for(:post, character_id: character.id) ]
+              posts_attributes: [attributes_for(:post, character_id: character.id)]
             }
           }.merge(session)
 

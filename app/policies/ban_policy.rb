@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 class BanPolicy < ApplicationPolicy
-  alias_method :ban, :record
+  alias ban record
 
   def index?
     allowed_to?(:view_owned_bans)
@@ -26,7 +27,7 @@ class BanPolicy < ApplicationPolicy
   end
 
   def permitted_attributes_for_update
-    attributes  = %i(reason expires_at)
+    attributes =  %i(reason expires_at)
     attributes << :deleted if allowed_to?(:delete_bans)
     attributes
   end

@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 class ChangeRoleInUsers < ActiveRecord::Migration[5.0]
-  def self.up
+  def up
     add_reference :users, :role, foreign_key: true, index: true
 
     execute(<<-SQL.squish).each do |roles|
@@ -21,7 +22,7 @@ class ChangeRoleInUsers < ActiveRecord::Migration[5.0]
     remove_column :users, :role
   end
 
-  def self.down
+  def down
     add_column :users, :role, :string, index: true, null: false, default: 'user'
 
     execute(<<-SQL.squish).each do |roles|
@@ -45,7 +46,7 @@ class ChangeRoleInUsers < ActiveRecord::Migration[5.0]
 
 private
 
-  def self.sanitize(*args)
+  def sanitize(*args)
     ActiveRecord::Base.send :sanitize_sql_array, args
   end
 end

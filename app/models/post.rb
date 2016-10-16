@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # == Schema Information
 #
 # Table name: posts
@@ -46,7 +47,7 @@ class Post < ApplicationRecord
 
   validates :author, presence: true
   validates :conversation, presence: true
-  validates :body, presence: true, length: { in: 10 .. 10_000, if: :body? }
+  validates :body, presence: true, length: { in: 10..10_000, if: :body? }
 
   formattable :body
 

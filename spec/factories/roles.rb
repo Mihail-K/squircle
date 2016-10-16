@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 FactoryGirl.define do
   factory :role do
     name { Faker::Company.profession }
@@ -13,7 +14,7 @@ FactoryGirl.define do
       permissions_count 0
     end
 
-    after :build do |role, e|
+    after :build do |_role, e|
       e.permissions = build_list :permission, e.permissions_count
     end
   end

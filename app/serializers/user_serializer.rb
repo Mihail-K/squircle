@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class UserSerializer < ApplicationSerializer
   cache expires_in: 3.hours
 
@@ -42,11 +43,10 @@ class UserSerializer < ApplicationSerializer
   belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted_users?
 
   def can_view_users_personal_fields?
-    object.id == current_user.try(:id) ||
-    current_user.try(:allowed_to?, :view_users_personal_fields)
+    object.id == current_user.try(:id) || allowed_to?(:view_users_personal_fields)
   end
 
   def can_view_deleted_users?
-    current_user.try(:allowed_to?, :view_deleted_users)
+    allowed_to?(:view_deleted_users)
   end
 end

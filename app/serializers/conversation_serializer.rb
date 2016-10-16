@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ConversationSerializer < ApplicationSerializer
   cache expires_in: 1.hour
 
@@ -54,6 +55,6 @@ class ConversationSerializer < ApplicationSerializer
 
   def participated
     instance_options[:participated][object.id].present? &&
-    instance_options[:participated][object.id] > 0
+      instance_options[:participated][object.id].positive?
   end
 end

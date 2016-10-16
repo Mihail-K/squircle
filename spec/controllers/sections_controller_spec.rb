@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 RSpec.describe SectionsController, type: :controller do
@@ -9,7 +10,7 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'returns a list of sections' do
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'sections'
@@ -20,7 +21,7 @@ RSpec.describe SectionsController, type: :controller do
     it 'does not return sections that are not visible' do
       sections.sample.update deleted: true, deleted_by: active_user
 
-      get :index, format: :json
+      get :index
 
       expect(response).to have_http_status :ok
       expect(json[:sections].count).to eq sections.count - 1
@@ -30,7 +31,7 @@ RSpec.describe SectionsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
       sections.sample.update deleted: true, deleted_by: active_user
 
-      get :index, format: :json, params: { access_token: token.token }
+      get :index, params: { access_token: token.token }
 
       expect(response).to have_http_status :ok
       expect(json[:sections].count).to eq sections.count
@@ -43,7 +44,7 @@ RSpec.describe SectionsController, type: :controller do
     end
 
     it 'returns the requested section' do
-      get :show, format: :json, params: { id: section.id }
+      get :show, params: { id: section.id }
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema 'section'
@@ -52,7 +53,7 @@ RSpec.describe SectionsController, type: :controller do
     it 'returns 404 if the section is deleted' do
       section.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: section.id }
+      get :show, params: { id: section.id }
 
       expect(response).to have_http_status :not_found
     end
@@ -61,7 +62,7 @@ RSpec.describe SectionsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
       section.update deleted: true, deleted_by: active_user
 
-      get :show, format: :json, params: { id: section.id }.merge(session)
+      get :show, params: { id: section.id }.merge(session)
 
       expect(response).to have_http_status :ok
     end
@@ -70,7 +71,7 @@ RSpec.describe SectionsController, type: :controller do
   describe '#POST create' do
     it 'requires an authenticated user' do
       expect do
-        post :create, format: :json, params: { section: attributes_for(:section) }
+        post :create, params: { section: attributes_for(:section) }
       end.not_to change { Section.count }
 
       expect(response).to have_http_status :unauthorized
@@ -78,7 +79,7 @@ RSpec.describe SectionsController, type: :controller do
 
     it 'only allows admins to create sections' do
       expect do
-        post :create, format: :json, params: { section: attributes_for(:section) }.merge(session)
+        post :create, params: { section: attributes_for(:section) }.merge(session)
       end.not_to change { Section.count }
 
       expect(response).to have_http_status :forbidden
@@ -88,7 +89,7 @@ RSpec.describe SectionsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        post :create, format: :json, params: { section: attributes_for(:section) }.merge(session)
+        post :create, params: { section: attributes_for(:section) }.merge(session)
       end.to change { Section.count }.by(1)
 
       expect(response).to have_http_status :created
@@ -99,7 +100,7 @@ RSpec.describe SectionsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        post :create, format: :json, params: {
+        post :create, params: {
           section: attributes_for(:section, title: nil)
         }.merge(session)
       end.not_to change { Section.count }
@@ -122,7 +123,7 @@ RSpec.describe SectionsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        patch :update, format: :json, params: { id: section.id, section: section_attributes }
+        patch :update, params: { id: section.id, section: section_attributes }
       end.not_to change { section.reload.title }
 
       expect(response).to have_http_status :unauthorized
@@ -130,7 +131,7 @@ RSpec.describe SectionsController, type: :controller do
 
     it 'only allows admins to edit sections' do
       expect do
-        patch :update, format: :json, params: { id: section.id, section: section_attributes }.merge(session)
+        patch :update, params: { id: section.id, section: section_attributes }.merge(session)
       end.not_to change { section.reload.title }
 
       expect(response).to have_http_status :forbidden
@@ -140,7 +141,7 @@ RSpec.describe SectionsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        patch :update, format: :json, params: { id: section.id, section: section_attributes }.merge(session)
+        patch :update, params: { id: section.id, section: section_attributes }.merge(session)
       end.to change { section.reload.title }
 
       expect(response).to have_http_status :ok
@@ -151,7 +152,7 @@ RSpec.describe SectionsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        patch :update, format: :json, params: { id: section.id, section: { title: nil } }.merge(session)
+        patch :update, params: { id: section.id, section: { title: nil } }.merge(session)
       end.not_to change { section.reload.title }
 
       expect(response).to have_http_status :unprocessable_entity
@@ -168,7 +169,7 @@ RSpec.describe SectionsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        delete :destroy, format: :json, params: { id: section.id }
+        delete :destroy, params: { id: section.id }
       end.not_to change { section.reload.deleted? }
 
       expect(response).to have_http_status :unauthorized
@@ -176,7 +177,7 @@ RSpec.describe SectionsController, type: :controller do
 
     it 'only allows admins to delete sections' do
       expect do
-        delete :destroy, format: :json, params: { id: section.id }.merge(session)
+        delete :destroy, params: { id: section.id }.merge(session)
       end.not_to change { section.reload.deleted? }
 
       expect(response).to have_http_status :forbidden
@@ -186,7 +187,7 @@ RSpec.describe SectionsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        delete :destroy, format: :json, params: { id: section.id }.merge(session)
+        delete :destroy, params: { id: section.id }.merge(session)
       end.to change { section.reload.deleted? }.from(false).to(true)
 
       expect(response).to have_http_status :no_content

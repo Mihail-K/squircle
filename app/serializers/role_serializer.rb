@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class RoleSerializer < ApplicationSerializer
   attribute :id
   attribute :deleted_by_id, if: :can_view_deleted_roles?

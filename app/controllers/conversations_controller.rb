@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ConversationsController < ApplicationController
   include FloodLimitable
 
@@ -52,8 +53,8 @@ private
 
   def character_id
     conversation_params[:posts_attributes].present? &&
-    conversation_params[:posts_attributes].first.present? &&
-    conversation_params[:posts_attributes].first[:character_id]
+      conversation_params[:posts_attributes].first.present? &&
+      conversation_params[:posts_attributes].first[:character_id]
   end
 
   def set_character

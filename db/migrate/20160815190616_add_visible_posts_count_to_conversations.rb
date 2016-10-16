@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class AddVisiblePostsCountToConversations < ActiveRecord::Migration[5.0]
   class Conversation < ActiveRecord::Base
     has_many :posts, -> { where(deleted: false) }
