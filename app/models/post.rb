@@ -38,6 +38,8 @@
 class Post < ApplicationRecord
   include Formattable
 
+  alias_attribute :user_id, :author_id
+
   belongs_to :author, class_name: 'User', inverse_of: :posts
   belongs_to :editor, class_name: 'User'
   belongs_to :character, inverse_of: :posts

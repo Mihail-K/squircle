@@ -65,12 +65,10 @@ private
   def set_conversations
     @conversations = policy_scope(Conversation)
     @conversations = @conversations.includes(:author, :section, first_post: :conversation, last_post: :conversation)
-    @conversations = @conversations.where(author: params[:author_id]) if params.key?(:author_id)
-    @conversations = @conversations.where(character: params[:character_id]) if params.key?(:character_id)
-    @conversations = @conversations.where(section: params[:section_id]) if params.key?(:section_id)
+    @conversations = @conversations.includes(:deleted_by) if allowed_to?(:view_deleted_conversations)
+    @conversations = @conversations.where(params.permit(:author_id, :character_id, :section_id))
     @conversations = @conversations.order(last_active_at: :desc)
     @conversations = @conversations.recently_active if params.key?(:recently_active)
-    @conversations = @conversations.includes(:deleted_by) if allowed_to?(:view_deleted_conversations)
   end
 
   def apply_pagination
@@ -78,7 +76,7 @@ private
   end
 
   def load_participated
-    # Construct a hash containing the current user's participation in conversations.
+    # Construct a Hash containing the current user's participation in conversations.
     @participated = policy_scope(Post).joins(:conversation)
                                       .group(Post.arel_table[:conversation_id])
                                       .where(posts: { author_id: current_user })
@@ -87,7 +85,7 @@ private
   end
 
   def set_conversation
-    @conversation = @conversations.find params[:id]
+    @conversation = @conversations.find(params[:id])
   end
 
   def increment_views_count

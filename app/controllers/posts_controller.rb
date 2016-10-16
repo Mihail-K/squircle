@@ -59,11 +59,9 @@ private
 
   def set_posts
     @posts = policy_scope(Post).includes(:author, :editor, :character, :conversation)
-    @posts = @posts.where(author: params[:user_id]) if params.key?(:user_id)
-    @posts = @posts.where(character: params[:character_id]) if params.key?(:character_id)
-    @posts = @posts.where(conversation: params[:conversation_id]) if params.key?(:conversation_id)
-    @posts = @posts.order(created_at: :asc)
     @posts = @posts.includes(:deleted_by) if allowed_to?(:view_deleted_posts)
+    @posts = @posts.where(params.permit(:user_id, :author_id, :character_id, :conversation_id))
+    @posts = @posts.order(created_at: :asc)
   end
 
   def apply_pagination
