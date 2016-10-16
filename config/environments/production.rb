@@ -53,4 +53,14 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  CarrierWave.configure do |config|
+    config.fog_provider    = 'fog/azurerm'
+    config.fog_credentials = {
+      provider:                        'AzureRM',
+      azure_storage_account_name:      ENV['AZURE_STORAGE_ACCOUNT_NAME'],
+      azure_storage_access_key:        ENV['AZURE_STORAGE_ACCESS_KEY'],
+      azure_storage_connection_string: ENV['AZURE_STORAGE_CONNECTION_STRING']
+    }
+  end
 end
