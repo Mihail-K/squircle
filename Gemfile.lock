@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/Mihail-K/fog-azure-rm.git
-  revision: 75fcce0845a7d8b74a820edf4050d8b27b1bad35
+  revision: efe73007545319ff2087ba5a56effacacdbb24b9
   specs:
     fog-azure-rm (0.0.9)
       azure-storage (~> 0.11.1.preview)
