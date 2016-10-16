@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.3.0'
+ruby '2.3.1'
 
 gem 'active_model_serializers', '~> 0.10.0'
 gem 'awesome_print'
@@ -22,6 +22,7 @@ gem 'resque'
 gem 'resque-scheduler'
 gem 'sass-rails', '~> 5.0'
 gem 'validates_timeliness'
+gem 'tzinfo-data', platforms: %i(mingw mswin x64_mingw)
 
 group :development do
   gem 'annotate'
