@@ -40,14 +40,13 @@ class Section < ApplicationRecord
   validates :description, length: { maximum: 1000 }
   validates :creator, presence: true
 
-  before_commit :queue_posts_counts_jobs, on: :update, if: -> { previous_changes.key?(:deleted) }
-  before_commit :queue_posts_counts_jobs, on: :destroy
+  before_commit :update_post_counts, if: -> { previous_changes.key?(:deleted) }
 
   scope :visible, -> { not_deleted }
 
 private
 
-  def queue_posts_counts_jobs
+  def update_post_counts
     SectionPostsCountJob.perform_later(id)
   end
 end

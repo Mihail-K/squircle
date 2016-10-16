@@ -43,8 +43,8 @@ class Conversation < ApplicationRecord
   has_many :post_authors, -> { distinct }, through: :posts, source: :author, class_name: 'User'
   has_many :post_characters, -> { distinct }, through: :posts, source: :character, class_name: 'Character'
 
-  has_one :first_post, -> { first_posts.not_deleted }, class_name: 'Post'
-  has_one :last_post, -> { last_posts.not_deleted }, class_name: 'Post'
+  has_one :first_post, -> { where(id: first_post.not_deleted) }, class_name: 'Post'
+  has_one :last_post, -> { where(id: last_post.not_deleted) }, class_name: 'Post'
 
   accepts_nested_attributes_for :posts, limit: 1, reject_if: :all_blank
 
