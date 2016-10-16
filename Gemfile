@@ -50,5 +50,5 @@ group :development, :test do
 end
 
 group :production do
-  gem 'fog-azure-rm', github: 'Mihail-K/fog-azure-rm'
+  gem 'fog-aws'
 end
