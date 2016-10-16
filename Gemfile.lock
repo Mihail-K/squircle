@@ -63,10 +63,9 @@ GEM
     annotate (2.7.1)
       activerecord (>= 3.2, < 6.0)
       rake (>= 10.4, < 12.0)
-    arel (7.1.1)
+    arel (7.1.4)
     awesome_print (1.7.0)
     bcrypt (3.1.11)
-    bcrypt (3.1.11-x64-mingw32)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     builder (3.2.2)
@@ -138,13 +137,10 @@ GEM
     nio4r (1.2.1)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
-    nokogiri (1.6.8.1-x64-mingw32)
-      mini_portile2 (~> 2.1.0)
     parallel (1.9.0)
     parallel_tests (2.9.0)
       parallel
     pg (0.19.0)
-    pg (0.19.0-x64-mingw32)
     puma (3.6.0)
     pundit (1.1.0)
       activesupport (>= 3.0.0)
@@ -187,9 +183,9 @@ GEM
       redis-store (~> 1.2.0)
     redis-namespace (1.5.2)
       redis (~> 3.0, >= 3.0.4)
-    redis-rack (2.0.0.pre)
-      rack (> 1.5, < 3)
-      redis-store (~> 1.2.0.pre)
+    redis-rack (2.0.0)
+      rack (~> 2.0)
+      redis-store (~> 1.2.0)
     redis-rails (5.0.1)
       redis-actionpack (~> 5.0.0)
       redis-activesupport (~> 5.0.0)
@@ -263,8 +259,6 @@ GEM
     timeliness (0.3.8)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    tzinfo-data (1.2016.7)
-      tzinfo (>= 1.0.0)
     validates_timeliness (4.0.2)
       timeliness (~> 0.3.7)
     vegas (0.1.11)
@@ -280,7 +274,6 @@ GEM
 
 PLATFORMS
   ruby
-  x64-mingw32
 
 DEPENDENCIES
   active_model_serializers (~> 0.10.0)
