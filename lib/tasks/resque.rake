@@ -1,5 +1,6 @@
 require 'resque/tasks'
 require 'resque/scheduler/tasks'
+require 'active_scheduler'
 
 namespace :resque do
   task setup: :environment
@@ -8,7 +9,8 @@ namespace :resque do
     require 'resque-scheduler'
 
     # Load schema from YAML file.
-    Resque.schedule = YAML.load_file('.schedule.yml')
+    resque_schedule = YAML.load_file('.schedule.yml')
+    Resque.schedule = ActiveScheduler::ResqueWrapper.wrap(resque_schedule)
   end
 
   task scheduler: :setup_schedule

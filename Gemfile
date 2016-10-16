@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 ruby '2.3.1'
 
 gem 'active_model_serializers', '~> 0.10.0'
+gem 'active_scheduler'
 gem 'awesome_print'
 gem 'bcrypt', '~> 3.1.7'
 gem 'carrierwave', github: 'carrierwaveuploader/carrierwave'
@@ -21,8 +22,8 @@ gem 'redis-rails'
 gem 'resque'
 gem 'resque-scheduler'
 gem 'sass-rails', '~> 5.0'
-gem 'validates_timeliness'
 gem 'tzinfo-data', platforms: %i(mingw mswin x64_mingw)
+gem 'validates_timeliness'
 
 group :development do
   gem 'annotate'
@@ -44,6 +45,7 @@ group :development, :test do
   gem 'parallel_tests'
   gem 'rspec'
   gem 'rspec-rails'
+  gem 'rubocop'
 end
 
 group :production do
