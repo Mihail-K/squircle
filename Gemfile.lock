@@ -100,7 +100,7 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.2)
     byebug (9.0.6)
-    carrierwave_backgrounder (0.0.2)
+    carrierwave_backgrounder (0.4.2)
     concurrent-ruby (1.0.2)
     debug_inspector (0.0.2)
     diff-lcs (1.2.5)
@@ -353,7 +353,7 @@ DEPENDENCIES
   bcrypt (~> 3.1.7)
   byebug
   carrierwave!
-  carrierwave_backgrounder
+  carrierwave_backgrounder (>= 0.4.2)
   doorkeeper
   dotenv-rails
   factory_girl_rails
