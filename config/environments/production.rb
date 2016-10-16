@@ -56,6 +56,7 @@ Rails.application.configure do
 
   CarrierWave.configure do |config|
     config.fog_provider    = 'fog/azurerm'
+    config.fog_directory   = 'avatars'
     config.fog_credentials = {
       provider:                        'AzureRM',
       azure_storage_account_name:      ENV['AZURE_STORAGE_ACCOUNT_NAME'],
