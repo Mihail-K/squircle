@@ -2,7 +2,7 @@
 class CharactersController < ApplicationController
   before_action :doorkeeper_authorize!, except: %i(index show)
 
-  before_action :set_characters, except: :create
+  before_action :set_characters
   before_action :set_character, only: %i(show update destroy)
   before_action :apply_pagination, only: :index
 
@@ -11,15 +11,15 @@ class CharactersController < ApplicationController
   def index
     render json: @characters,
            each_serializer: CharacterSerializer,
-           meta: meta_for(@characters)
+           meta: meta_for(@characters) if stale?(@characters)
   end
 
   def show
-    render json: @character
+    render json: @character if stale?(@character)
   end
 
   def create
-    @character = Character.create! character_params do |character|
+    @character = @characters.create!(character_params) do |character|
       character.user    = current_user if character.user.nil?
       character.creator = current_user
     end
@@ -28,13 +28,13 @@ class CharactersController < ApplicationController
   end
 
   def update
-    @character.update! character_params
+    @character.update!(character_params)
 
     render json: @character
   end
 
   def destroy
-    @character.update! deleted: true, deleted_by: current_user
+    @character.delete!(current_user)
 
     head :no_content
   end
@@ -43,7 +43,8 @@ private
 
   def set_characters
     @characters = policy_scope(Character).includes(:user, :creator)
-    @characters = @characters.where(user_id: params[:user_id]) if params.key?(:user_id)
+    @characters = @characters.includes(:deleted_by) if allowed_to?(:view_deleted_characters)
+    @characters = @characters.where(params.slice(:user_id))
   end
 
   def apply_pagination

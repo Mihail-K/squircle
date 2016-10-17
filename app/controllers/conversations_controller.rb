@@ -65,7 +65,7 @@ private
     @conversations = policy_scope(Conversation).order(last_active_at: :desc)
     @conversations = @conversations.includes(:author, :section, first_post: :conversation, last_post: :conversation)
     @conversations = @conversations.includes(:deleted_by) if allowed_to?(:view_deleted_conversations)
-    @conversations = @conversations.where(params.permit(:author_id, :character_id, :section_id))
+    @conversations = @conversations.where(params.slice(:author_id, :character_id, :section_id))
     @conversations = @conversations.recently_active if params.key?(:recently_active)
   end
 

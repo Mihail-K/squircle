@@ -5,6 +5,7 @@ class CharacterSerializer < ApplicationSerializer
   attribute :id
   attribute :user_id
   attribute :creator_id
+  attribute :deleted_by_id, if: :allowed_to_view_deleted_characters?
 
   attribute :name
   attribute :title
@@ -14,6 +15,7 @@ class CharacterSerializer < ApplicationSerializer
 
   attribute :created_at
   attribute :updated_at
+  attribute :deleted_at, if: :allowed_to_view_deleted_characters?
 
   attribute :avatar_url do
     object.avatar.url
@@ -30,5 +32,6 @@ class CharacterSerializer < ApplicationSerializer
   end
 
   belongs_to :user
-  belongs_to :creator, serializer: UserSerializer
+  belongs_to :creator
+  belongs_to :deleted_by, if: :allowed_to_view_deleted_characters?
 end

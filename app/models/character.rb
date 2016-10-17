@@ -33,8 +33,8 @@
 #
 
 class Character < ApplicationRecord
-  belongs_to :user, counter_cache: :characters_count, inverse_of: :characters
-  belongs_to :creator, counter_cache: :created_characters_count, class_name: 'User'
+  belongs_to :user, counter_cache: :characters_count, inverse_of: :characters, touch: true
+  belongs_to :creator, counter_cache: :created_characters_count, class_name: 'User', touch: true
 
   has_many :posts, inverse_of: :character
 

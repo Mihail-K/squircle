@@ -9,10 +9,27 @@
           "type": "integer"
         },
         "user_id": {
-          "type": "integer"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer"
+            }
+          ]
         },
         "creator_id": {
           "type": "integer"
+        },
+        "deleted_by_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer"
+            }
+          ]
         },
         "name": {
           "type": "string"
@@ -51,22 +68,6 @@
           "type": "string",
           "format": "date-time"
         },
-        "avatar_url": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ]
-        },
-        "gallery_image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "deleted_at": {
           "oneOf": [
             {
@@ -77,6 +78,24 @@
               "format": "date-time"
             }
           ]
+        },
+        "avatar_url": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "url"
+            }
+          ]
+        },
+        "gallery_image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "url"
+          }
         },
         "editable": {
           "type": "boolean"

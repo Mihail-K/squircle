@@ -60,7 +60,7 @@ private
   def set_posts
     @posts = policy_scope(Post).includes(:author, :editor, :character, :conversation)
     @posts = @posts.includes(:deleted_by) if allowed_to?(:view_deleted_posts)
-    @posts = @posts.where(params.permit(:user_id, :author_id, :character_id, :conversation_id))
+    @posts = @posts.where(params.slice(:user_id, :author_id, :character_id, :conversation_id))
     @posts = @posts.order(created_at: :asc)
   end
 
