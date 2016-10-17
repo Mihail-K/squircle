@@ -1,3 +1,3 @@
 web: bundle exec puma -C config/puma.rb
 worker: bundle exec rake jobs:work
-scheduler: bundle exec rake resque:scheduler
+cron: bundle exec rake jobs:cron

@@ -16,3 +16,9 @@ namespace :resque do
 
   task scheduler: :setup_schedule
 end
+
+desc 'Alias for resque:work'
+task 'jobs:work' => 'resque:work'
+
+desc 'Alias for resque:scheduler'
+task 'jobs:cron' => 'resque:scheduler'
