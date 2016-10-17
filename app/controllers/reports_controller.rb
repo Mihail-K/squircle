@@ -35,7 +35,7 @@ class ReportsController < ApplicationController
   end
 
   def destroy
-    @report.update! deleted: true, deleted_by: current_user
+    @report.delete!(current_user)
 
     head :no_content
   end
@@ -44,11 +44,12 @@ private
 
   def set_reports
     @reports = policy_scope(Report).includes(:creator, :reportable)
-    @reports = @reports.where(status: params[:status]) if params.key?(:status)
+    @reports = @reports.where(params.permit(:status))
+    @reports = @reports.includes(:deleted_by) if allowed_to?(:view_deleted_reports)
   end
 
   def set_report
-    @report = @reports.find params[:id]
+    @report = @reports.find(params[:id])
   end
 
   def apply_pagination

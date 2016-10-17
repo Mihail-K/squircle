@@ -13,11 +13,11 @@ definitions:
         type: string
       creator_id:
         type: integer
-      deleted_by_id:
+      closed_by_id:
         oneOf:
         - type: 'null'
         - type: integer
-      closed_by_id:
+      deleted_by_id:
         oneOf:
         - type: 'null'
         - type: integer

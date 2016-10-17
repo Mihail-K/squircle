@@ -44,7 +44,7 @@ private
   def set_characters
     @characters = policy_scope(Character).includes(:user, :creator)
     @characters = @characters.includes(:deleted_by) if allowed_to?(:view_deleted_characters)
-    @characters = @characters.where(params.slice(:user_id))
+    @characters = @characters.where(params.permit(:user_id, :creator_id))
   end
 
   def apply_pagination
