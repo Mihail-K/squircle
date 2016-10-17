@@ -7,6 +7,7 @@ class UserSerializer < ApplicationSerializer
 
   attribute :display_name
   attribute :created_at
+  attribute :updated_at
   attribute :last_active_at
 
   attribute :email, if: :can_view_users_personal_fields?
@@ -30,13 +31,13 @@ class UserSerializer < ApplicationSerializer
     policy.destroy? || false
   end
 
-  attribute :avatar_url, if: -> { object.avatar.file.present? } do
+  attribute :avatar_url do
     object.avatar.url
   end
-  attribute :avatar_medium_url, if: -> { object.avatar.medium.file.present? } do
+  attribute :avatar_medium_url do
     object.avatar.medium.url
   end
-  attribute :avatar_thumb_url, if: -> { object.avatar.thumb.file.present? } do
+  attribute :avatar_thumb_url do
     object.avatar.thumb.url
   end
 

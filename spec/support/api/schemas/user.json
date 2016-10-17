@@ -72,6 +72,10 @@
           "type": "string",
           "format": "date-time"
         },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
         "last_active_at": {
           "type": "string",
           "format": "date-time"
@@ -89,13 +93,37 @@
           "type": "boolean"
         },
         "avatar_url": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "url"
+            }
+          ]
         },
         "avatar_medium_url": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "url"
+            }
+          ]
         },
         "avatar_thumb_url": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "url"
+            }
+          ]
         },
         "deleted_at": {
           "oneOf": [
@@ -126,6 +154,7 @@
         "characters_count",
         "created_characters_count",
         "created_at",
+        "updated_at",
         "last_active_at",
         "banned",
         "deleted",
