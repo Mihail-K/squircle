@@ -2,7 +2,7 @@
 class SectionsController < ApplicationController
   before_action :doorkeeper_authorize!, except: %i(index show)
 
-  before_action :set_sections, except: :create
+  before_action :set_sections
   before_action :set_section, except: %i(index create)
   before_action :apply_pagination, only: :index
 
@@ -19,7 +19,7 @@ class SectionsController < ApplicationController
   end
 
   def create
-    @section = Section.create! section_params do |section|
+    @section = @sections.create!(section_params) do |section|
       section.creator = current_user
     end
 
@@ -27,13 +27,13 @@ class SectionsController < ApplicationController
   end
 
   def update
-    @section.update! section_params
+    @section.update!(section_params)
 
     render json: @section
   end
 
   def destroy
-    @section.update! deleted: true, deleted_by: current_user
+    @section.delete!(current_user)
 
     head :no_content
   end
@@ -47,7 +47,7 @@ private
   end
 
   def set_section
-    @section = @sections.find params[:id]
+    @section = @sections.find(params[:id])
   end
 
   def apply_pagination

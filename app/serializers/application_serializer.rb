@@ -17,6 +17,6 @@ class ApplicationSerializer < ActiveModel::Serializer
   end
 
   def method_missing(method_name, *args, &block)
-    method_name =~ /^allowed_to_(\w+)\?$/ ? allowed_to?($1) : super
+    method_name =~ /^allowed_to_(\w+)\?$/ ? allowed_to?(Regexp.last_match(1)) : super
   end
 end
