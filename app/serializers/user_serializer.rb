@@ -3,19 +3,20 @@ class UserSerializer < ApplicationSerializer
   cache expires_in: 3.hours
 
   attribute :id
-  attribute :deleted_by_id, if: :can_view_deleted_users?
+  attribute :deleted_by_id, if: :allowed_to_view_deleted_users?
 
   attribute :display_name
   attribute :created_at
   attribute :updated_at
+  attribute :deleted_at, if: :allowed_to_view_deleted_users?
   attribute :last_active_at
 
-  attribute :email, if: :can_view_users_personal_fields?
-  attribute :email_confirmed_at, if: :can_view_users_personal_fields?
+  attribute :email, if: :allowed_to_view_users_personal_fields?
+  attribute :email_confirmed_at, if: :allowed_to_view_users_personal_fields?
 
-  attribute :first_name, if: :can_view_users_personal_fields?
-  attribute :last_name, if: :can_view_users_personal_fields?
-  attribute :date_of_birth, if: :can_view_users_personal_fields?
+  attribute :first_name, if: :allowed_to_view_users_personal_fields?
+  attribute :last_name, if: :allowed_to_view_users_personal_fields?
+  attribute :date_of_birth, if: :allowed_to_view_users_personal_fields?
 
   attribute :characters_count
   attribute :created_characters_count
@@ -41,13 +42,9 @@ class UserSerializer < ApplicationSerializer
     object.avatar.thumb.url
   end
 
-  belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted_users?
+  belongs_to :deleted_by, if: :allowed_to_view_deleted_users?
 
-  def can_view_users_personal_fields?
+  def allowed_to_view_users_personal_fields?
     object.id == current_user.try(:id) || allowed_to?(:view_users_personal_fields)
-  end
-
-  def can_view_deleted_users?
-    allowed_to?(:view_deleted_users)
   end
 end

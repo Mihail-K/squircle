@@ -5,14 +5,15 @@ class ConversationSerializer < ApplicationSerializer
   attribute :id
   attribute :author_id
   attribute :section_id
-  attribute :locked_by_id, if: :can_view_locking_user?
-  attribute :deleted_by_id, if: :can_view_deleted?
+  attribute :locked_by_id, if: :allowed_to_lock_conversations?
+  attribute :deleted_by_id, if: :allowed_to_view_deleted_conversations?
 
   attribute :title
   attribute :views_count
   attribute :posts_count
   attribute :created_at
   attribute :updated_at
+  attribute :deleted_at, if: :allowed_to_view_deleted_conversations?
   attribute :last_active_at
   attribute :participated, if: :include_participation?
 
@@ -33,21 +34,13 @@ class ConversationSerializer < ApplicationSerializer
     policy.destroy? || false
   end
 
-  belongs_to :author, serializer: UserSerializer
-  belongs_to :locked_by, serializer: UserSerializer, if: :can_view_locking_user?
+  belongs_to :author
+  belongs_to :locked_by, if: :allowed_to_lock_conversations?
   belongs_to :section
-  belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted?
+  belongs_to :deleted_by, if: :allowed_to_view_deleted_conversations?
 
-  belongs_to :first_post, serializer: PostSerializer
-  belongs_to :last_post, serializer: PostSerializer
-
-  def can_view_locking_user?
-    current_user.try(:allowed_to?, :lock_conversations)
-  end
-
-  def can_view_deleted?
-    current_user.try(:allowed_to?, :view_deleted_conversations)
-  end
+  has_one :first_post
+  has_one :last_post
 
   def include_participation?
     instance_options[:participated].is_a?(Hash)
