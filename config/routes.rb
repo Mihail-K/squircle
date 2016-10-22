@@ -22,6 +22,7 @@ Rails.application.routes.draw do
     resources :sections do
       resources :conversations, only: :index
     end
+    resources :subscriptions, only: %i(index show create destroy)
 
     resources :users do
       get :me, on: :collection
