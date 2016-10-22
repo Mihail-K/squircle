@@ -12,7 +12,7 @@ RSpec.describe PermissionsController, type: :controller do
     end
 
     it 'returns a list of permissions' do
-      get :index, params: { access_token: token.token }
+      get :index, params: { access_token: access_token }
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema :permissions
@@ -31,7 +31,7 @@ RSpec.describe PermissionsController, type: :controller do
     end
 
     it 'returns the specified permission' do
-      get :show, params: { id: permission.id, access_token: token.token }
+      get :show, params: { id: permission.id, access_token: access_token }
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema :permission

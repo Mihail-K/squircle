@@ -31,7 +31,7 @@ RSpec.describe SectionsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'admin')
       sections.sample.update deleted: true, deleted_by: active_user
 
-      get :index, params: { access_token: token.token }
+      get :index, params: { access_token: access_token }
 
       expect(response).to have_http_status :ok
       expect(json[:sections].count).to eq sections.count
