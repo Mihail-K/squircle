@@ -53,7 +53,7 @@ Dir[Rails.root.join('spec/support/api/schemas/**/*.yml')].each do |file_name|
   json_name = File.join(File.dirname(file_name), File.basename(file_name, '.yml')) + '.json'
 
   # Skip generation if file is already up to date.
-  next if File.exists?(json_name) && File.mtime(json_name) >= File.mtime(file_name)
+  next if File.exist?(json_name) && File.mtime(json_name) >= File.mtime(file_name)
   File.write(json_name, JSON.pretty_generate(YAML.load_file(file_name)) + "\n")
 end
 
