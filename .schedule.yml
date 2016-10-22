@@ -1,3 +1,5 @@
 UnbanJob:
   every: 5m
+  class: UnbanJob
+  queue: medium
   description: 'This job clears expired bans'
