@@ -33,6 +33,8 @@
 #
 
 class Character < ApplicationRecord
+  include SoftDeletable
+
   belongs_to :user, counter_cache: :characters_count, inverse_of: :characters, touch: true
   belongs_to :creator, counter_cache: :created_characters_count, class_name: 'User', touch: true
 

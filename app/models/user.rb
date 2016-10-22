@@ -38,6 +38,7 @@
 
 class User < ApplicationRecord
   include Permissible::Model
+  include SoftDeletable
 
   has_and_belongs_to_many :roles, -> { not_deleted }
   has_many :role_permissions, through: :roles

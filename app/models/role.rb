@@ -25,6 +25,7 @@
 
 class Role < ApplicationRecord
   include Permissible::Model
+  include SoftDeletable
 
   has_and_belongs_to_many :users
 

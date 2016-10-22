@@ -35,6 +35,8 @@
 #
 
 class Conversation < ApplicationRecord
+  include SoftDeletable
+
   belongs_to :author, class_name: 'User'
   belongs_to :locked_by, class_name: 'User'
   belongs_to :section, inverse_of: :conversations

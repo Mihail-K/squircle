@@ -34,6 +34,8 @@
 #
 
 class Report < ApplicationRecord
+  include SoftDeletable
+
   belongs_to :reportable, polymorphic: true
   belongs_to :creator, class_name: 'User'
   belongs_to :closed_by, class_name: 'User'

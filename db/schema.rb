@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161022182624) do
+ActiveRecord::Schema.define(version: 20161022184818) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -252,15 +252,11 @@ ActiveRecord::Schema.define(version: 20161022182624) do
   end
 
   create_table "subscriptions", force: :cascade do |t|
-    t.integer  "user_id",                         null: false
-    t.integer  "conversation_id",                 null: false
-    t.boolean  "deleted",         default: false, null: false
-    t.datetime "deleted_at"
-    t.integer  "deleted_by_id"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+    t.integer  "user_id",         null: false
+    t.integer  "conversation_id", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
     t.index ["conversation_id"], name: "index_subscriptions_on_conversation_id", using: :btree
-    t.index ["deleted_by_id"], name: "index_subscriptions_on_deleted_by_id", using: :btree
     t.index ["user_id", "conversation_id"], name: "index_subscriptions_on_user_id_and_conversation_id", unique: true, using: :btree
     t.index ["user_id"], name: "index_subscriptions_on_user_id", using: :btree
   end
@@ -326,6 +322,5 @@ ActiveRecord::Schema.define(version: 20161022182624) do
   add_foreign_key "sections", "users", column: "deleted_by_id"
   add_foreign_key "subscriptions", "conversations"
   add_foreign_key "subscriptions", "users"
-  add_foreign_key "subscriptions", "users", column: "deleted_by_id"
   add_foreign_key "users", "users", column: "deleted_by_id"
 end

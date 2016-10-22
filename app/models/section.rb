@@ -29,6 +29,8 @@
 #
 
 class Section < ApplicationRecord
+  include SoftDeletable
+
   belongs_to :creator, class_name: 'User'
 
   has_many :conversations, inverse_of: :section

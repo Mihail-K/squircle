@@ -2,41 +2,7 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  belongs_to :deleted_by, class_name: 'User'
-
-  before_save :set_deleted_at_timestamp, if: -> { deleted_changed?(to: true) }
-
-  scope :deleted, -> {
-    where deleted: true
-  }
-
-  scope :not_deleted, -> {
-    where deleted: false
-  }
-
-  def delete(deleted_by = nil)
-    update(deleted: true, deleted_by: deleted_by)
-  end
-
-  def delete!(deleted_by = nil)
-    update!(deleted: true, deleted_by: deleted_by)
-  end
-
-  def restore
-    update(deleted: false)
-  end
-
-  def restore!
-    update!(deleted: false)
-  end
-
   def self.chain(&block)
     all.chain(&block)
-  end
-
-private
-
-  def set_deleted_at_timestamp
-    self.deleted_at = Time.zone.now
   end
 end

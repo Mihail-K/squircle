@@ -37,6 +37,7 @@
 
 class Post < ApplicationRecord
   include Formattable
+  include SoftDeletable
 
   alias_attribute :user_id, :author_id
 

@@ -28,6 +28,8 @@
 #
 
 class Ban < ApplicationRecord
+  include SoftDeletable
+
   belongs_to :user, inverse_of: :bans
   belongs_to :creator, class_name: 'User'
 
