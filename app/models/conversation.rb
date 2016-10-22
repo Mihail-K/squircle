@@ -40,6 +40,7 @@ class Conversation < ApplicationRecord
   belongs_to :section, inverse_of: :conversations
 
   has_many :posts, inverse_of: :conversation, dependent: :destroy
+  has_many :subscriptions, inverse_of: :conversation, dependent: :destroy
 
   has_many :post_authors, -> { distinct }, through: :posts, source: :author, class_name: 'User'
   has_many :post_characters, -> { distinct }, through: :posts, source: :character, class_name: 'Character'
