@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class SubscriptionPolicy < ApplicationPolicy
   alias subscription record
 
@@ -15,7 +16,7 @@ class SubscriptionPolicy < ApplicationPolicy
 
   def destroy?
     (subscription.user == current_user && allowed_to?(:delete_owned_subscriptions)) ||
-    allowed_to?(:delete_subscriptions)
+      allowed_to?(:delete_subscriptions)
   end
 
   def permitted_attributes

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class SubscriptionSerializer < ActiveModel::Serializer
   attribute :id
   attribute :user_id

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class SubscriptionsController < ApplicationController
   before_action :set_subscriptions
   before_action :set_subscription, except: %i(index create)

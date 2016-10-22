@@ -143,7 +143,7 @@ RSpec.describe ConversationsController, type: :controller do
         expect do
           post :create, params: { conversation: attributes_for(
             :conversation, section_id: section.id,
-            posts_attributes: [attributes_for(:post, character_id: character.id)]
+                           posts_attributes: [attributes_for(:post, character_id: character.id)]
           ) }.merge(session)
 
           expect(response).to have_http_status :created
@@ -159,7 +159,7 @@ RSpec.describe ConversationsController, type: :controller do
         expect do
           post :create, params: { conversation: attributes_for(
             :conversation, section_id: section.id,
-            posts_attributes: [attributes_for(:post, character_id: character.id)]
+                           posts_attributes: [attributes_for(:post, character_id: character.id)]
           ) }.merge(session)
 
           expect(response).to have_http_status :not_found
