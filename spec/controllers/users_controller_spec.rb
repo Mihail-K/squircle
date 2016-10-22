@@ -12,7 +12,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'returns the current user' do
-      get :me, params: { access_token: token.token }
+      get :me, params: { access_token: access_token }
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema :user

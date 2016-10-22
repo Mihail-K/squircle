@@ -60,4 +60,39 @@ RSpec.describe SubscriptionsController, type: :controller do
       expect(response).to match_response_schema :subscription
     end
   end
+
+  describe '#POST create' do
+    let :conversation do
+      create :conversation
+    end
+
+    it 'requires an authenticated user' do
+      expect do
+        post :create, params: { subscription: { conversation_id: conversation.id } }
+
+        expect(response).to have_http_status :unauthorized
+      end.not_to change { Subscription.count }
+    end
+
+    it 'creates a subscription to a conversation' do
+      expect do
+        post :create, params: { subscription: { conversation_id: conversation.id },
+                                access_token: access_token }
+
+        expect(response).to have_http_status :created
+        expect(response).to match_response_schema :subscription
+      end.to change { Subscription.count }.by(1)
+    end
+
+    it "doesn't create subscriptions for conversations the user cannot see" do
+      conversation.delete
+
+      expect do
+        post :create, params: { subscription: { conversation_id: conversation.id },
+                                access_token: access_token }
+
+        expect(response).to have_http_status :not_found
+      end.not_to change { Subscription.count }
+    end
+  end
 end

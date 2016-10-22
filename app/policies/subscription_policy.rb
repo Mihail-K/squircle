@@ -11,12 +11,11 @@ class SubscriptionPolicy < ApplicationPolicy
   end
 
   def create?
-    allowed_to?(:create_subscriptions)
+    authenticated?
   end
 
   def destroy?
-    (subscription.user == current_user && allowed_to?(:delete_owned_subscriptions)) ||
-      allowed_to?(:delete_subscriptions)
+    subscription.user == current_user
   end
 
   def permitted_attributes
