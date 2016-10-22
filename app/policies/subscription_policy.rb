@@ -2,7 +2,7 @@
 class SubscriptionPolicy < ApplicationPolicy
   alias subscription record
 
-  def index
+  def index?
     authenticated?
   end
 

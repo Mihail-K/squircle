@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 class SubscriptionsController < ApplicationController
+  before_action :doorkeeper_authorize!
+
   before_action :set_subscriptions
   before_action :set_subscription, except: %i(index create)
   before_action :apply_pagination, only: :index
+
+  before_action :enforce_policy!
 
   def index
     render json: @subscriptions,

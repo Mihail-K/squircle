@@ -1,0 +1,50 @@
+{
+  "definitions": {
+    "subscription": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "integer"
+        },
+        "conversation_id": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "user.json#/definitions/user"
+        },
+        "conversation": {
+          "$ref": "conversation.json#/definitions/conversation"
+        }
+      },
+      "required": [
+        "id",
+        "user_id",
+        "conversation_id",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "subscription": {
+      "$ref": "#/definitions/subscription"
+    }
+  },
+  "required": [
+    "subscription"
+  ],
+  "additionalProperties": false
+}

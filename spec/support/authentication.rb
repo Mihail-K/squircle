@@ -4,11 +4,11 @@ RSpec.shared_context 'authentication', shared_context: :metadata do
     create :user
   end
 
-  let :token do
-    create :access_token, resource_owner_id: active_user.id
+  let :access_token do
+    create(:access_token, resource_owner_id: active_user.id).token
   end
 
   let :session do
-    { access_token: token.token }
+    { access_token: access_token }
   end
 end

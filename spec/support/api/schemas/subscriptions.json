@@ -1,0 +1,24 @@
+{
+  "definitions": {
+    "subscriptions": {
+      "type": "array",
+      "items": {
+        "$ref": "subscription.json#/definitions/subscription"
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "subscriptions": {
+      "$ref": "#/definitions/subscriptions"
+    },
+    "meta": {
+      "$ref": "meta.json#/definitions/meta"
+    }
+  },
+  "required": [
+    "subscriptions",
+    "meta"
+  ],
+  "additionalProperties": false
+}
