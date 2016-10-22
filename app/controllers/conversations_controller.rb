@@ -27,7 +27,7 @@ class ConversationsController < ApplicationController
   end
 
   def create
-    @conversation = Conversation.create! conversation_params do |conversation|
+    @conversation = Conversation.create!(conversation_params) do |conversation|
       conversation.author    = current_user
       conversation.locked_by = current_user if conversation.locked?
     end

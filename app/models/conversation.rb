@@ -47,12 +47,16 @@ class Conversation < ApplicationRecord
   has_one :first_post, -> { where(id: first_post.not_deleted) }, class_name: 'Post'
   has_one :last_post, -> { where(id: last_post.not_deleted) }, class_name: 'Post'
 
-  accepts_nested_attributes_for :posts, limit: 1, reject_if: :all_blank
+  accepts_nested_attributes_for :posts, limit: 1
 
   validates :title, presence: true
   validates :author, presence: true
   validates :locked_by, presence: true, if: :locked?
   validates :section, presence: true
+  validates :posts, presence: true
+
+  before_validation :set_first_post_title, on: :create
+  before_validation :set_first_post_author, on: :create
 
   before_save :set_locked_on_timestamp, if: -> { locked_changed?(to: true) }
 
@@ -72,6 +76,14 @@ private
 
   def set_locked_on_timestamp
     self.locked_on = Time.zone.now
+  end
+
+  def set_first_post_title
+    posts.first.title = title if posts.first.present?
+  end
+
+  def set_first_post_author
+    posts.first.author = author if posts.first.present?
   end
 
   def set_posts_counts

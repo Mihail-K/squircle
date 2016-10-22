@@ -8,7 +8,8 @@ FactoryGirl.define do
 
     after :build do |post|
       if post.conversation.nil?
-        post.conversation = create :conversation, author: post.author, post_count: 0, posts: [post]
+        post.conversation = build :conversation, author: post.author, posts_count: 0
+        post.conversation.posts << post
       end
     end
   end

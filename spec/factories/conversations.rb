@@ -3,20 +3,23 @@ FactoryGirl.define do
   factory :conversation do
     association :author, factory: :user, strategy: :build
     association :section, strategy: :build
-    deleted false
+
+    title { Faker::Book.title }
 
     trait :with_posts do
-      post_count 1
+      posts_count 1
     end
 
     transient do
-      post_count 1
+      posts_count 1
     end
 
     after :build do |conversation, e|
-      if e.post_count.positive?
-        conversation.posts = build_list :post, e.post_count, conversation: conversation
-      end
+      conversation.posts = build_list :post, e.posts_count, conversation: conversation
+    end
+
+    trait :with_editor do
+      association :editor, factory: :user, strategy: :build
     end
   end
 end

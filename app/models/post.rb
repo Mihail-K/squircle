@@ -53,9 +53,6 @@ class Post < ApplicationRecord
 
   formattable :body
 
-  before_validation :set_author, on: :create, if: -> { author.nil? && conversation.present? }
-  before_validation :set_conversation_title, on: :create, if: -> { conversation.present? }
-
   before_commit :set_posts_counts
   before_commit :set_conversation_last_activity
 
@@ -84,18 +81,6 @@ class Post < ApplicationRecord
   }
 
 private
-
-  def character_owned_by_author
-    errors.add :character, 'cannot be used in posts' if character.user_id != author_id
-  end
-
-  def set_author
-    self.author = conversation.author if conversation.new_record?
-  end
-
-  def set_conversation_title
-    conversation.title = title if conversation.new_record?
-  end
 
   def set_posts_counts
     author.update_columns(posts_count: author.posts.visible.count)

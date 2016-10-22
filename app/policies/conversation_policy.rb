@@ -25,14 +25,14 @@ class ConversationPolicy < ApplicationPolicy
   end
 
   def permitted_attributes_for_create
-    attributes =  [:section_id, posts_attributes: %i(character_id title body)]
+    attributes =  [:section_id, :title, posts_attributes: [:character_id, :body]]
     attributes << :locked  if allowed_to?(:lock_conversations)
     attributes << :deleted if allowed_to?(:delete_conversations)
     attributes
   end
 
   def permitted_attributes_for_update
-    attributes =  []
+    attributes =  [:title]
     attributes << :section_id if allowed_to?(:move_conversations)
     attributes << :locked     if allowed_to?(:lock_conversations)
     attributes << :deleted    if allowed_to?(:delete_conversations)
