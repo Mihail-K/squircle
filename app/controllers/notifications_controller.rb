@@ -8,6 +8,8 @@ class NotificationsController < ApplicationController
 
   before_action :enforce_policy!
 
+  after_action :mark_notifications_read, only: :index
+
   def index
     render json: @notifications,
            each_serializer: NotificationSerializer,
@@ -43,5 +45,9 @@ private
 
   def apply_pagination
     @notifications = @notifications.page(params[:page]).per(params[:count])
+  end
+
+  def mark_notifications_read
+    Notification.where(id: @notifications).update_all(read: true)
   end
 end

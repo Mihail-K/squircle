@@ -2,7 +2,7 @@
 FactoryGirl.define do
   factory :notification do
     association :user, strategy: :build
-    association :targetable, factory: :post, strategy: :build
+    association :targetable, factory: :user, strategy: :build
 
     title { Faker::Book.title }
 
