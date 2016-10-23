@@ -6,7 +6,7 @@ RSpec.describe Ban, type: :model do
     build :ban
   end
 
-  it_behaves_like ApplicationRecord
+  it_behaves_like SoftDeletable
 
   it 'has a valid factory' do
     expect(ban).to be_valid

@@ -6,7 +6,7 @@ RSpec.describe Conversation, type: :model do
     build :conversation
   end
 
-  it_behaves_like ApplicationRecord
+  it_behaves_like SoftDeletable
 
   it 'has a valid factory' do
     expect(conversation).to be_valid

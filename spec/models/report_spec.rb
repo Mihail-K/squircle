@@ -6,7 +6,7 @@ RSpec.describe Report, type: :model do
     build :report
   end
 
-  it_behaves_like ApplicationRecord
+  it_behaves_like SoftDeletable
 
   it 'has a valid factory' do
     expect(report).to be_valid

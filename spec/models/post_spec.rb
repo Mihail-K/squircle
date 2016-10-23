@@ -6,7 +6,7 @@ RSpec.describe Post, type: :model do
     build :post
   end
 
-  it_behaves_like ApplicationRecord
+  it_behaves_like SoftDeletable
 
   it 'has a valid factory' do
     expect(post).to be_valid

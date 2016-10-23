@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'rails_helper'
 
-RSpec.shared_examples_for ApplicationRecord do
+RSpec.shared_examples_for SoftDeletable do
   let :model do
     described_class.model_name.singular
   end
