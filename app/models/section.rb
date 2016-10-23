@@ -29,6 +29,7 @@
 #
 
 class Section < ApplicationRecord
+  include PostCountable
   include SoftDeletable
 
   belongs_to :creator, class_name: 'User'

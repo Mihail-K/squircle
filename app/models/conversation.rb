@@ -35,6 +35,7 @@
 #
 
 class Conversation < ApplicationRecord
+  include PostCountable
   include SoftDeletable
 
   belongs_to :author, class_name: 'User'
@@ -75,6 +76,12 @@ class Conversation < ApplicationRecord
                                                    .gteq(1.day.ago))
   }
 
+protected
+
+  def countable_posts
+    posts.not_deleted
+  end
+
 private
 
   def set_locked_on_timestamp
@@ -90,25 +97,9 @@ private
   end
 
   def set_posts_counts
-    set_section_post_count
-    set_author_post_counts
-    set_character_post_counts
-  end
-
-  def set_section_post_count
-    section.update_columns(posts_count: section.posts.visible.count) unless section.destroyed?
-  end
-
-  def set_author_post_counts
-    post_authors.find_each do |author|
-      author.update_columns(posts_count: author.posts.visible.count)
-    end
-  end
-
-  def set_character_post_counts
-    post_characters.find_each do |character|
-      character.update_columns(posts_count: character.posts.visible.count)
-    end
+    section.set_posts_count unless section.destroyed?
+    post_authors.set_posts_counts
+    post_characters.set_posts_counts
   end
 
   def set_conversations_count

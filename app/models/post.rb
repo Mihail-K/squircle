@@ -84,10 +84,10 @@ class Post < ApplicationRecord
 private
 
   def set_posts_counts
-    author.update_columns(posts_count: author.posts.visible.count)
-    character.update_columns(posts_count: character.posts.visible.count) if character.present?
-    conversation.update_columns(posts_count: conversation.posts.not_deleted.count) unless conversation.destroyed?
-    section.update_columns(posts_count: section.posts.visible.count) if section.present?
+    author.set_posts_count
+    character&.set_posts_count
+    conversation.set_posts_count unless conversation.destroyed?
+    section.set_posts_count
   end
 
   def set_conversation_last_activity

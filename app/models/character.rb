@@ -33,6 +33,7 @@
 #
 
 class Character < ApplicationRecord
+  include PostCountable
   include SoftDeletable
 
   belongs_to :user, counter_cache: :characters_count, inverse_of: :characters, touch: true
