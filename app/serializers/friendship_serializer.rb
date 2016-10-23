@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class FriendshipSerializer < ActiveModel::Serializer
+class FriendshipSerializer < ApplicationSerializer
   attribute :id
   attribute :user_id
   attribute :friend_id

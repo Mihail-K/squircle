@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class NotificationSerializer < ActiveModel::Serializer
+class NotificationSerializer < ApplicationSerializer
   attribute :id
   attribute :user_id
   attribute :targetable_id

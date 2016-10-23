@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class SubscriptionSerializer < ActiveModel::Serializer
+class SubscriptionSerializer < ApplicationSerializer
   attribute :id
   attribute :user_id
   attribute :conversation_id
