@@ -1,0 +1,35 @@
+---
+definitions:
+  friendship:
+    type: object
+    properties:
+      id:
+        type: integer
+      user_id:
+        type: integer
+      friend_id:
+        type: integer
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      user:
+        $ref: user.json#/definitions/user
+      friend:
+        $ref: user.json#/definitions/user
+    required:
+      - id
+      - user_id
+      - friend_id
+      - created_at
+      - updated_at
+    additionalProperties: false
+type: object
+properties:
+  friendship:
+    $ref: '#/definitions/friendship'
+required:
+  - friendship
+additionalProperties: false

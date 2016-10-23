@@ -1,0 +1,16 @@
+---
+definitions:
+  friendships:
+    type: array
+    items:
+      $ref: friendship.json#/definitions/friendship
+type: object
+properties:
+  friendships:
+    $ref: '#/definitions/friendships'
+  meta:
+    $ref: meta.json#/definitions/meta
+required:
+  - friendships
+  - meta
+additionalProperties: false

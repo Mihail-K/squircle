@@ -13,6 +13,7 @@ RSpec.describe FriendshipsController, type: :controller do
       get :index
 
       expect(response).to have_http_status :ok
+      expect(response).to match_response_schema :friendships
       expect(json[:friendships].count).to eq 3
     end
 
@@ -35,6 +36,7 @@ RSpec.describe FriendshipsController, type: :controller do
       get :show, params: { id: friendship.id }
 
       expect(response).to have_http_status :ok
+      expect(response).to match_response_schema :friendship
     end
 
     it "returns 404 if the friendship doesn't exist" do
@@ -63,6 +65,7 @@ RSpec.describe FriendshipsController, type: :controller do
                                 access_token: access_token }
 
         expect(response).to have_http_status :created
+        expect(response).to match_response_schema :friendship
       end.to change { Friendship.count }.by(1)
     end
 
