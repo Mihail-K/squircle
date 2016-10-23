@@ -64,7 +64,6 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates :display_name, presence: true, uniqueness: true
-
   validates :date_of_birth, presence: true
 
   with_options if: :date_of_birth_changed? do |o|

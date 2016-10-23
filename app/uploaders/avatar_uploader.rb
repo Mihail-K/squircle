@@ -12,6 +12,10 @@ class AvatarUploader < CarrierWave::Uploader::Base
     storage :fog
   end
 
+  def file_size
+    128.bytes..2.megabytes
+  end
+
   def store_dir
     "uploads/#{model.class.name.underscore}/#{mounted_as}/#{model.id}"
   end
