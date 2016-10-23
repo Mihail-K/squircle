@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'rails_helper'
 
-RSpec.describe 'routes for Permissions', type: :routing do
+RSpec.describe PermissionsController, type: :routing do
   it 'has a routable index path' do
     expect(get: 'permissions').to be_routable
   end

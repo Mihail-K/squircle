@@ -13,6 +13,8 @@ Rails.application.routes.draw do
       resources :posts
     end
 
+    resources :friendships, only: %i(index show create destroy)
+
     resources :permissions, only: %i(index show)
     resources :posts
 
@@ -30,6 +32,7 @@ Rails.application.routes.draw do
       resources :bans, only: :index
       resources :characters, only: :index
       resources :conversations, only: :index
+      resources :friendships, only: :index
       resources :posts, only: :index
       resources :reports, only: :index
       resources :roles, only: :index

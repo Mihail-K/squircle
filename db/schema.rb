@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161022184818) do
+ActiveRecord::Schema.define(version: 20161023175528) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -69,6 +69,16 @@ ActiveRecord::Schema.define(version: 20161022184818) do
     t.index ["deleted_by_id"], name: "index_conversations_on_deleted_by_id", using: :btree
     t.index ["locked_by_id"], name: "index_conversations_on_locked_by_id", using: :btree
     t.index ["section_id"], name: "index_conversations_on_section_id", using: :btree
+  end
+
+  create_table "friendships", force: :cascade do |t|
+    t.integer  "user_id",    null: false
+    t.integer  "friend_id",  null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["friend_id"], name: "index_friendships_on_friend_id", using: :btree
+    t.index ["user_id", "friend_id"], name: "index_friendships_on_user_id_and_friend_id", unique: true, using: :btree
+    t.index ["user_id"], name: "index_friendships_on_user_id", using: :btree
   end
 
   create_table "oauth_access_grants", force: :cascade do |t|
@@ -297,6 +307,8 @@ ActiveRecord::Schema.define(version: 20161022184818) do
   add_foreign_key "conversations", "users", column: "author_id"
   add_foreign_key "conversations", "users", column: "deleted_by_id"
   add_foreign_key "conversations", "users", column: "locked_by_id"
+  add_foreign_key "friendships", "users"
+  add_foreign_key "friendships", "users", column: "friend_id"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "permissible_implied_permissions", "permissible_permissions", column: "implied_by_id"
