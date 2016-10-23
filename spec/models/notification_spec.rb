@@ -16,7 +16,7 @@ RSpec.describe Notification, type: :model do
   end
 
   it 'is invalid without a target' do
-    notification.target = nil
+    notification.targetable = nil
     expect(notification).to be_invalid
   end
 
