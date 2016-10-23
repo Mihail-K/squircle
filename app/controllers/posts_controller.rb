@@ -33,8 +33,9 @@ class PostsController < ApplicationController
   end
 
   def update
-    @post.editor = current_user
-    @post.update!(post_params)
+    @post.attributes = post_params
+    @post.editor = current_user if @post.body_changed? || @post.title_changed? unless post_params.key?(:editor_id)
+    @post.save!
 
     render json: @post
   end

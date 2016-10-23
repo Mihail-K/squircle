@@ -9,8 +9,12 @@ RSpec.describe PostsController, type: :controller do
   end
 
   describe '#GET index' do
+    let! :conversation do
+      create :conversation, posts_count: 3
+    end
+
     let! :posts do
-      create_list :post, 5
+      conversation.posts
     end
 
     it 'returns a list of posts' do
@@ -23,23 +27,19 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'returns only visible posts' do
-      deleted_posts = posts.sample(3).each do |post|
-        post.update deleted: true, deleted_by: active_user
-      end
+      posts.sample(2).each(&:delete)
 
       get :index
 
       expect(response).to have_http_status :ok
-      expect(json[:posts].count).to eq posts.count - deleted_posts.count
+      expect(json[:posts].count).to eq posts.count - 2
     end
 
     it 'includes deleted posts when called by an admin' do
       active_user.roles << Role.find_by!(name: 'admin')
-      posts.sample(3).each do |post|
-        post.update deleted: true, deleted_by: active_user
-      end
+      posts.sample(2).each(&:delete)
 
-      get :index, params: session
+      get :index, params: { access_token: access_token }
 
       expect(response).to have_http_status :ok
       expect(json[:posts].count).to eq posts.count
@@ -99,9 +99,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        post :create, params: {
-          post: attributes_for(:post, conversation_id: conversation.id)
-        }
+        post :create, params: { post: attributes_for(:post, conversation_id: conversation.id) }
       end.not_to change { Post.count }
 
       expect(response).to have_http_status :unauthorized
@@ -109,9 +107,8 @@ RSpec.describe PostsController, type: :controller do
 
     it 'creates a new post in a conversation' do
       expect do
-        post :create, params: {
-          post: attributes_for(:post, conversation_id: conversation.id)
-        }.merge(session)
+        post :create, params: { post: attributes_for(:post, conversation_id: conversation.id),
+                                access_token: access_token }
 
         expect(response).to have_http_status :created
         expect(response).to match_response_schema :post
@@ -122,9 +119,8 @@ RSpec.describe PostsController, type: :controller do
       active_user.roles << Role.find_by!(name: 'banned')
 
       expect do
-        post :create, params: {
-          post: attributes_for(:post, conversation_id: conversation.id)
-        }.merge(session)
+        post :create, params: { post: attributes_for(:post, conversation_id: conversation.id),
+                                access_token: access_token }
 
         expect(response).to have_http_status :forbidden
       end.not_to change { Post.count }
@@ -134,9 +130,8 @@ RSpec.describe PostsController, type: :controller do
       conversation.update deleted: true, deleted_by: active_user
 
       expect do
-        post :create, params: {
-          post: attributes_for(:post, conversation_id: conversation.id)
-        }.merge(session)
+        post :create, params: { post: attributes_for(:post, conversation_id: conversation.id),
+                                access_token: access_token }
 
         expect(response).to have_http_status :not_found
       end.not_to change { Post.count }
@@ -146,9 +141,8 @@ RSpec.describe PostsController, type: :controller do
       conversation.update locked: true, locked_by: create(:user, role: :admin)
 
       expect do
-        post :create, params: {
-          post: attributes_for(:post, conversation_id: conversation.id)
-        }.merge(session)
+        post :create, params: { post: attributes_for(:post, conversation_id: conversation.id),
+                                access_token: access_token }
 
         expect(response).to have_http_status :forbidden
       end.not_to change { Post.count }
@@ -156,7 +150,10 @@ RSpec.describe PostsController, type: :controller do
 
     it_behaves_like 'flood_limitable' do
       let :attributes do
-        { post: attributes_for(:post, conversation_id: conversation.id) }.merge(session)
+        {
+          post: attributes_for(:post, conversation_id: conversation.id),
+          access_token: access_token
+        }
       end
     end
 
@@ -167,9 +164,9 @@ RSpec.describe PostsController, type: :controller do
 
       it 'creates a post with the character' do
         expect do
-          post :create, params: {
-            post: attributes_for(:post, conversation_id: conversation.id, character_id: character.id)
-          }.merge(session)
+          post :create, params: { post: attributes_for(:post, conversation_id: conversation.id,
+                                                              character_id: character.id),
+                                  access_token: access_token }
 
           expect(response).to have_http_status :created
         end.to change { Post.count }.by(1)
@@ -181,9 +178,9 @@ RSpec.describe PostsController, type: :controller do
         character.update user: create(:user)
 
         expect do
-          post :create, params: {
-            post: attributes_for(:post, conversation_id: conversation.id, character_id: character.id)
-          }.merge(session)
+          post :create, params: { post: attributes_for(:post, conversation_id: conversation.id,
+                                                              character_id: character.id),
+                                  access_token: access_token }
 
           expect(response).to have_http_status :not_found
         end.not_to change { Post.count }
@@ -198,37 +195,44 @@ RSpec.describe PostsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        patch :update, params: { id: post.id, post: attributes_for(:post) }
-      end.not_to change { post.reload.attributes }
+        patch :update, params: { id: post.id,
+                                 post: attributes_for(:post) }
 
-      expect(response).to have_http_status :unauthorized
+        expect(response).to have_http_status :unauthorized
+      end.not_to change { post.reload.attributes }
     end
 
     it 'updates the attributes of a post' do
       expect do
-        patch :update, params: { id: post.id, post: attributes_for(:post) }.merge(session)
-      end.to change { post.reload.attributes }
+        patch :update, params: { id: post.id,
+                                 post: attributes_for(:post),
+                                 access_token: access_token }
 
-      expect(response).to have_http_status :ok
-      expect(response).to match_response_schema 'post'
+        expect(response).to have_http_status :ok
+        expect(response).to match_response_schema :post
+      end.to change { post.reload.attributes }
     end
 
     it 'sets the editor when a post is modified' do
       expect do
-        patch :update, params: { id: post.id, post: attributes_for(:post) }.merge(session)
-      end.to change { post.reload.editor }.from(nil).to(active_user)
+        patch :update, params: { id: post.id,
+                                 post: attributes_for(:post),
+                                 access_token: access_token }
 
-      expect(response).to have_http_status :ok
+        expect(response).to have_http_status :ok
+      end.to change { post.reload.editor }.from(nil).to(active_user)
     end
 
     it 'does not allow editing posts not owned by the user' do
       post.update author: create(:user)
 
       expect do
-        patch :update, params: { id: post.id, post: attributes_for(:post) }.merge(session)
-      end.not_to change { post.reload.attributes }
+        patch :update, params: { id: post.id,
+                                 post: attributes_for(:post),
+                                 access_token: access_token }
 
-      expect(response).to have_http_status :forbidden
+        expect(response).to have_http_status :forbidden
+      end.not_to change { post.reload.attributes }
     end
 
     it 'allows admins to edit posts owned by other users' do
@@ -236,59 +240,70 @@ RSpec.describe PostsController, type: :controller do
       post.update author: create(:user)
 
       expect do
-        patch :update, params: { id: post.id, post: attributes_for(:post) }.merge(session)
-      end.to change { post.reload.attributes }
+        patch :update, params: { id: post.id,
+                                 post: attributes_for(:post),
+                                 access_token: access_token }
 
-      expect(response).to have_http_status :ok
-      expect(post.editor).to eq active_user
+        expect(response).to have_http_status :ok
+        expect(post.reload.editor).to eq active_user
+      end.to change { post.reload.attributes }
     end
 
     it 'prevents users from editing the deleted state of a post' do
       expect do
-        patch :update, params: { id: post.id, post: { deleted: true } }.merge(session)
-      end.not_to change { post.reload.deleted? }
+        patch :update, params: { id: post.id,
+                                 post: { deleted: true },
+                                 access_token: access_token }
 
-      expect(response).to have_http_status :ok
+        expect(response).to have_http_status :ok
+      end.not_to change { post.reload.deleted? }
     end
 
     it 'allows admins to edit the deleted state of a post' do
       active_user.roles << Role.find_by!(name: 'admin')
-      post.update deleted: true, deleted_by: active_user
+      post.delete
 
       expect do
-        patch :update, params: { id: post.id, post: { deleted: false } }.merge(session)
-      end.to change { post.reload.deleted? }.from(true).to(false)
+        patch :update, params: { id: post.id,
+                                 post: { deleted: false },
+                                 access_token: access_token }
 
-      expect(response).to have_http_status :ok
+        expect(response).to have_http_status :ok
+      end.to change { post.reload.deleted? }.from(true).to(false)
     end
 
     it 'prevents users from changing the editor of a post' do
       expect do
-        patch :update, params: { id: post.id, post: { editor_id: nil } }.merge(session)
-      end.to change { post.reload.editor }.from(nil).to(active_user)
+        patch :update, params: { id: post.id,
+                                 post: attributes_for(:post, editor_id: nil),
+                                 access_token: access_token }
 
-      expect(response).to have_http_status :ok
+        expect(response).to have_http_status :ok
+      end.to change { post.reload.editor }.from(nil).to(active_user)
     end
 
     it 'returns 404 when editing deleted posts' do
-      post.update deleted: true, deleted_by: active_user
+      post.delete
 
       expect do
-        patch :update, params: { id: post.id, post: attributes_for(:post) }.merge(session)
-      end.not_to change { post.reload.attributes }
+        patch :update, params: { id: post.id,
+                                 post: attributes_for(:post),
+                                 access_token: access_token }
 
-      expect(response).to have_http_status :not_found
+        expect(response).to have_http_status :not_found
+      end.not_to change { post.reload.attributes }
     end
 
     it 'returns errors if the post is invalid' do
       expect do
-        patch :update, params: { id: post.id, post: { body: nil } }.merge(session)
+        patch :update, params: { id: post.id,
+                                 post: attributes_for(:post, body: nil),
+                                 access_token: access_token }
+
+        expect(response).to have_http_status :unprocessable_entity
+        expect(response).to match_response_schema :errors
+        expect(json[:errors]).to have_key :body
       end.not_to change { post.reload.body }
-
-      expect(response).to have_http_status :unprocessable_entity
-      expect(response).to match_response_schema 'errors'
-
-      expect(json[:errors]).to have_key :body
     end
   end
 
@@ -300,27 +315,29 @@ RSpec.describe PostsController, type: :controller do
     it 'requires an authenticated user' do
       expect do
         delete :destroy, params: { id: post.id }
-      end.not_to change { post.reload.deleted? }
 
-      expect(response).to have_http_status :unauthorized
+        expect(response).to have_http_status :unauthorized
+      end.not_to change { post.reload.deleted? }
     end
 
     it 'marks a post as deleted' do
       expect do
-        delete :destroy, params: { id: post.id }.merge(session)
-      end.to change { post.reload.deleted? }.from(false).to(true)
+        delete :destroy, params: { id: post.id,
+                                   access_token: access_token }
 
-      expect(response).to have_http_status :no_content
+        expect(response).to have_http_status :no_content
+      end.to change { post.reload.deleted? }.from(false).to(true)
     end
 
     it 'prevents users from deleting posts they do not own' do
       post.update author: create(:user)
 
       expect do
-        delete :destroy, params: { id: post.id }.merge(session)
-      end.not_to change { post.reload.deleted? }
+        delete :destroy, params: { id: post.id,
+                                   access_token: access_token }
 
-      expect(response).to have_http_status :forbidden
+        expect(response).to have_http_status :forbidden
+      end.not_to change { post.reload.deleted? }
     end
 
     it 'allows admins to delete posts owned by other users' do
@@ -328,20 +345,22 @@ RSpec.describe PostsController, type: :controller do
       post.update author: create(:user)
 
       expect do
-        delete :destroy, params: { id: post.id }.merge(session)
-      end.to change { post.reload.deleted? }.from(false).to(true)
+        delete :destroy, params: { id: post.id,
+                                   access_token: access_token }
 
-      expect(response).to have_http_status :no_content
+        expect(response).to have_http_status :no_content
+      end.to change { post.reload.deleted? }.from(false).to(true)
     end
 
     it 'prevents users from deleting posts in locked conversations' do
       post.conversation.update locked: true, locked_by: create(:user, role: :admin)
 
       expect do
-        delete :destroy, params: { id: post.id }.merge(session)
-      end.not_to change { post.reload.deleted? }
+        delete :destroy, params: { id: post.id,
+                                   access_token: access_token }
 
-      expect(response).to have_http_status :forbidden
+        expect(response).to have_http_status :forbidden
+      end.not_to change { post.reload.deleted? }
     end
 
     it 'allows admins to delete posts in locked conversations' do
@@ -349,20 +368,22 @@ RSpec.describe PostsController, type: :controller do
       post.conversation.update locked: true, locked_by: create(:user, role: :admin)
 
       expect do
-        delete :destroy, params: { id: post.id }.merge(session)
-      end.to change { post.reload.deleted? }.from(false).to(true)
+        delete :destroy, params: { id: post.id,
+                                   access_token: access_token }
 
-      expect(response).to have_http_status :no_content
+        expect(response).to have_http_status :no_content
+      end.to change { post.reload.deleted? }.from(false).to(true)
     end
 
     it 'returns 404 when trying to delete a post which is already marked as deleted' do
       post.update deleted: true, deleted_by: active_user
 
       expect do
-        delete :destroy, params: { id: post.id }.merge(session)
-      end.not_to change { post.reload.deleted? }
+        delete :destroy, params: { id: post.id,
+                                   access_token: access_token }
 
-      expect(response).to have_http_status :not_found
+        expect(response).to have_http_status :not_found
+      end.not_to change { post.reload.deleted? }
     end
   end
 end
