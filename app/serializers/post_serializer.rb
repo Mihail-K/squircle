@@ -7,7 +7,7 @@ class PostSerializer < ApplicationSerializer
   attribute :editor_id
   attribute :character_id
   attribute :conversation_id
-  attribute :deleted_by_id, if: :can_view_deleted?
+  attribute :deleted_by_id, if: :allowed_to_view_deleted_posts?
 
   attribute :title
   attribute :body
@@ -23,13 +23,9 @@ class PostSerializer < ApplicationSerializer
     policy.destroy? || false
   end
 
-  belongs_to :author, serializer: UserSerializer
-  belongs_to :editor, serializer: UserSerializer
+  belongs_to :author
+  belongs_to :editor
   belongs_to :character
   belongs_to :conversation
-  belongs_to :deleted_by, serializer: UserSerializer, if: :can_view_deleted?
-
-  def can_view_deleted?
-    current_user.try(:allowed_to?, :view_deleted_posts)
-  end
+  belongs_to :deleted_by, if: :allowed_to_view_deleted_posts?
 end

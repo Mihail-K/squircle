@@ -3,7 +3,7 @@ Doorkeeper.configure do
   orm :active_record
 
   resource_owner_from_credentials do
-    User.visible
+    User.not_deleted
         .find_by(email: params[:email] || params[:username])
         .try(:authenticate, params[:password])
   end
