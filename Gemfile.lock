@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: git://github.com/mihail-k/permissible.git
-  revision: 41e0314ce72fc5704814f1af25aeca7fd2b28fa4
+  revision: 20d7658274b85da11b25744acd56d81f9f563e75
   specs:
     permissible (0.1.0)
       railties (>= 4.2)
