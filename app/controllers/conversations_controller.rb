@@ -19,11 +19,11 @@ class ConversationsController < ApplicationController
     render json: @conversations,
            each_serializer: ConversationSerializer,
            participated: @participated,
-           meta: meta_for(@conversations) if stale?(@conversations)
+           meta: meta_for(@conversations)
   end
 
   def show
-    render json: @conversation if stale?(@conversation)
+    render json: @conversation
   end
 
   def create
