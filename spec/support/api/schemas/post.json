@@ -44,16 +44,6 @@
             }
           ]
         },
-        "title": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ]
-        },
         "body": {
           "type": "string",
           "description": "Contains the original post body, in unprocessed form."
@@ -139,7 +129,6 @@
         "editor_id",
         "character_id",
         "conversation_id",
-        "title",
         "body",
         "formatted_body",
         "deleted",

@@ -4,7 +4,6 @@
 # Table name: posts
 #
 #  id              :integer          not null, primary key
-#  title           :string
 #  body            :text             not null
 #  author_id       :integer          not null
 #  editor_id       :integer
@@ -24,7 +23,6 @@
 #  index_posts_on_conversation_id  (conversation_id)
 #  index_posts_on_deleted_by_id    (deleted_by_id)
 #  index_posts_on_editor_id        (editor_id)
-#  index_posts_on_title            (title)
 #
 # Foreign Keys
 #

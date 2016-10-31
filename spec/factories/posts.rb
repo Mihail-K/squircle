@@ -3,7 +3,6 @@ FactoryGirl.define do
   factory :post do
     association :author, factory: :user, strategy: :build
 
-    title { Faker::Book.title }
     body { Faker::Hipster.paragraph }
 
     after :build do |post|

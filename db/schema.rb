@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161023220229) do
+ActiveRecord::Schema.define(version: 20161031174948) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -180,7 +180,6 @@ ActiveRecord::Schema.define(version: 20161023220229) do
   end
 
   create_table "posts", force: :cascade do |t|
-    t.string   "title"
     t.text     "body",                            null: false
     t.integer  "author_id",                       null: false
     t.integer  "editor_id"
@@ -197,7 +196,6 @@ ActiveRecord::Schema.define(version: 20161023220229) do
     t.index ["conversation_id"], name: "index_posts_on_conversation_id", using: :btree
     t.index ["deleted_by_id"], name: "index_posts_on_deleted_by_id", using: :btree
     t.index ["editor_id"], name: "index_posts_on_editor_id", using: :btree
-    t.index ["title"], name: "index_posts_on_title", using: :btree
   end
 
   create_table "reports", force: :cascade do |t|

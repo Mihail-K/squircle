@@ -59,7 +59,6 @@ class Conversation < ApplicationRecord
   validates :section, presence: true
   validates :posts, presence: true
 
-  before_validation :set_first_post_title, on: :create
   before_validation :set_first_post_author, on: :create
 
   before_save :set_locked_on_timestamp, if: -> { locked_changed?(to: true) }
@@ -86,10 +85,6 @@ private
 
   def set_locked_on_timestamp
     self.locked_on = Time.zone.now
-  end
-
-  def set_first_post_title
-    posts.first.title = title if posts.first.present?
   end
 
   def set_first_post_author

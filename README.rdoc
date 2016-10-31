@@ -1,5 +1,11 @@
 == README
 
+== Setting Up
+
+ - `bundle install`
+ - `rake db:create db:migrate db:seed`
+ - `rake mock:data`
+
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
