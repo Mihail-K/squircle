@@ -48,13 +48,14 @@ class Report < ApplicationRecord
   }
 
   validates :reportable, presence: true
+  validates :reportable_type, inclusion: { in: %w(Character Conversation Post User) }
   validates :creator, presence: true
   validates :closed_by, presence: true, if: :closed?
 
   validates :status, presence: true
   validates :description, presence: true, length: { in: 10..1000 }
 
-  before_save :set_closed_at_timestamp, if: -> { status_changed? from: 'open' }
+  before_save :set_closed_at, if: -> { status_changed? from: 'open' }
 
   def closed?
     status != 'open'
@@ -62,7 +63,7 @@ class Report < ApplicationRecord
 
   alias closed closed?
 
-  def set_closed_at_timestamp
+  def set_closed_at
     self.closed_at = Time.zone.now
   end
 end
