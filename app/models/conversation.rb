@@ -12,7 +12,7 @@
 #  views_count    :integer          default(0), not null
 #  title          :string           not null
 #  locked         :boolean          default(FALSE), not null
-#  locked_on      :datetime
+#  locked_at      :datetime
 #  locked_by_id   :integer
 #  last_active_at :datetime
 #  section_id     :integer          not null
@@ -61,7 +61,7 @@ class Conversation < ApplicationRecord
 
   before_validation :set_first_post_author, on: :create
 
-  before_save :set_locked_on_timestamp, if: -> { locked_changed?(to: true) }
+  before_save :set_locked_at, if: -> { locked_changed?(to: true) }
 
   before_commit :set_posts_counts
   before_commit :set_conversations_count
@@ -83,8 +83,8 @@ protected
 
 private
 
-  def set_locked_on_timestamp
-    self.locked_on = Time.zone.now
+  def set_locked_at
+    self.locked_at = Time.zone.now
   end
 
   def set_first_post_author

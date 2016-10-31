@@ -45,7 +45,7 @@ definitions:
         - type: 'null'
         - type: string
           format: date-time
-      locked_on:
+      locked_at:
         oneOf:
         - type: 'null'
         - type: string
@@ -90,7 +90,7 @@ definitions:
     - created_at
     - updated_at
     - last_active_at
-    - locked_on
+    - locked_at
     - editable
     - deletable
     additionalProperties: false

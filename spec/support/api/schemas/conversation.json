@@ -79,7 +79,7 @@
             }
           ]
         },
-        "locked_on": {
+        "locked_at": {
           "oneOf": [
             {
               "type": "null"
@@ -161,7 +161,7 @@
         "created_at",
         "updated_at",
         "last_active_at",
-        "locked_on",
+        "locked_at",
         "editable",
         "deletable"
       ],

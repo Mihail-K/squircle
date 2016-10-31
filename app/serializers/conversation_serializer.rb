@@ -19,7 +19,7 @@ class ConversationSerializer < ApplicationSerializer
 
   attribute :deleted
   attribute :locked
-  attribute :locked_on
+  attribute :locked_at
 
   attribute :postable do
     allowed_to?(:create_posts) && (!object.locked? || allowed_to?(:lock_conversations))

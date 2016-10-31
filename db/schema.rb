@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161031174948) do
+ActiveRecord::Schema.define(version: 20161031180141) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,7 +59,7 @@ ActiveRecord::Schema.define(version: 20161031174948) do
     t.integer  "views_count",    default: 0,     null: false
     t.string   "title",                          null: false
     t.boolean  "locked",         default: false, null: false
-    t.datetime "locked_on"
+    t.datetime "locked_at"
     t.integer  "locked_by_id"
     t.datetime "last_active_at"
     t.integer  "section_id",                     null: false
