@@ -6,7 +6,7 @@ RSpec.describe ReportsController, type: :controller do
 
   describe '#GET index' do
     let! :reports do
-      create_list :report, 5, creator: active_user
+      create_list :report, 3, creator: active_user
     end
 
     it 'requires an authenticated user' do
@@ -19,40 +19,38 @@ RSpec.describe ReportsController, type: :controller do
       get :index, params: session
 
       expect(response).to have_http_status :ok
-      expect(response).to match_response_schema 'reports'
+      expect(response).to match_response_schema :reports
 
       expect(json[:reports].count).to eq reports.count
     end
 
     it 'returns only reports created by the current user' do
-      other_user    = create(:user)
-      other_reports = reports.sample(3).each do |report|
-        report.update creator: other_user
+      other_user = create(:user)
+      reports.sample(2).each do |report|
+        report.update(creator: other_user)
       end
 
       get :index, params: session
 
       expect(response).to have_http_status :ok
-      expect(json[:reports].count).to eq reports.count - other_reports.count
+      expect(json[:reports].count).to eq(reports.count - 2)
     end
 
     it 'only returns reports that are in a visible state' do
-      deleted_reports = reports.sample(3).each do |report|
-        report.update deleted: true, deleted_by: active_user
-      end
+      reports.sample(2).each(&:delete)
 
       get :index, params: session
 
       expect(response).to have_http_status :ok
-      expect(json[:reports].count).to eq reports.count - deleted_reports.count
+      expect(json[:reports].count).to eq(reports.count - 2)
     end
 
     it 'returns all reports for admin users' do
       active_user.roles << Role.find_by!(name: 'admin')
 
       other_user = create(:user)
-      reports.sample(3).each do |report|
-        report.update creator: other_user
+      reports.each do |report|
+        report.update(creator: other_user)
       end
 
       get :index, params: session
@@ -62,7 +60,7 @@ RSpec.describe ReportsController, type: :controller do
     end
 
     it 'filters reports by status' do
-      closed_reports = reports.sample(3).each do |report|
+      closed_reports = reports.sample(2).each do |report|
         report.update status: 'resolved', closed_by: active_user
       end
 
