@@ -46,6 +46,11 @@ class Post < ApplicationRecord
   belongs_to :conversation, inverse_of: :posts
   has_one :section, through: :conversation
 
+  has_many :notifications, as: :targetable, dependent: :destroy
+
+  has_many :subscriptions, through: :conversation
+  has_many :subscribers, through: :subscriptions, source: :user
+
   validates :author, presence: true
   validates :conversation, presence: true
   validates :body, presence: true, length: { in: 10..10_000, if: :body? }
@@ -54,6 +59,8 @@ class Post < ApplicationRecord
 
   before_commit :set_posts_counts
   before_commit :set_conversation_last_activity
+
+  after_commit :create_notifications, on: :create
 
   scope :first_post, -> {
     select(<<-SQL.squish)
@@ -92,5 +99,9 @@ private
     return if conversation.destroyed?
     last_activity = conversation.posts.not_deleted.maximum(:updated_at)
     conversation.update_columns(last_active_at: last_activity)
+  end
+
+  def create_notifications
+    PostNotificationJob.perform_later(id)
   end
 end
