@@ -3,6 +3,7 @@ class ReportsController < ApplicationController
   before_action :doorkeeper_authorize!
 
   before_action :set_reports, except: :create
+  before_action :set_reportable, only: :create
   before_action :set_report, except: %i(index create)
   before_action :apply_pagination, only: :index
 
@@ -19,7 +20,7 @@ class ReportsController < ApplicationController
   end
 
   def create
-    @report = Report.create! report_params do |report|
+    @report = Report.create!(report_params) do |report|
       report.creator = current_user
     end
 
@@ -41,6 +42,11 @@ class ReportsController < ApplicationController
   end
 
 private
+
+  def set_reportable
+    return not_found unless Report::ALLOWED_TYPES.include?(report_params[:reportable_type])
+    policy_scope(report_params[:reportable_type].safe_constantize).find(report_params[:reportable_id])
+  end
 
   def set_reports
     @reports = policy_scope(Report).includes(:creator, :reportable)

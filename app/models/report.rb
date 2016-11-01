@@ -36,6 +36,8 @@
 class Report < ApplicationRecord
   include SoftDeletable
 
+  ALLOWED_TYPES = %w(Character Conversation Post User).freeze
+
   belongs_to :reportable, polymorphic: true
   belongs_to :creator, class_name: 'User'
   belongs_to :closed_by, class_name: 'User'
@@ -48,7 +50,7 @@ class Report < ApplicationRecord
   }
 
   validates :reportable, presence: true
-  validates :reportable_type, inclusion: { in: %w(Character Conversation Post User) }
+  validates :reportable_type, inclusion: { in: ALLOWED_TYPES }
   validates :creator, presence: true
   validates :closed_by, presence: true, if: :closed?
 

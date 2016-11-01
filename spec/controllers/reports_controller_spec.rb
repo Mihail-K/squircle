@@ -133,48 +133,69 @@ RSpec.describe ReportsController, type: :controller do
 
     it 'requires an authenticated user' do
       expect do
-        post :create, params: {
-          report: attributes_for(:report, reportable_id: user.id, reportable_type: user.model_name.name)
-        }
-      end.not_to change { Report.count }
+        post :create, params: { report: attributes_for(:report, reportable_id: user.id,
+                                                                reportable_type: user.model_name.name) }
 
-      expect(response).to have_http_status :unauthorized
+        expect(response).to have_http_status :unauthorized
+      end.not_to change { Report.count }
     end
 
     it 'creates a report' do
       expect do
-        post :create, params: {
-          report: attributes_for(:report, reportable_id: user.id, reportable_type: user.model_name.name)
-        }.merge(session)
-      end.to change { Report.count }.by(1)
+        post :create, params: { report: attributes_for(:report, reportable_id: user.id,
+                                                                reportable_type: user.model_name.name),
+                                access_token: access_token }
 
-      expect(response).to have_http_status :created
-      expect(response).to match_response_schema 'report'
+        expect(response).to have_http_status :created
+        expect(response).to match_response_schema :report
+      end.to change { Report.count }.by(1)
     end
 
     it 'prevents banned users from creating reports' do
       active_user.roles << Role.find_by!(name: 'banned')
 
       expect do
-        post :create, params: {
-          report: attributes_for(:report, reportable_id: user.id, reportable_type: user.model_name.name)
-        }.merge(session)
-      end.not_to change { Report.count }
+        post :create, params: { report: attributes_for(:report, reportable_id: user.id,
+                                                                reportable_type: user.model_name.name),
+                                access_token: access_token }
 
-      expect(response).to have_http_status :forbidden
+        expect(response).to have_http_status :forbidden
+      end.not_to change { Report.count }
+    end
+
+    it 'returns 404 if the reportable type is not allowed' do
+      expect do
+        post :create, params: { report: attributes_for(:report, reportable_id: user.id,
+                                                                reportable_type: 'FooBar'),
+                                access_token: access_token }
+
+        expect(response).to have_http_status :not_found
+      end.not_to change { Report.count }
+    end
+
+    it 'returns 404 if the reportable object is deleted' do
+      user.delete
+
+      expect do
+        post :create, params: { report: attributes_for(:report, reportable_id: user.id,
+                                                                reportable_type: user.model_name.name),
+                                access_token: access_token }
+
+        expect(response).to have_http_status :not_found
+      end.not_to change { Report.count }
     end
 
     it 'returns errors if the report is invalid' do
       expect do
-        post :create, params: {
-          report: attributes_for(:report, reportable_id: nil, reportable_type: user.model_name.name)
-        }.merge(session)
+        post :create, params: { report: attributes_for(:report, reportable_id: user.id,
+                                                                reportable_type: user.model_name.name, description: nil),
+                                access_token: access_token }
+
+        expect(response).to have_http_status :unprocessable_entity
+        expect(response).to match_response_schema 'errors'
+
+        expect(json[:errors]).to have_key :description
       end.not_to change { Report.count }
-
-      expect(response).to have_http_status :unprocessable_entity
-      expect(response).to match_response_schema 'errors'
-
-      expect(json[:errors]).to have_key :reportable
     end
   end
 
