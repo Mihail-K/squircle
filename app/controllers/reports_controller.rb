@@ -36,7 +36,7 @@ class ReportsController < ApplicationController
   end
 
   def destroy
-    @report.delete!(current_user)
+    @report.soft_delete!(current_user)
 
     head :no_content
   end

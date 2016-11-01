@@ -31,7 +31,7 @@ RSpec.describe Section, type: :model do
     section = create :section
 
     expect do
-      section.delete
+      section.soft_delete
     end.to have_enqueued_job(SectionPostsCountJob).on_queue('low')
   end
 
@@ -54,13 +54,13 @@ RSpec.describe Section, type: :model do
       conversation = create :conversation, section: section
 
       expect do
-        conversation.delete
+        conversation.soft_delete
       end.to change { section.conversations_count }.by(-1)
     end
 
     it 'increases when a conversation is restored' do
       conversation = create :conversation, section: section
-      conversation.delete
+      conversation.soft_delete
 
       expect do
         conversation.restore

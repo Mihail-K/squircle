@@ -41,7 +41,7 @@ class PostsController < ApplicationController
   end
 
   def destroy
-    @post.delete!(current_user)
+    @post.soft_delete!(current_user)
 
     head :no_content
   end

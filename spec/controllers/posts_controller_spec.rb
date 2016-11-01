@@ -27,7 +27,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'returns only visible posts' do
-      posts.sample(2).each(&:delete)
+      posts.sample(2).each(&:soft_delete)
 
       get :index
 
@@ -37,7 +37,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'includes deleted posts when called by an admin' do
       active_user.roles << Role.find_by!(name: 'admin')
-      posts.sample(2).each(&:delete)
+      posts.sample(2).each(&:soft_delete)
 
       get :index, params: { access_token: access_token }
 
@@ -261,7 +261,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'allows admins to edit the deleted state of a post' do
       active_user.roles << Role.find_by!(name: 'admin')
-      post.delete
+      post.soft_delete
 
       expect do
         patch :update, params: { id: post.id,
@@ -283,7 +283,7 @@ RSpec.describe PostsController, type: :controller do
     end
 
     it 'returns 404 when editing deleted posts' do
-      post.delete
+      post.soft_delete
 
       expect do
         patch :update, params: { id: post.id,

@@ -44,7 +44,7 @@ class ConversationsController < ApplicationController
   end
 
   def destroy
-    @conversation.delete!(current_user)
+    @conversation.soft_delete!(current_user)
 
     head :no_content
   end

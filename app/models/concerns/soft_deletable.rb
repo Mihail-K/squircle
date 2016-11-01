@@ -16,11 +16,11 @@ module SoftDeletable
     }
   end
 
-  def delete(deleted_by = nil)
+  def soft_delete(deleted_by = nil)
     update(deleted: true, deleted_by: deleted_by)
   end
 
-  def delete!(deleted_by = nil)
+  def soft_delete!(deleted_by = nil)
     update!(deleted: true, deleted_by: deleted_by)
   end
 

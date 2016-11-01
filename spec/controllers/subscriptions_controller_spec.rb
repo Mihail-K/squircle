@@ -85,7 +85,7 @@ RSpec.describe SubscriptionsController, type: :controller do
     end
 
     it "doesn't create subscriptions for conversations the user cannot see" do
-      conversation.delete
+      conversation.soft_delete
 
       expect do
         post :create, params: { subscription: { conversation_id: conversation.id },

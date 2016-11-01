@@ -18,7 +18,7 @@ RSpec.describe ConversationsController, type: :controller do
     end
 
     it 'only returns visible conversations' do
-      conversations.sample(3).each(&:delete)
+      conversations.sample(3).each(&:soft_delete)
 
       get :index
 
@@ -28,7 +28,7 @@ RSpec.describe ConversationsController, type: :controller do
 
     it 'returns all conversations for admin users' do
       active_user.roles << Role.find_by!(name: 'admin')
-      conversations.sample(3).each(&:delete)
+      conversations.sample(3).each(&:soft_delete)
 
       get :index, params: session
 

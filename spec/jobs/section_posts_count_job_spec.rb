@@ -20,7 +20,7 @@ RSpec.describe SectionPostsCountJob, type: :job do
 
   it 'updates the posts counts of authors in a section' do
     expect do
-      section.delete
+      section.soft_delete
       SectionPostsCountJob.perform_now(section.id)
     end.to change { author.reload.posts_count }.by(-1)
 
@@ -34,7 +34,7 @@ RSpec.describe SectionPostsCountJob, type: :job do
     conversation.posts.first.update character: character
 
     expect do
-      section.delete
+      section.soft_delete
       SectionPostsCountJob.perform_now(section.id)
     end.to change { character.reload.posts_count }.by(-1)
 

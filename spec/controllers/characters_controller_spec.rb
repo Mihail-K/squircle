@@ -19,7 +19,7 @@ RSpec.describe CharactersController, type: :controller do
     end
 
     it 'only returns visible characters' do
-      characters.sample(3).each(&:delete)
+      characters.sample(3).each(&:soft_delete)
 
       get :index
 
@@ -29,7 +29,7 @@ RSpec.describe CharactersController, type: :controller do
 
     it 'includes deleted characters when called by an admin' do
       active_user.roles << Role.find_by!(name: 'admin')
-      characters.sample(3).each(&:delete)
+      characters.sample(3).each(&:soft_delete)
 
       get :index, params: session
 

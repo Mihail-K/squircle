@@ -37,7 +37,7 @@ RSpec.describe ReportsController, type: :controller do
     end
 
     it 'only returns reports that are in a visible state' do
-      reports.sample(2).each(&:delete)
+      reports.sample(2).each(&:soft_delete)
 
       get :index, params: session
 
@@ -172,7 +172,7 @@ RSpec.describe ReportsController, type: :controller do
     end
 
     it 'returns 404 if the reportable object is deleted' do
-      user.delete
+      user.soft_delete
 
       expect do
         post :create, params: { report: attributes_for(:report, reportable_id: user.id,

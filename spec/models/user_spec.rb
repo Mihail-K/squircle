@@ -154,7 +154,7 @@ RSpec.describe User, type: :model do
       post = create :post, author: user
 
       expect do
-        post.delete
+        post.soft_delete
       end.to change { user.posts_count }.by(-1)
     end
 
@@ -162,7 +162,7 @@ RSpec.describe User, type: :model do
       post = create :post, author: user
 
       expect do
-        post.conversation.delete
+        post.conversation.soft_delete
       end.to change { user.reload.posts_count }.by(-1)
     end
   end
