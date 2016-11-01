@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 namespace :mock do
   task data: :environment do
     abort('Only usable in development') unless Rails.env.development?

@@ -186,7 +186,8 @@ RSpec.describe ReportsController, type: :controller do
     it 'returns errors if the report is invalid' do
       expect do
         post :create, params: { report: attributes_for(:report, reportable_id: user.id,
-                                                                reportable_type: user.model_name.name, description: nil),
+                                                                reportable_type: user.model_name.name,
+                                                                description: nil),
                                 access_token: access_token }
 
         expect(response).to have_http_status :unprocessable_entity
