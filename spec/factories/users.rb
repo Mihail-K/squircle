@@ -5,8 +5,13 @@ FactoryGirl.define do
     date_of_birth { Faker::Date.between(50.years.ago, 13.years.ago) }
 
     display_name do
-      Faker::Internet.user_name + Faker::Number.number(Faker::Number.between(0, 4)).to_s
+      case rand(1..3)
+      when 1 then "#{Faker::Internet.user_name}#{Faker::Number.number(Faker::Number.between(2, 6))}"
+      when 2 then "#{Faker::Internet.user_name}-#{Faker::Pokemon.name}#{Faker::Number.number(3)}"
+      when 3 then "#{Faker::Name.first_name}.#{Faker::Name.last_name}#{Faker::Number.number(3)}"
+      end
     end
+
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
 
