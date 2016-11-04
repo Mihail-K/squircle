@@ -20,4 +20,18 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  activerecord:
+    errors:
+      models:
+        ban:
+          attributes:
+            base:
+              cant_self_ban: "you can't ban yourself"
+        friendship:
+          attributes:
+            base:
+              cant_self_friend: "you can't be friends with yourself"
+        post:
+          attributes:
+            base:
+              flood_limit: 'you can only post once every 20 seconds'

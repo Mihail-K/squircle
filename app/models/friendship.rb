@@ -30,6 +30,6 @@ class Friendship < ApplicationRecord
   validates :user, uniqueness: { scope: :friend }
 
   validate if: -> { user.present? && friend.present? } do
-    errors.add :base, 'you cannot be friends with yourself' if user == friend
+    errors.add :base, :cant_self_friend if user == friend
   end
 end
