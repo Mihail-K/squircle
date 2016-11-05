@@ -82,11 +82,11 @@ class User < ApplicationRecord
   end
 
   scope :banned, -> {
-    joins(:roles).where(roles: { name: 'banned' })
+    where(banned: true)
   }
 
   scope :not_banned, -> {
-    where.not(id: banned)
+    where(banned: false)
   }
 
   scope :no_active_bans, -> {
@@ -99,12 +99,8 @@ class User < ApplicationRecord
   }
 
   scope :recently_active, -> {
-    where(User.arel_table[:last_active_at]
-              .gteq(5.minutes.ago)
-              .and(
-                User.arel_table[:posts_count]
-                    .gt(0)
-              ))
+    not_banned.where(User.arel_table[:last_active_at].gteq(5.minutes.ago))
+              .where(User.arel_table[:posts_count].gt(0))
   }
 
 private
