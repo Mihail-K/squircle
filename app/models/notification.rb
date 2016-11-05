@@ -27,7 +27,7 @@
 #
 
 class Notification < ApplicationRecord
-  belongs_to :user
+  belongs_to :user, inverse_of: :notifications
   belongs_to :targetable, polymorphic: true
 
   validates :user, presence: true

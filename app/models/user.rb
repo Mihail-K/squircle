@@ -54,7 +54,9 @@ class User < ApplicationRecord
   has_many :created_characters, foreign_key: :creator_id, class_name: 'Character'
 
   has_many :posts, foreign_key: :author_id, inverse_of: :author
-  has_many :subscriptions, inverse_of: :user, dependent: :destroy
+
+  has_many :notifications, inverse_of: :user, dependent: :delete_all
+  has_many :subscriptions, inverse_of: :user, dependent: :delete_all
 
   has_secure_token :email_token
   has_secure_password
