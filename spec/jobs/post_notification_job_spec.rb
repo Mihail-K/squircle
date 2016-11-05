@@ -32,5 +32,13 @@ RSpec.describe PostNotificationJob, type: :job do
         PostNotificationJob.perform_now(post.id)
       end.not_to change { Notification.count }
     end
+
+    it "doesn't create a notification for the post author" do
+      subscription.update_columns(user_id: post.author_id)
+
+      expect do
+        PostNotificationJob.perform_now(post.id)
+      end.not_to change { Notification.count }
+    end
   end
 end
