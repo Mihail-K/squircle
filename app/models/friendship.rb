@@ -29,7 +29,19 @@ class Friendship < ApplicationRecord
   validates :friend, presence: true
   validates :user, uniqueness: { scope: :friend }
 
-  validate if: -> { user.present? && friend.present? } do
+  validate :friend_is_not_user, if: -> { user.present? && friend.present? }
+
+  after_create :create_notification
+
+private
+
+  def friend_is_not_user
     errors.add :base, :cant_self_friend if user == friend
+  end
+
+  def create_notification
+    Notification.find_or_create_by(user: friend, targetable: user) do |notification|
+      notification.title = "#{user.display_name} added you as a friend."
+    end
   end
 end

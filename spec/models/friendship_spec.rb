@@ -29,4 +29,10 @@ RSpec.describe Friendship, type: :model do
     friendship.friend = friendship.user
     expect(friendship).to be_invalid
   end
+
+  it 'creates a notification' do
+    expect do
+      friendship.save
+    end.to change { friendship.friend.notifications.count }.by(1)
+  end
 end
