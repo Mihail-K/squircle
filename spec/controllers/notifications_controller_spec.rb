@@ -32,9 +32,9 @@ RSpec.describe NotificationsController, type: :controller do
       expect(json[:notifications].count).to eq 2
     end
 
-    it "marks notifications as read once they're returned" do
+    it "marks notifications as read when requested" do
       expect do
-        get :index, params: { access_token: access_token }
+        get :index, params: { read: true, access_token: access_token }
 
         expect(response).to have_http_status :ok
       end.to change { Notification.where(read: true).count }.from(0).to(3)
@@ -46,8 +46,7 @@ RSpec.describe NotificationsController, type: :controller do
           notification.update(dismissed: true)
         end
 
-        get :index, params: { pending: true,
-                              access_token: access_token }
+        get :index, params: { pending: true, access_token: access_token }
 
         expect(response).to have_http_status :ok
         expect(json[:notifications].count).to eq 1

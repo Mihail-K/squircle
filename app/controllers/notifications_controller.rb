@@ -8,7 +8,7 @@ class NotificationsController < ApplicationController
 
   before_action :enforce_policy!
 
-  after_action :mark_notifications_read, only: :index
+  after_action :mark_notifications_read, only: :index, if: -> { params.key?(:read) }
 
   def index
     render json: @notifications,
