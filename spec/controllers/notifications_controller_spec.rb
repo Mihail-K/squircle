@@ -19,6 +19,7 @@ RSpec.describe NotificationsController, type: :controller do
       get :index, params: { access_token: access_token }
 
       expect(response).to have_http_status :ok
+      expect(response).to match_response_schema :notifications
       expect(json[:notifications].count).to eq 3
     end
 
@@ -70,6 +71,7 @@ RSpec.describe NotificationsController, type: :controller do
                            access_token: access_token }
 
       expect(response).to have_http_status :ok
+      expect(response).to match_response_schema :notification
     end
 
     it "doesn't allow users to view notifications they don't own" do
@@ -103,6 +105,7 @@ RSpec.describe NotificationsController, type: :controller do
                                  access_token: access_token }
 
         expect(response).to have_http_status :ok
+        expect(response).to match_response_schema :notification
       end.to change { notification.reload.dismissed? }.from(false).to(true)
     end
 

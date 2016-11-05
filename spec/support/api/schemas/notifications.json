@@ -1,0 +1,24 @@
+{
+  "definitions": {
+    "notifications": {
+      "type": "array",
+      "items": {
+        "$ref": "notification.json#/definitions/notification"
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "notifications": {
+      "$ref": "#/definitions/notifications"
+    },
+    "meta": {
+      "$ref": "meta.json#/definitions/meta"
+    }
+  },
+  "required": [
+    "notifications",
+    "meta"
+  ],
+  "additionalProperties": false
+}

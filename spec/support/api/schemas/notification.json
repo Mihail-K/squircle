@@ -1,0 +1,105 @@
+{
+  "definitions": {
+    "notification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "integer"
+        },
+        "targetable_id": {
+          "type": "integer"
+        },
+        "targetable_type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "read": {
+          "type": "boolean"
+        },
+        "dismissed": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "user.json#/definitions/user"
+        },
+        "targetable": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "post"
+                  ]
+                },
+                "post": {
+                  "$ref": "post.json#/definitions/post"
+                }
+              },
+              "required": [
+                "type",
+                "post"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "user"
+                  ]
+                },
+                "user": {
+                  "$ref": "user.json#/definitions/user"
+                }
+              },
+              "required": [
+                "type",
+                "user"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "user_id",
+        "targetable_id",
+        "targetable_type",
+        "title",
+        "read",
+        "dismissed",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "notification": {
+      "$ref": "#/definitions/notification"
+    }
+  },
+  "required": [
+    "notification"
+  ],
+  "additionalProperties": false
+}
