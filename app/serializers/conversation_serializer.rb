@@ -44,13 +44,21 @@ class ConversationSerializer < ApplicationSerializer
 
   has_one :first_post
   has_one :last_post
+  has_one :subscription, if: :include_subscription?
 
   def include_participation?
-    instance_options[:participated].is_a?(Hash)
+    instance_options[:participation].is_a?(Hash)
   end
 
   def participated
-    instance_options[:participated][object.id].present? &&
-      instance_options[:participated][object.id].positive?
+    instance_options[:participation][object.id]&.positive? || false
+  end
+
+  def include_subscription?
+    instance_options[:subscriptions].is_a?(Hash)
+  end
+  
+  def subscription
+    instance_options[:subscriptions][object.id]
   end
 end

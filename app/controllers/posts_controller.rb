@@ -54,7 +54,7 @@ private
   end
 
   def set_character
-    return unless post_params.key?(:character_id)
+    return unless post_params[:character_id].present?
     policy_scope(Character).where(user: current_user).find(post_params[:character_id])
   end
 

@@ -9,8 +9,6 @@ class ConversationsController < ApplicationController
   before_action :set_conversations, except: :create
   before_action :set_conversation, except: %i(index create)
   before_action :apply_pagination, only: :index
-  before_action :load_participated, only: :index, if: -> { current_user.present? }
-
   before_action :enforce_policy!
 
   after_action :increment_views_count, only: :show
@@ -18,12 +16,15 @@ class ConversationsController < ApplicationController
   def index
     render json: @conversations,
            each_serializer: ConversationSerializer,
-           participated: @participated,
+           participation: participation,
+           subscriptions: subscriptions,
            meta: meta_for(@conversations)
   end
 
   def show
-    render json: @conversation
+    render json: @conversation,
+           participation: participation,
+           subscriptions: subscriptions
   end
 
   def create
@@ -73,20 +74,27 @@ private
     @conversations = @conversations.page(params[:page]).per(params[:count])
   end
 
-  def load_participated
-    # Construct a Hash containing the current user's participation in conversations.
-    @participated = policy_scope(Post).joins(:conversation)
-                                      .group(Post.arel_table[:conversation_id])
-                                      .where(posts: { author_id: current_user })
-                                      .where(conversations: { id: @conversations })
-                                      .count
-  end
-
   def set_conversation
     @conversation = @conversations.find(params[:id])
   end
 
   def increment_views_count
     @conversation.increment!(:views_count)
+  end
+
+  def participation
+    return if current_user.nil?
+    # A Hash of the current user's participation in conversations.
+    policy_scope(Post).group(Post.arel_table[:conversation_id])
+                      .where(posts: { author_id: current_user })
+                      .where(conversation_id: @conversation || @conversations)
+                      .count
+  end
+
+  def subscriptions
+    return if current_user.nil?
+    # A Hash of the current user's subscriptions to conversations.
+    Subscription.where(user: current_user, conversation: @conversation || @conversations)
+                .group_by(&:conversation_id)
   end
 end
