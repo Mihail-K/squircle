@@ -95,6 +95,6 @@ private
     return if current_user.nil?
     # A Hash of the current user's subscriptions to conversations.
     Subscription.where(user: current_user, conversation: @conversation || @conversations)
-                .group_by(&:conversation_id)
+                .map { |subscription| [subscription.conversation_id, subscription] }.to_h
   end
 end

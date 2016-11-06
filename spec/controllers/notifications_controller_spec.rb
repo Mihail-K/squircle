@@ -32,7 +32,7 @@ RSpec.describe NotificationsController, type: :controller do
       expect(json[:notifications].count).to eq 2
     end
 
-    it "marks notifications as read when requested" do
+    it 'marks notifications as read when requested' do
       expect do
         get :index, params: { read: true, access_token: access_token }
 

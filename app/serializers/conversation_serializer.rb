@@ -57,7 +57,7 @@ class ConversationSerializer < ApplicationSerializer
   def include_subscription?
     instance_options[:subscriptions].is_a?(Hash)
   end
-  
+
   def subscription
     instance_options[:subscriptions][object.id]
   end
