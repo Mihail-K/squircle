@@ -86,6 +86,9 @@
         "deleted": {
           "type": "boolean"
         },
+        "friendshipable": {
+          "type": "boolean"
+        },
         "editable": {
           "type": "boolean"
         },
@@ -158,6 +161,7 @@
         "last_active_at",
         "banned",
         "deleted",
+        "friendshipable",
         "editable",
         "deletable"
       ],

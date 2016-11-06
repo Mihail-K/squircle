@@ -27,6 +27,9 @@ class ConversationSerializer < ApplicationSerializer
   attribute :lockable do
     allowed_to?(:lock_conversations)
   end
+  attribute :subscribable do
+    current_user.present?
+  end
   attribute :editable do
     policy.update? || false
   end

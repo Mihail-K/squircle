@@ -9,23 +9,23 @@ definitions:
         type: integer
       deleted_by_id:
         oneOf:
-        - type: 'null'
-        - type: integer
+          - type: 'null'
+          - type: integer
       email:
         type: string
       email_confirmed_at:
         anyOf:
-        - type: 'null'
-        - type: string
-          format: date-time
+          - type: 'null'
+          - type: string
+            format: date-time
       first_name:
         anyOf:
-        - type: 'null'
-        - type: string
+          - type: 'null'
+          - type: string
       last_name:
         anyOf:
-        - type: 'null'
-        - type: string
+          - type: 'null'
+          - type: string
       date_of_birth:
         type: string
         format: date
@@ -50,52 +50,55 @@ definitions:
         type: boolean
       deleted:
         type: boolean
+      friendshipable:
+        type: boolean
       editable:
         type: boolean
       deletable:
         type: boolean
       avatar_url:
         oneOf:
-        - type: 'null'
-        - type: string
-          format: url
+          - type: 'null'
+          - type: string
+            format: url
       avatar_medium_url:
         oneOf:
-        - type: 'null'
-        - type: string
-          format: url
+          - type: 'null'
+          - type: string
+            format: url
       avatar_thumb_url:
         oneOf:
-        - type: 'null'
-        - type: string
-          format: url
+          - type: 'null'
+          - type: string
+            format: url
       deleted_at:
         oneOf:
-        - type: 'null'
-        - type: string
-          format: date-time
+          - type: 'null'
+          - type: string
+            format: date-time
       deleted_by:
         oneOf:
-        - type: 'null'
-        - $ref: user.json#/definitions/user
+          - type: 'null'
+          - $ref: user.json#/definitions/user
     required:
-    - id
-    - display_name
-    - posts_count
-    - characters_count
-    - created_characters_count
-    - created_at
-    - updated_at
-    - last_active_at
-    - banned
-    - deleted
-    - editable
-    - deletable
+      - id
+      - display_name
+      - posts_count
+      - characters_count
+      - created_characters_count
+      - created_at
+      - updated_at
+      - last_active_at
+      - banned
+      - deleted
+      - friendshipable
+      - editable
+      - deletable
     additionalProperties: false
 type: object
 properties:
   user:
     $ref: '#/definitions/user'
 required:
-- user
+  - user
 additionalProperties: false

@@ -25,6 +25,9 @@ class UserSerializer < ApplicationSerializer
   attribute :banned
   attribute :deleted
 
+  attribute :friendshipable do
+    current_user.present?
+  end
   attribute :editable do
     policy.update? || false
   end
@@ -45,6 +48,6 @@ class UserSerializer < ApplicationSerializer
   belongs_to :deleted_by, if: :allowed_to_view_deleted_users?
 
   def allowed_to_view_users_personal_fields?
-    object.id == current_user.try(:id) || allowed_to?(:view_users_personal_fields)
+    object.id == current_user&.id || allowed_to?(:view_users_personal_fields)
   end
 end
