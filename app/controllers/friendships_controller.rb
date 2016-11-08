@@ -48,8 +48,4 @@ private
   def set_friendship
     @friendship = @friendships.find(params[:id])
   end
-
-  def apply_pagination
-    @friendships = @friendships.page(params[:page]).per(params[:count])
-  end
 end

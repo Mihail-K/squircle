@@ -46,8 +46,4 @@ private
   def set_role
     @role = @roles.find params[:id]
   end
-
-  def apply_pagination
-    @roles = @roles.page(params[:page]).per(params[:count])
-  end
 end

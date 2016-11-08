@@ -65,10 +65,6 @@ private
     @posts = @posts.order(created_at: :asc)
   end
 
-  def apply_pagination
-    @posts = @posts.page(params[:page]).per(params[:count])
-  end
-
   def set_post
     @post = @posts.find(params[:id])
   end

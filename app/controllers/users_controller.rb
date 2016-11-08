@@ -35,7 +35,7 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    @user.update! deleted: true, deleted_by: current_user
+    @user.soft_delete!(current_user)
 
     head :no_content
   end
@@ -46,18 +46,10 @@ private
     @users = policy_scope(User)
     @users = @users.recently_active if params.key?(:recently_active)
     @users = @users.most_active if params.key?(:most_active)
-    @users = @users.includes(:deleted_by) if can_view_deleted_users?
+    @users = @users.includes(:deleted_by) if allowed_to?(:view_deleted_users)
   end
 
   def set_user
-    @user = @users.find params[:id]
-  end
-
-  def apply_pagination
-    @users = @users.page(params[:page]).per(params[:count])
-  end
-
-  def can_view_deleted_users?
-    current_user.try(:allowed_to?, :view_deleted_users)
+    @user = @users.find(params[:id])
   end
 end

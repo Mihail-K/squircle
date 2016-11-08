@@ -43,10 +43,6 @@ private
     @notification = @notifications.find(params[:id])
   end
 
-  def apply_pagination
-    @notifications = @notifications.page(params[:page]).per(params[:count])
-  end
-
   def mark_notifications_read
     Notification.where(id: @notifications).update_all(read: true)
   end

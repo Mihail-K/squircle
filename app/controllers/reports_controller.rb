@@ -57,8 +57,4 @@ private
   def set_report
     @report = @reports.find(params[:id])
   end
-
-  def apply_pagination
-    @reports = @reports.page(params[:page]).per(params[:count])
-  end
 end

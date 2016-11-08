@@ -47,8 +47,4 @@ private
   def set_subscription
     @subscription = @subscriptions.find(params[:id])
   end
-
-  def apply_pagination
-    @subscriptions = @subscriptions.page(params[:page]).per(params[:count])
-  end
 end

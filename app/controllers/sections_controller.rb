@@ -49,8 +49,4 @@ private
   def set_section
     @section = @sections.find(params[:id])
   end
-
-  def apply_pagination
-    @sections = @sections.page(params[:page]).per(params[:count])
-  end
 end

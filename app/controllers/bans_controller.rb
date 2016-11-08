@@ -50,8 +50,4 @@ private
   def set_ban
     @ban = @bans.find(params[:id])
   end
-
-  def apply_pagination
-    @bans = @bans.page(params[:page]).per(params[:count])
-  end
 end

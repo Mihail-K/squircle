@@ -47,11 +47,7 @@ private
     @characters = @characters.where(params.permit(:user_id, :creator_id))
   end
 
-  def apply_pagination
-    @characters = @characters.page(params[:page]).per(params[:count])
-  end
-
   def set_character
-    @character = @characters.find params[:id]
+    @character = @characters.find(params[:id])
   end
 end

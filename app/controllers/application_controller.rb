@@ -34,6 +34,15 @@ class ApplicationController < ActionController::API
     render json: { errors: { model => ['not found'] } }, status: :not_found
   end
 
+  def paginate(objects)
+    objects.page(params[:page]).per(params[:count])
+  end
+
+  def apply_pagination
+    objects = instance_variable_get("@#{current_object_plural_name}")
+    instance_variable_set("@#{current_object_plural_name}", paginate(objects))
+  end
+
   def meta_for(objects)
     {
       page:  objects.current_page,
@@ -47,16 +56,16 @@ class ApplicationController < ActionController::API
   end
 
   def enforce_policy!
-    authorize(pundit_object)
+    authorize(current_object)
   end
 
   def respond_to_missing?(method_name, include_private = true)
-    method_name == :"#{pundit_object_singular_name}_params" || super
+    method_name == :"#{current_object_singular_name}_params" || super
   end
 
   def method_missing(method_name, *args, &block)
-    if method_name == :"#{pundit_object_singular_name}_params"
-      permitted_attributes(pundit_object)
+    if method_name == :"#{current_object_singular_name}_params"
+      permitted_attributes(current_object)
     else
       super
     end
@@ -72,21 +81,21 @@ class ApplicationController < ActionController::API
 
 private
 
-  def pundit_object
-    instance_variable_get("@#{pundit_object_singular_name}") ||
-      instance_variable_get("@#{pundit_object_plural_name}") ||
-      pundit_model
+  def current_object
+    instance_variable_get("@#{current_object_singular_name}") ||
+      instance_variable_get("@#{current_object_plural_name}") ||
+      current_model
   end
 
-  def pundit_object_singular_name
-    pundit_model.model_name.singular
+  def current_object_singular_name
+    current_model.model_name.singular
   end
 
-  def pundit_object_plural_name
-    pundit_model.model_name.plural
+  def current_object_plural_name
+    current_model.model_name.plural
   end
 
-  def pundit_model
-    @pundit_model ||= controller_name.singularize.camelize.constantize
+  def current_model
+    @current_model ||= controller_name.singularize.camelize.constantize
   end
 end

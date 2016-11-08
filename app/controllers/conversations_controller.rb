@@ -70,10 +70,6 @@ private
     @conversations = @conversations.recently_active if params.key?(:recently_active)
   end
 
-  def apply_pagination
-    @conversations = @conversations.page(params[:page]).per(params[:count])
-  end
-
   def set_conversation
     @conversation = @conversations.find(params[:id])
   end

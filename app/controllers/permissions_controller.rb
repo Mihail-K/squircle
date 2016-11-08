@@ -28,6 +28,6 @@ private
   end
 
   def apply_pagination
-    @permissions = @permissions.page(params[:page]).per(params[:count])
+    @permissions = paginate(@permissions)
   end
 end
