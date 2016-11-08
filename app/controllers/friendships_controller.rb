@@ -3,6 +3,7 @@ class FriendshipsController < ApplicationController
   before_action :doorkeeper_authorize!, except: %i(index show)
 
   before_action :set_friendships
+  before_action :set_friend, only: %i(create update)
   before_action :set_friendship, except: %i(index create)
   before_action :apply_pagination, only: :index
 
@@ -33,6 +34,11 @@ class FriendshipsController < ApplicationController
   end
 
 private
+
+  def set_friend
+    return unless friendship_params[:friend_id].present?
+    policy_scope(User).find(friendship_params[:friend_id])
+  end
 
   def set_friendships
     @friendships = policy_scope(Friendship).includes(:user, :friend)

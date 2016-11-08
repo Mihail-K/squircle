@@ -71,12 +71,23 @@ RSpec.describe FriendshipsController, type: :controller do
 
     it 'returns errors if the friendship is invalid' do
       expect do
-        post :create, params: { friendship: { friend_id: friend.id + 1 },
+        post :create, params: { friendship: { friend_id: nil },
                                 access_token: access_token }
 
         expect(response).to have_http_status :unprocessable_entity
         expect(response).to match_response_schema :errors
         expect(json[:errors]).to have_key :friend
+      end.not_to change { Friendship.count }
+    end
+
+    it 'returns 404 if the friend is deleted' do
+      friend.soft_delete
+
+      expect do
+        post :create, params: { friendship: { friend_id: friend.id },
+                                access_token: access_token }
+
+        expect(response).to have_http_status :not_found
       end.not_to change { Friendship.count }
     end
   end
