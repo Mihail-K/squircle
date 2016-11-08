@@ -5,6 +5,7 @@ class ConversationsController < ApplicationController
   before_action :doorkeeper_authorize!, except: %i(index show)
 
   before_action :set_character, only: :create
+  before_action :set_section, only: :create
 
   before_action :set_conversations, except: :create
   before_action :set_conversation, except: %i(index create)
@@ -62,6 +63,11 @@ private
 
   def set_character
     policy_scope(Character).where(user: current_user).find(character_id) if character_id.present?
+  end
+
+  def set_section
+    return unless conversation_params[:section_id].present? || params[:section_id].present?
+    policy_scope(Section).find(conversation_params[:section_id] || params[:section_id])
   end
 
   def set_conversations
