@@ -3,6 +3,7 @@ class BansController < ApplicationController
   before_action :doorkeeper_authorize!
 
   before_action :set_bans
+  before_action :set_user, only: :create
   before_action :set_ban, except: %i(index create)
   before_action :apply_pagination, only: :index
 
@@ -41,6 +42,11 @@ class BansController < ApplicationController
   end
 
 private
+
+  def set_user
+    return unless ban_params[:user_id].present? || params[:user_id].present?
+    policy_scope(User).find(ban_params[:user_id] || params[:user_id])
+  end
 
   def set_bans
     @bans = policy_scope(Ban).includes(:user)
