@@ -11,11 +11,11 @@ class CharactersController < ApplicationController
   def index
     render json: @characters,
            each_serializer: CharacterSerializer,
-           meta: meta_for(@characters) if stale?(@characters)
+           meta: meta_for(@characters)
   end
 
   def show
-    render json: @character if stale?(@character)
+    render json: @character
   end
 
   def create
