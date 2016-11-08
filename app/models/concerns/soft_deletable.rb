@@ -16,19 +16,23 @@ module SoftDeletable
     }
   end
 
-  def soft_delete(deleted_by = nil)
+  def soft_delete(deleted_by = nil, &block)
+    yield(self) if block_given?
     update(deleted: true, deleted_by: deleted_by)
   end
 
-  def soft_delete!(deleted_by = nil)
+  def soft_delete!(deleted_by = nil, &block)
+    yield(self) if block_given?
     update!(deleted: true, deleted_by: deleted_by)
   end
 
-  def restore
+  def restore(&block)
+    yield(self) if block_given?
     update(deleted: false)
   end
 
-  def restore!
+  def restore!(&block)
+    yield(self) if block_given?
     update!(deleted: false)
   end
 

@@ -45,7 +45,9 @@ class ConversationsController < ApplicationController
   end
 
   def destroy
-    @conversation.soft_delete!(current_user)
+    @conversation.soft_delete! do |conversation|
+      conversation.deleted_by = current_user
+    end
 
     head :no_content
   end

@@ -34,7 +34,9 @@ class CharactersController < ApplicationController
   end
 
   def destroy
-    @character.soft_delete!(current_user)
+    @character.soft_delete! do |character|
+      character.deleted_by = current_user
+    end
 
     head :no_content
   end

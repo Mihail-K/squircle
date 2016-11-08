@@ -23,19 +23,21 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.create! user_params
+    @user = User.create!(user_params)
 
     render json: @user, status: :created
   end
 
   def update
-    @user.update! user_params
+    @user.update!(user_params)
 
     render json: @user
   end
 
   def destroy
-    @user.soft_delete!(current_user)
+    @user.soft_delete! do |user|
+      user.deleted_by = current_user
+    end
 
     head :no_content
   end

@@ -33,7 +33,9 @@ class SectionsController < ApplicationController
   end
 
   def destroy
-    @section.soft_delete!(current_user)
+    @section.soft_delete! do |section|
+      section.deleted_by = current_user
+    end
 
     head :no_content
   end

@@ -31,7 +31,9 @@ class RolesController < ApplicationController
   end
 
   def destroy
-    @role.update! deleted: true, deleted_by: current_user
+    @role.soft_delete! do |role|
+      role.deleted_by = current_user
+    end
 
     head :no_content
   end
