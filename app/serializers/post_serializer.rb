@@ -11,6 +11,7 @@ class PostSerializer < ApplicationSerializer
 
   attribute :body
   attribute :formatted_body
+  attribute :likes_count
   attribute :deleted
   attribute :created_at
   attribute :updated_at

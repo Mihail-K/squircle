@@ -11,24 +11,26 @@ definitions:
         type: integer
       editor_id:
         oneOf:
-        - type: 'null'
-        - type: integer
+          - type: 'null'
+          - type: integer
       character_id:
         oneOf:
-        - type: 'null'
-        - type: integer
+          - type: 'null'
+          - type: integer
       conversation_id:
         type: integer
       deleted_by_id:
         oneOf:
-        - type: 'null'
-        - type: integer
+          - type: 'null'
+          - type: integer
       body:
         type: string
         description: Contains the original post body, in unprocessed form.
       formatted_body:
         type: string
         description: Contains a processed, HTML-safe version of the post body.
+      likes_count:
+        type: integer
       deleted:
         type: boolean
         description: Indicates whether this post is deleted.
@@ -42,9 +44,9 @@ definitions:
         description: Stores a timestamp of when this post was last modified.
       deleted_at:
         oneOf:
-        - type: 'null'
-        - type: string
-          format: date-time
+          - type: 'null'
+          - type: string
+            format: date-time
         description: Stores a timestamp of when this post was deleted.
       editable:
         type: boolean
@@ -56,34 +58,35 @@ definitions:
         $ref: user.json#/definitions/user
       editor:
         oneOf:
-        - type: 'null'
-        - $ref: user.json#/definitions/user
+          - type: 'null'
+          - $ref: user.json#/definitions/user
       character:
         oneOf:
-        - type: 'null'
-        - $ref: character.json#/definitions/character
+          - type: 'null'
+          - $ref: character.json#/definitions/character
       conversation:
         $ref: conversation.json#/definitions/conversation
       deleted_by:
         oneOf:
-        - type: 'null'
-        - $ref: user.json#/definitions/user
+          - type: 'null'
+          - $ref: user.json#/definitions/user
     required:
-    - id
-    - author_id
-    - editor_id
-    - character_id
-    - conversation_id
-    - body
-    - formatted_body
-    - deleted
-    - created_at
-    - updated_at
+      - id
+      - author_id
+      - editor_id
+      - character_id
+      - conversation_id
+      - body
+      - formatted_body
+      - likes_count
+      - deleted
+      - created_at
+      - updated_at
     additionalProperties: false
 type: object
 properties:
   post:
     $ref: "#/definitions/post"
 required:
-- post
+  - post
 additionalProperties: false

@@ -52,6 +52,9 @@
           "type": "string",
           "description": "Contains a processed, HTML-safe version of the post body."
         },
+        "likes_count": {
+          "type": "integer"
+        },
         "deleted": {
           "type": "boolean",
           "description": "Indicates whether this post is deleted."
@@ -131,6 +134,7 @@
         "conversation_id",
         "body",
         "formatted_body",
+        "likes_count",
         "deleted",
         "created_at",
         "updated_at"
