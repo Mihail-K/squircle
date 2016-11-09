@@ -94,5 +94,16 @@ RSpec.describe SubscriptionsController, type: :controller do
         expect(response).to have_http_status :not_found
       end.not_to change { Subscription.count }
     end
+
+    it 'returns errors if the subscription is invalid' do
+      expect do
+        post :create, params: { subscription: { conversation_id: nil },
+                                access_token: access_token }
+
+        expect(response).to have_http_status :unprocessable_entity
+        expect(response).to match_response_schema :errors
+        expect(json[:errors]).to have_key :conversation
+      end.not_to change { Subscription.count }
+    end
   end
 end

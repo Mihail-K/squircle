@@ -24,7 +24,7 @@ private
   end
 
   def set_permission
-    @permission = @permissions.find params[:id]
+    @permission = @permissions.find(params[:id])
   end
 
   def apply_pagination

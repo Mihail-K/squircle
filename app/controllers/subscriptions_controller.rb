@@ -37,6 +37,7 @@ class SubscriptionsController < ApplicationController
 private
 
   def set_conversation
+    return unless subscription_params[:conversation_id].present?
     policy_scope(Conversation).find(subscription_params[:conversation_id])
   end
 
