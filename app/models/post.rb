@@ -15,6 +15,7 @@
 #  formatted_body  :text
 #  deleted_by_id   :integer
 #  deleted_at      :datetime
+#  likes_count     :integer          default(0), not null
 #
 # Indexes
 #
@@ -35,6 +36,7 @@
 
 class Post < ApplicationRecord
   include Formattable
+  include Likeable
   include SoftDeletable
 
   alias_attribute :user_id, :author_id

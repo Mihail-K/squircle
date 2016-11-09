@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161031180141) do
+ActiveRecord::Schema.define(version: 20161109141912) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -79,6 +79,17 @@ ActiveRecord::Schema.define(version: 20161031180141) do
     t.index ["friend_id"], name: "index_friendships_on_friend_id", using: :btree
     t.index ["user_id", "friend_id"], name: "index_friendships_on_user_id_and_friend_id", unique: true, using: :btree
     t.index ["user_id"], name: "index_friendships_on_user_id", using: :btree
+  end
+
+  create_table "likes", force: :cascade do |t|
+    t.string   "likeable_type", null: false
+    t.integer  "likeable_id",   null: false
+    t.integer  "user_id",       null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.index ["likeable_id", "likeable_type", "user_id"], name: "index_likes_on_likeable_id_and_likeable_type_and_user_id", unique: true, using: :btree
+    t.index ["likeable_type", "likeable_id"], name: "index_likes_on_likeable_type_and_likeable_id", using: :btree
+    t.index ["user_id"], name: "index_likes_on_user_id", using: :btree
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -191,6 +202,7 @@ ActiveRecord::Schema.define(version: 20161031180141) do
     t.text     "formatted_body"
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
+    t.integer  "likes_count",     default: 0,     null: false
     t.index ["author_id"], name: "index_posts_on_author_id", using: :btree
     t.index ["character_id"], name: "index_posts_on_character_id", using: :btree
     t.index ["conversation_id"], name: "index_posts_on_conversation_id", using: :btree
@@ -323,6 +335,7 @@ ActiveRecord::Schema.define(version: 20161031180141) do
   add_foreign_key "conversations", "users", column: "locked_by_id"
   add_foreign_key "friendships", "users"
   add_foreign_key "friendships", "users", column: "friend_id"
+  add_foreign_key "likes", "users"
   add_foreign_key "notifications", "users"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
