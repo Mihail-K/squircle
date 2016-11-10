@@ -23,6 +23,7 @@
 #  last_active_at           :datetime
 #  deleted_by_id            :integer
 #  deleted_at               :datetime
+#  bucket                   :string           default("active"), not null
 #
 # Indexes
 #
@@ -57,6 +58,12 @@ class User < ApplicationRecord
 
   has_many :notifications, inverse_of: :user, dependent: :delete_all
   has_many :subscriptions, inverse_of: :user, dependent: :delete_all
+
+  enum bucket: {
+    active:   'active',
+    inactive: 'inactive',
+    lost:     'lost'
+  }
 
   has_secure_token :email_token
   has_secure_password

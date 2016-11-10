@@ -2,4 +2,10 @@ UnbanJob:
   every: 5m
   class: UnbanJob
   queue: medium
-  description: 'This job clears expired bans'
+  description: Clears expired bans.
+
+UserBucketJob:
+  every: 12h
+  class: UserBucketJob
+  queue: low
+  description: Categorizes users according to activity.
