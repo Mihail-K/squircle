@@ -27,6 +27,8 @@ class Like < ApplicationRecord
   belongs_to :likeable, polymorphic: true, inverse_of: :likes, counter_cache: :likes_count
   belongs_to :user
 
+  has_many :notifications, as: :sourceable
+
   validates :user, presence: true, uniqueness: { scope: :likeable }
   validates :likeable, presence: true
 
@@ -39,7 +41,7 @@ class Like < ApplicationRecord
 private
 
   def create_notification
-    Notification.find_or_create_by(user: likeable.author, targetable: likeable) do |notification|
+    notifications.find_or_create_by(user: likeable.author, targetable: likeable) do |notification|
       notification.title = "#{user.display_name} liked your #{likeable.class.model_name.singular}."
     end
   end

@@ -1,4 +1,6 @@
 ---
+$schema: http://json-schema.org/draft-04/schema#
+title: Notification
 definitions:
   notification:
     type: object
@@ -7,6 +9,14 @@ definitions:
         type: integer
       user_id:
         type: integer
+      sourceable_id:
+        oneOf:
+          - type: 'null'
+          - type: integer
+      sourceable_type:
+        oneOf:
+          - type: 'null'
+          - type: string
       targetable_id:
         type: integer
       targetable_type:
@@ -25,6 +35,21 @@ definitions:
         format: date-time
       user:
         $ref: user.json#/definitions/user
+      sourceable:
+        oneOf:
+          - type: 'null'
+          - type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - like
+              like:
+                $ref: like.json#/definitions/like
+            required:
+              - type
+              - like
+            additionalProperties: false
       targetable:
         oneOf:
           - type: object

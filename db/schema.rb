@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161110134427) do
+ActiveRecord::Schema.define(version: 20161110142742) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -101,9 +101,12 @@ ActiveRecord::Schema.define(version: 20161110134427) do
     t.boolean  "dismissed",       default: false, null: false
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
+    t.string   "sourceable_type"
+    t.integer  "sourceable_id"
     t.index ["dismissed"], name: "index_notifications_on_dismissed", using: :btree
     t.index ["read", "dismissed"], name: "index_notifications_on_read_and_dismissed", using: :btree
     t.index ["read"], name: "index_notifications_on_read", using: :btree
+    t.index ["sourceable_type", "sourceable_id"], name: "index_notifications_on_sourceable_type_and_sourceable_id", using: :btree
     t.index ["targetable_type", "targetable_id"], name: "index_notifications_on_targetable_type_and_targetable_id", using: :btree
     t.index ["user_id"], name: "index_notifications_on_user_id", using: :btree
   end

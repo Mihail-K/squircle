@@ -2,6 +2,8 @@
 class NotificationSerializer < ApplicationSerializer
   attribute :id
   attribute :user_id
+  attribute :sourceable_id
+  attribute :sourceable_type
   attribute :targetable_id
   attribute :targetable_type
 
@@ -12,5 +14,6 @@ class NotificationSerializer < ApplicationSerializer
   attribute :updated_at
 
   belongs_to :user
+  belongs_to :sourceable, polymorphic: true
   belongs_to :targetable, polymorphic: true
 end

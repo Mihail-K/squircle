@@ -12,12 +12,15 @@
 #  dismissed       :boolean          default(FALSE), not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  sourceable_type :string
+#  sourceable_id   :integer
 #
 # Indexes
 #
 #  index_notifications_on_dismissed                          (dismissed)
 #  index_notifications_on_read                               (read)
 #  index_notifications_on_read_and_dismissed                 (read,dismissed)
+#  index_notifications_on_sourceable_type_and_sourceable_id  (sourceable_type,sourceable_id)
 #  index_notifications_on_targetable_type_and_targetable_id  (targetable_type,targetable_id)
 #  index_notifications_on_user_id                            (user_id)
 #
@@ -29,6 +32,7 @@
 class Notification < ApplicationRecord
   belongs_to :user, inverse_of: :notifications
   belongs_to :targetable, polymorphic: true
+  belongs_to :sourceable, polymorphic: true
 
   validates :user, presence: true
   validates :targetable, presence: true
