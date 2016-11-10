@@ -13,7 +13,10 @@
           "type": "integer"
         },
         "likeable_type": {
-          "type": "integer"
+          "type": "string",
+          "enum": [
+            "Post"
+          ]
         },
         "created_at": {
           "type": "string",
@@ -34,7 +37,7 @@
                 "type": {
                   "type": "string",
                   "enum": [
-                    "Post"
+                    "post"
                   ]
                 },
                 "post": {

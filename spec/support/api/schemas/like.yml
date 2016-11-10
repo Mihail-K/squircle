@@ -10,7 +10,9 @@ definitions:
       likeable_id:
         type: integer
       likeable_type:
-        type: integer
+        type: string
+        enum:
+          - Post
       created_at:
         type: string
         format: date-time
@@ -26,7 +28,7 @@ definitions:
               type:
                 type: string
                 enum:
-                  - Post
+                  - post
               post:
                 $ref: post.json#/definitions/post
     required:
