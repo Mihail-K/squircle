@@ -24,4 +24,10 @@ RSpec.describe Like, type: :model do
     like.save
     expect(like.dup).to be_invalid
   end
+
+  it 'creates a notification' do
+    expect do
+      like.save
+    end.to change { Notification.count }.by(1)
+  end
 end

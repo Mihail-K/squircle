@@ -30,7 +30,17 @@ class Like < ApplicationRecord
   validates :user, presence: true, uniqueness: { scope: :likeable }
   validates :likeable, presence: true
 
+  after_create :create_notification
+
   def likeable_type
     super if ALLOWED_TYPES.include?(super)
+  end
+
+private
+
+  def create_notification
+    Notification.find_or_create_by(user: likeable.author, targetable: likeable) do |notification|
+      notification.title = "#{user.display_name} liked your #{likeable.class.model_name.singular}."
+    end
   end
 end
