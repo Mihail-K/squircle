@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161110142742) do
+ActiveRecord::Schema.define(version: 20161110144339) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -321,6 +321,7 @@ ActiveRecord::Schema.define(version: 20161110142742) do
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
     t.string   "bucket",                   default: "active", null: false
+    t.datetime "last_email_at"
     t.index ["deleted_by_id"], name: "index_users_on_deleted_by_id", using: :btree
     t.index ["display_name"], name: "index_users_on_display_name", unique: true, using: :btree
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree

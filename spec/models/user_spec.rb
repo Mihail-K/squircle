@@ -2,6 +2,8 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
+  include ActiveJob::TestHelper
+
   let :user do
     build :user
   end
@@ -164,6 +166,26 @@ RSpec.describe User, type: :model do
       expect do
         post.conversation.soft_delete
       end.to change { user.reload.posts_count }.by(-1)
+    end
+  end
+
+  describe '.bucket' do
+    let :user do
+      create :user
+    end
+
+    it 'sends an email when the user becomes inactive' do
+      expect do
+        user.update(bucket: 'inactive')
+      end.to have_enqueued_job(ActionMailer::DeliveryJob)
+         .with('UserMailer', 'inactive', 'deliver_now', user.id)
+    end
+
+    it 'sends an email when the user becomes lost' do
+      expect do
+        user.update(bucket: 'lost')
+      end.to have_enqueued_job(ActionMailer::DeliveryJob)
+         .with('UserMailer', 'lost', 'deliver_now', user.id)
     end
   end
 end

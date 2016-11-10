@@ -24,6 +24,7 @@
 #  deleted_by_id            :integer
 #  deleted_at               :datetime
 #  bucket                   :string           default("active"), not null
+#  last_email_at            :datetime
 #
 # Indexes
 #
@@ -83,10 +84,13 @@ class User < ApplicationRecord
   before_create :assign_default_user_roles
   before_create :set_last_active_at_timestamp
 
-  with_options if: -> { previous_changes.key?(:email) } do |o|
+  with_options if: :email_previously_changed? do |o|
     o.after_commit :regenerate_email_token
     o.after_commit :send_email_confirmation
   end
+
+  after_commit :send_user_inactive_email, if: %i(bucket_previously_changed? inactive?)
+  after_commit :send_user_lost_email, if: %i(bucket_previously_changed? lost?)
 
   scope :banned, -> {
     where(banned: true)
@@ -112,15 +116,23 @@ class User < ApplicationRecord
 
 private
 
+  def assign_default_user_roles
+    roles << Role.find_by!(name: 'user') unless roles.any? { |role| role.name == 'user' }
+  end
+
   def set_last_active_at_timestamp
     self.last_active_at = Time.zone.now
   end
 
   def send_email_confirmation
-    # TODO
+    UserMailer.confirmation(id).deliver_later
   end
 
-  def assign_default_user_roles
-    roles << Role.find_by!(name: 'user') unless roles.any? { |role| role.name == 'user' }
+  def send_user_inactive_email
+    UserMailer.inactive(id).deliver_later
+  end
+
+  def send_user_lost_email
+    UserMailer.lost(id).deliver_later
   end
 end
