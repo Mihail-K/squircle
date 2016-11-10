@@ -1,4 +1,5 @@
-require "rails_helper"
+# frozen_string_literal: true
+require 'rails_helper'
 
 RSpec.describe UserMailer, type: :mailer do
   let :user do
@@ -19,8 +20,8 @@ RSpec.describe UserMailer, type: :mailer do
       expect do
         mail.body
       end.to change { user.reload.last_email_at }
-         .from(nil)
-         .to be_within(1.minute).of(Time.zone.now)
+        .from(nil)
+        .to be_within(1.minute).of(Time.zone.now)
     end
   end
 
@@ -38,8 +39,8 @@ RSpec.describe UserMailer, type: :mailer do
       expect do
         mail.body
       end.to change { user.reload.last_email_at }
-         .from(nil)
-         .to be_within(1.minute).of(Time.zone.now)
+        .from(nil)
+        .to be_within(1.minute).of(Time.zone.now)
     end
   end
 end

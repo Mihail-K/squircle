@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class UserMailer < ApplicationMailer
   after_action :set_last_email_at
 

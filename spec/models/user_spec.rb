@@ -178,14 +178,14 @@ RSpec.describe User, type: :model do
       expect do
         user.update(bucket: 'inactive')
       end.to have_enqueued_job(ActionMailer::DeliveryJob)
-         .with('UserMailer', 'inactive', 'deliver_now', user.id)
+        .with('UserMailer', 'inactive', 'deliver_now', user.id)
     end
 
     it 'sends an email when the user becomes lost' do
       expect do
         user.update(bucket: 'lost')
       end.to have_enqueued_job(ActionMailer::DeliveryJob)
-         .with('UserMailer', 'lost', 'deliver_now', user.id)
+        .with('UserMailer', 'lost', 'deliver_now', user.id)
     end
   end
 end
