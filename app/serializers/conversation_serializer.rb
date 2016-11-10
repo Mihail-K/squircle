@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 class ConversationSerializer < ApplicationSerializer
-  cache expires_in: 1.hour
-
   attribute :id
   attribute :author_id
   attribute :section_id
