@@ -3,6 +3,7 @@ class LikesController < ApplicationController
   before_action :doorkeeper_authorize!, except: %i(index show)
 
   before_action :set_likes, except: :create
+  before_action :set_likeable, only: :create
   before_action :set_like, except: %i(index create)
   before_action :apply_pagination, only: :index
 
@@ -33,6 +34,11 @@ class LikesController < ApplicationController
   end
 
 private
+
+  def set_likeable
+    return not_found unless Like::ALLOWED_TYPES.include?(like_params[:likeable_type])
+    policy_scope(like_params[:likeable_type].safe_constantize).find(like_params[:likeable_id])
+  end
 
   def set_likes
     @likes = policy_scope(Like).includes(:likeable, :user)

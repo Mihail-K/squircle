@@ -1,0 +1,16 @@
+---
+definitions:
+  likes:
+    type: array
+    items:
+      $ref: like.json#/definitions/like
+type: object
+properties:
+  likes:
+    $ref: '#/definitions/likes'
+  meta:
+    $ref: meta.json#/definitions/meta
+required:
+  - likes
+  - meta
+additionalProperties: false

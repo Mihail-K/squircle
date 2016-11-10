@@ -7,7 +7,11 @@ class LikePolicy < ApplicationPolicy
   end
 
   def destroy?
-    authenticated?
+    authenticated? && current_user == like.user
+  end
+
+  def permitted_attributes
+    %i(likeable_id likeable_type)
   end
 
   class Scope < ApplicationPolicy::Scope

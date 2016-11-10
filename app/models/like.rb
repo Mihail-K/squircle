@@ -22,9 +22,15 @@
 #
 
 class Like < ApplicationRecord
+  ALLOWED_TYPES = %w(Post).freeze
+
   belongs_to :likeable, polymorphic: true, inverse_of: :likes, counter_cache: :likes_count
   belongs_to :user
 
   validates :user, presence: true, uniqueness: { scope: :likeable }
   validates :likeable, presence: true
+
+  def likeable_type
+    super if ALLOWED_TYPES.include?(super)
+  end
 end
