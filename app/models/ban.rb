@@ -50,11 +50,11 @@ class Ban < ApplicationRecord
   }
 
   scope :expired, -> {
-    where.not(expires_at: nil).where(arel_table[:expires_at].lt(Time.zone.now))
+    where.not(expires_at: nil).where(arel_table[:expires_at].lt(Time.current))
   }
 
   scope :not_expired, -> {
-    where(expires_at: nil).or(where(arel_table[:expires_at].gt(Time.zone.now)))
+    where(expires_at: nil).or(where(arel_table[:expires_at].gt(Time.current)))
   }
 
   def active?

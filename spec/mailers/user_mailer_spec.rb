@@ -21,7 +21,7 @@ RSpec.describe UserMailer, type: :mailer do
         mail.body
       end.to change { user.reload.last_email_at }
         .from(nil)
-        .to be_within(1.minute).of(Time.zone.now)
+        .to be_within(1.minute).of(Time.current)
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe UserMailer, type: :mailer do
         mail.body
       end.to change { user.reload.last_email_at }
         .from(nil)
-        .to be_within(1.minute).of(Time.zone.now)
+        .to be_within(1.minute).of(Time.current)
     end
   end
 end

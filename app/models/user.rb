@@ -121,7 +121,7 @@ private
   end
 
   def set_last_active_at_timestamp
-    self.last_active_at = Time.zone.now
+    self.last_active_at = Time.current
   end
 
   def send_email_confirmation

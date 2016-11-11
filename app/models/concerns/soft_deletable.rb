@@ -39,6 +39,6 @@ module SoftDeletable
 private
 
   def set_deleted_at
-    self.deleted_at = Time.zone.now
+    self.deleted_at = Time.current
   end
 end

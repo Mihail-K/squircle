@@ -8,7 +8,7 @@ class RemoveRoleFromUsers < ActiveRecord::Migration[5.0]
       FROM
         users
     SQL
-      execute(sanitize(<<-SQL.squish, result[0], result[1], Time.zone.now, Time.zone.now))
+      execute(sanitize(<<-SQL.squish, result[0], result[1], Time.current, Time.current))
         INSERT INTO
           roles_users(user_id, role_id, created_at, updated_at)
         VALUES

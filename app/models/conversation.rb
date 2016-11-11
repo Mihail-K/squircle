@@ -84,7 +84,7 @@ protected
 private
 
   def set_locked_at
-    self.locked_at = Time.zone.now
+    self.locked_at = Time.current
   end
 
   def set_first_post_author

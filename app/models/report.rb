@@ -66,6 +66,6 @@ class Report < ApplicationRecord
   alias closed closed?
 
   def set_closed_at
-    self.closed_at = Time.zone.now
+    self.closed_at = Time.current
   end
 end
