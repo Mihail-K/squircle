@@ -43,7 +43,7 @@ private
 
   def create_notification
     notifications.find_or_create_by(user: friend, targetable: user) do |notification|
-      notification.title = "#{user.display_name} added you as a friend."
+      notification.title = I18n.t('notifications.friendship', name: user.display_name)
     end
   end
 end
