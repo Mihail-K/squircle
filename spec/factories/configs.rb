@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 FactoryGirl.define do
   factory :config do
     key { "#{Faker::Hacker.noun}-#{Faker::Hacker.noun}" }
