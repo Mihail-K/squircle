@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161110144339) do
+ActiveRecord::Schema.define(version: 20161111135328) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,14 @@ ActiveRecord::Schema.define(version: 20161110144339) do
     t.index ["deleted_by_id"], name: "index_characters_on_deleted_by_id", using: :btree
     t.index ["name"], name: "index_characters_on_name", using: :btree
     t.index ["user_id"], name: "index_characters_on_user_id", using: :btree
+  end
+
+  create_table "configs", force: :cascade do |t|
+    t.string   "key",                     null: false
+    t.jsonb    "value",      default: {}, null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.index ["key"], name: "index_configs_on_key", unique: true, using: :btree
   end
 
   create_table "conversations", force: :cascade do |t|
