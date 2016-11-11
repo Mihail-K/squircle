@@ -88,7 +88,7 @@ private
   end
 
   def set_first_post_author
-    posts.first.author = author if posts.first.present?
+    posts.first&.author = author
   end
 
   def set_posts_counts
