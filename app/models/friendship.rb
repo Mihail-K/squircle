@@ -25,6 +25,8 @@ class Friendship < ApplicationRecord
   belongs_to :user
   belongs_to :friend, class_name: 'User'
 
+  has_many :notifications, as: :sourceable
+
   validates :user, presence: true
   validates :friend, presence: true
   validates :user, uniqueness: { scope: :friend }
@@ -40,7 +42,7 @@ private
   end
 
   def create_notification
-    Notification.find_or_create_by(user: friend, targetable: user) do |notification|
+    notifications.find_or_create_by(user: friend, targetable: user) do |notification|
       notification.title = "#{user.display_name} added you as a friend."
     end
   end
