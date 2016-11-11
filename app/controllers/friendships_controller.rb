@@ -20,7 +20,7 @@ class FriendshipsController < ApplicationController
   end
 
   def create
-    @friendship = @friendships.create!(friendship_params) do |friendship|
+    @friendship = Friendship.create!(friendship_params) do |friendship|
       friendship.user = current_user
     end
 

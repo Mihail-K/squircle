@@ -6,10 +6,6 @@ RSpec.describe FriendshipsController, type: :routing do
     expect(get: '/friendships').to route_to('friendships#index')
   end
 
-  it 'routes to #index as a sub-resource of users' do
-    expect(get: '/users/1/friendships').to route_to('friendships#index', user_id: '1')
-  end
-
   it 'routes to #show' do
     expect(get: '/friendships/1').to route_to('friendships#show', id: '1')
   end
