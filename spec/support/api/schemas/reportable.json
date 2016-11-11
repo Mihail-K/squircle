@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Reportable",
+  "definitions": {
+    "reportable": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "character"
+              ]
+            },
+            "character": {
+              "$ref": "character.json#/definitions/character"
+            }
+          },
+          "required": [
+            "type",
+            "character"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "conversation"
+              ]
+            },
+            "conversation": {
+              "$ref": "conversation.json#/definitions/conversation"
+            }
+          },
+          "required": [
+            "type",
+            "conversation"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "post"
+              ]
+            },
+            "post": {
+              "$ref": "post.json#/definitions/post"
+            }
+          },
+          "required": [
+            "type",
+            "post"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "user"
+              ]
+            },
+            "user": {
+              "$ref": "user.json#/definitions/user"
+            }
+          },
+          "required": [
+            "type",
+            "user"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}
