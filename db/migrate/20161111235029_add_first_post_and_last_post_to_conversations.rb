@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class AddFirstPostAndLastPostToConversations < ActiveRecord::Migration[5.0]
   def up
     add_reference :conversations, :first_post, index: true

@@ -60,8 +60,11 @@ class Post < ApplicationRecord
   formattable :body
 
   before_commit :set_posts_counts
-  before_commit :set_conversation_last_activity
-  before_commit :set_conversation_first_last_posts
+
+  with_options unless: -> { conversation.destroyed? } do |o|
+    o.before_commit :set_conversation_last_activity
+    o.before_commit :set_conversation_first_last_posts
+  end
 
   after_commit :create_notifications, on: :create
 
@@ -90,18 +93,16 @@ private
   end
 
   def set_conversation_last_activity
-    return if conversation.destroyed?
     last_activity = conversation.posts.not_deleted.maximum(:updated_at)
     conversation.update_columns(last_active_at: last_activity)
   end
 
-  def create_notifications
-    PostNotificationJob.perform_later(id)
-  end
-
   def set_conversation_first_last_posts
-    return if conversation.destroyed?
     first_post_id, last_post_id = conversation.posts.not_deleted.first_last_post.first
     conversation.update_columns(first_post_id: first_post_id, last_post_id: last_post_id)
+  end
+
+  def create_notifications
+    PostNotificationJob.perform_later(id)
   end
 end

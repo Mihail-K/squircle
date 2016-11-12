@@ -79,7 +79,6 @@ private
   end
 
   def set_conversation
-    debugger
     @conversation = @conversations.find(params[:id])
   end
 
