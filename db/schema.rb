@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161111135328) do
+ActiveRecord::Schema.define(version: 20161111235029) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -73,8 +73,12 @@ ActiveRecord::Schema.define(version: 20161111135328) do
     t.integer  "section_id",                     null: false
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
+    t.integer  "first_post_id"
+    t.integer  "last_post_id"
     t.index ["author_id"], name: "index_conversations_on_author_id", using: :btree
     t.index ["deleted_by_id"], name: "index_conversations_on_deleted_by_id", using: :btree
+    t.index ["first_post_id"], name: "index_conversations_on_first_post_id", using: :btree
+    t.index ["last_post_id"], name: "index_conversations_on_last_post_id", using: :btree
     t.index ["locked_by_id"], name: "index_conversations_on_locked_by_id", using: :btree
     t.index ["section_id"], name: "index_conversations_on_section_id", using: :btree
   end
@@ -342,6 +346,8 @@ ActiveRecord::Schema.define(version: 20161111135328) do
   add_foreign_key "characters", "users"
   add_foreign_key "characters", "users", column: "creator_id"
   add_foreign_key "characters", "users", column: "deleted_by_id"
+  add_foreign_key "conversations", "posts", column: "first_post_id", on_delete: :nullify
+  add_foreign_key "conversations", "posts", column: "last_post_id", on_delete: :nullify
   add_foreign_key "conversations", "sections"
   add_foreign_key "conversations", "users", column: "author_id"
   add_foreign_key "conversations", "users", column: "deleted_by_id"

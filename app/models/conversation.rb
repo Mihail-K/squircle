@@ -18,17 +18,23 @@
 #  section_id     :integer          not null
 #  deleted_by_id  :integer
 #  deleted_at     :datetime
+#  first_post_id  :integer
+#  last_post_id   :integer
 #
 # Indexes
 #
 #  index_conversations_on_author_id      (author_id)
 #  index_conversations_on_deleted_by_id  (deleted_by_id)
+#  index_conversations_on_first_post_id  (first_post_id)
+#  index_conversations_on_last_post_id   (last_post_id)
 #  index_conversations_on_locked_by_id   (locked_by_id)
 #  index_conversations_on_section_id     (section_id)
 #
 # Foreign Keys
 #
 #  fk_rails_23b24f1951  (locked_by_id => users.id)
+#  fk_rails_2f01fbea46  (last_post_id => posts.id) ON DELETE => nullify
+#  fk_rails_98fb1708f1  (first_post_id => posts.id) ON DELETE => nullify
 #  fk_rails_a10f02b3e3  (deleted_by_id => users.id)
 #  fk_rails_add3e5cc0c  (section_id => sections.id)
 #  fk_rails_c9ec5eb09c  (author_id => users.id)
@@ -42,14 +48,14 @@ class Conversation < ApplicationRecord
   belongs_to :locked_by, class_name: 'User'
   belongs_to :section, inverse_of: :conversations
 
+  belongs_to :first_post, class_name: 'Post'
+  belongs_to :last_post, class_name: 'Post'
+
   has_many :posts, inverse_of: :conversation, dependent: :destroy
   has_many :subscriptions, inverse_of: :conversation, dependent: :destroy
 
   has_many :post_authors, -> { distinct }, through: :posts, source: :author, class_name: 'User'
   has_many :post_characters, -> { distinct }, through: :posts, source: :character, class_name: 'Character'
-
-  has_one :first_post, -> { where(id: first_post.not_deleted) }, class_name: 'Post'
-  has_one :last_post, -> { where(id: last_post.not_deleted) }, class_name: 'Post'
 
   accepts_nested_attributes_for :posts, limit: 1
 

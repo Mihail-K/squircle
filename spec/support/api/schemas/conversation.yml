@@ -19,6 +19,14 @@ definitions:
         oneOf:
           - type: 'null'
           - type: integer
+      first_post_id:
+        oneOf:
+          - type: 'null'
+          - type: integer
+      last_post_id:
+        oneOf:
+          - type: 'null'
+          - type: integer
       title:
         type: string
       views_count:
@@ -84,6 +92,8 @@ definitions:
       - id
       - author_id
       - section_id
+      - first_post_id
+      - last_post_id
       - title
       - views_count
       - posts_count

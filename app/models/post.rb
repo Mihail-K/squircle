@@ -61,22 +61,14 @@ class Post < ApplicationRecord
 
   before_commit :set_posts_counts
   before_commit :set_conversation_last_activity
+  before_commit :set_conversation_first_last_posts
 
   after_commit :create_notifications, on: :create
 
-  scope :first_post, -> {
-    select(<<-SQL.squish)
-      first_value("posts"."id")
-    OVER
-      (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" ASC)
-    SQL
-  }
-
-  scope :last_post, -> {
-    select(<<-SQL.squish)
-      first_value("posts"."id")
-    OVER
-      (PARTITION BY "posts"."conversation_id" ORDER BY "posts"."created_at" DESC)
+  scope :first_last_post, -> {
+    limit(1).pluck(<<-SQL.squish)
+      first_value(posts.id) OVER (PARTITION BY posts.conversation_id ORDER BY posts.created_at ASC) AS first_post_id,
+      first_value(posts.id) OVER (PARTITION BY posts.conversation_id ORDER BY posts.created_at DESC) AS last_post_id
     SQL
   }
 
@@ -105,5 +97,11 @@ private
 
   def create_notifications
     PostNotificationJob.perform_later(id)
+  end
+
+  def set_conversation_first_last_posts
+    return if conversation.destroyed?
+    first_post_id, last_post_id = conversation.posts.not_deleted.first_last_post.first
+    conversation.update_columns(first_post_id: first_post_id, last_post_id: last_post_id)
   end
 end

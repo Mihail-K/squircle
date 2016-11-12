@@ -5,6 +5,8 @@ class ConversationSerializer < ApplicationSerializer
   attribute :section_id
   attribute :locked_by_id, if: :allowed_to_lock_conversations?
   attribute :deleted_by_id, if: :allowed_to_view_deleted_conversations?
+  attribute :first_post_id
+  attribute :last_post_id
 
   attribute :title
   attribute :views_count
@@ -40,8 +42,9 @@ class ConversationSerializer < ApplicationSerializer
   belongs_to :section
   belongs_to :deleted_by, if: :allowed_to_view_deleted_conversations?
 
-  has_one :first_post
-  has_one :last_post
+  belongs_to :first_post
+  belongs_to :last_post
+
   has_one :subscription, if: :include_subscription?
 
   def include_participation?
