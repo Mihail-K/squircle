@@ -34,10 +34,6 @@ class Like < ApplicationRecord
 
   after_create :create_notification
 
-  def likeable_type
-    super if ALLOWED_TYPES.include?(super)
-  end
-
 private
 
   def create_notification
