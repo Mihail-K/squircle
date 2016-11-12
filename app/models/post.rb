@@ -68,7 +68,7 @@ class Post < ApplicationRecord
   scope :first_last_post, -> {
     limit(1).pluck(<<-SQL.squish)
       first_value(posts.id) OVER (PARTITION BY posts.conversation_id ORDER BY posts.created_at ASC) AS first_post_id,
-      first_value(posts.id) OVER (PARTITION BY posts.conversation_id ORDER BY posts.created_at DESC) AS last_post_id
+      last_value(posts.id)  OVER (PARTITION BY posts.conversation_id ORDER BY posts.created_at ASC) AS last_post_id
     SQL
   }
 
