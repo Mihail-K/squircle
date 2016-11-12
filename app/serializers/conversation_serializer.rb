@@ -42,8 +42,11 @@ class ConversationSerializer < ApplicationSerializer
   belongs_to :section
   belongs_to :deleted_by, if: :allowed_to_view_deleted_conversations?
 
-  belongs_to :first_post
-  belongs_to :last_post
+  has_one :first_post
+  has_one :last_post do
+    # NOTE : Rails doesn't properly eager load this assocation if the ids match.
+    object.first_post_id == object.last_post_id ? object.first_post : object.last_post
+  end
 
   has_one :subscription, if: :include_subscription?
 

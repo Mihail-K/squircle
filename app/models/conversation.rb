@@ -48,14 +48,14 @@ class Conversation < ApplicationRecord
   belongs_to :locked_by, class_name: 'User'
   belongs_to :section, inverse_of: :conversations
 
-  belongs_to :first_post, class_name: 'Post'
-  belongs_to :last_post, class_name: 'Post'
-
   has_many :posts, inverse_of: :conversation, dependent: :destroy
   has_many :subscriptions, inverse_of: :conversation, dependent: :destroy
 
   has_many :post_authors, -> { distinct }, through: :posts, source: :author, class_name: 'User'
   has_many :post_characters, -> { distinct }, through: :posts, source: :character, class_name: 'Character'
+
+  has_one :first_post, foreign_key: :id, primary_key: :first_post_id, class_name: 'Post', inverse_of: :conversation
+  has_one :last_post, foreign_key: :id, primary_key: :last_post_id, class_name: 'Post', inverse_of: :conversation
 
   accepts_nested_attributes_for :posts, limit: 1
 
