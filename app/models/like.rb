@@ -42,11 +42,8 @@ private
 
   def create_notification
     notifications.find_or_create_by(user: likeable.author, targetable: likeable) do |notification|
-      notification.title = I18n.t('notifications.like', name: user.display_name, thing: thing)
+      notification.title = I18n.t('notifications.like', name: user.display_name,
+                                                        likeable: likeable.class.model_name.singular)
     end
-  end
-
-  def thing
-    likeable.class.model_name.singular
   end
 end

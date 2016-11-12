@@ -37,4 +37,5 @@ en:
               flood_limit: 'you can only post once every 20 seconds'
   notifications:
     friendship: '%{name} added you as a friend.'
-    like: '%{name} liked your %{thing}.'
+    like: '%{name} liked your %{likeable}.'
+    post: '%{name} replied to %{conversation}'

@@ -6,9 +6,8 @@ class PostNotificationJob < ApplicationJob
     post = Post.find(post_id)
     post.subscribers.where.not(id: post.author_id).find_each do |user|
       post.notifications.find_or_create_by(user: user) do |notification|
-        notification.title = <<-TEXT.squish
-          #{post.author.display_name} replied to #{post.conversation.title}.
-        TEXT
+        notification.title = I18n.t('notifications.post', name: post.author.display_name,
+                                                          conversation: post.conversation.title)
       end
     end
   end
