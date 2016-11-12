@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 class UserSerializer < ApplicationSerializer
-  cache expires_in: 3.hours
-
   attribute :id
   attribute :deleted_by_id, if: :allowed_to_view_deleted_users?
 

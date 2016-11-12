@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 class BanSerializer < ApplicationSerializer
-  cache expires_in: 6.hours
-
   attribute :id
   attribute :user_id
   attribute :creator_id, if: :can_view_ban_creator?

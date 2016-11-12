@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 class SectionSerializer < ApplicationSerializer
-  cache expires_in: 6.hours
-
   attribute :id
   attribute :creator_id, if: :can_view_creator?
   attribute :deleted_by_id, if: :can_view_deleted_sections?

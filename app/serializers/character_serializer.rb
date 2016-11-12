@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 class CharacterSerializer < ApplicationSerializer
-  cache expires_in: 1.hour
-
   attribute :id
   attribute :user_id
   attribute :creator_id
