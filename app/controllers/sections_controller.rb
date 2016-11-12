@@ -19,7 +19,7 @@ class SectionsController < ApplicationController
   end
 
   def create
-    @section = @sections.create!(section_params) do |section|
+    @section = Section.create!(section_params) do |section|
       section.creator = current_user
     end
 

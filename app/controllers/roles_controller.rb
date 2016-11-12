@@ -19,7 +19,7 @@ class RolesController < ApplicationController
   end
 
   def create
-    @role = @roles.create!(role_params)
+    @role = Role.create!(role_params)
 
     render json: @role, status: :created
   end
@@ -46,6 +46,6 @@ private
   end
 
   def set_role
-    @role = @roles.find params[:id]
+    @role = @roles.find(params[:id])
   end
 end

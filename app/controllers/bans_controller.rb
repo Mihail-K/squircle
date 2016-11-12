@@ -20,7 +20,7 @@ class BansController < ApplicationController
   end
 
   def create
-    @ban = @bans.create!(ban_params) do |ban|
+    @ban = Ban.create!(ban_params) do |ban|
       ban.creator = current_user
     end
 
@@ -44,8 +44,8 @@ class BansController < ApplicationController
 private
 
   def set_user
-    return unless ban_params[:user_id].present? || params[:user_id].present?
-    policy_scope(User).find(ban_params[:user_id] || params[:user_id])
+    return unless ban_params[:user_id].present?
+    policy_scope(User).find(ban_params[:user_id])
   end
 
   def set_bans

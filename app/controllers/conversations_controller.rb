@@ -66,8 +66,8 @@ private
   end
 
   def set_section
-    return unless conversation_params[:section_id].present? || params[:section_id].present?
-    policy_scope(Section).find(conversation_params[:section_id] || params[:section_id])
+    return unless conversation_params[:section_id].present?
+    policy_scope(Section).find(conversation_params[:section_id])
   end
 
   def set_conversations

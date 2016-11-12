@@ -19,7 +19,7 @@ class CharactersController < ApplicationController
   end
 
   def create
-    @character = @characters.create!(character_params) do |character|
+    @character = Character.create!(character_params) do |character|
       character.user    = current_user if character.user.nil?
       character.creator = current_user
     end

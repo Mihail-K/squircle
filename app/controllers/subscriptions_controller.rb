@@ -21,7 +21,7 @@ class SubscriptionsController < ApplicationController
   end
 
   def create
-    @subscription = @subscriptions.create!(subscription_params) do |subscription|
+    @subscription = Subscription.create!(subscription_params) do |subscription|
       subscription.user = current_user
     end
 

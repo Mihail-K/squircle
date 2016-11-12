@@ -24,7 +24,7 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = @posts.create!(post_params) do |post|
+    @post = Post.create!(post_params) do |post|
       post.author       = current_user
       post.conversation = @conversation
     end
@@ -51,13 +51,13 @@ class PostsController < ApplicationController
 private
 
   def set_conversation
-    @conversation = policy_scope(Conversation).find(post_params[:conversation_id] || params[:conversation_id])
+    @conversation = policy_scope(Conversation).find(post_params[:conversation_id])
     forbid if @conversation.locked? unless allowed_to?(:lock_conversations)
   end
 
   def set_character
-    return unless post_params[:character_id].present? || params[:character_id].present?
-    policy_scope(Character).where(user: current_user).find(post_params[:character_id] || params[:character_id])
+    return unless post_params[:character_id].present?
+    policy_scope(Character).where(user: current_user).find(post_params[:character_id])
   end
 
   def set_posts
