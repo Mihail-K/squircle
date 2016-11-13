@@ -20,6 +20,9 @@
             "Post"
           ]
         },
+        "display_name": {
+          "type": "string"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"
@@ -58,6 +61,7 @@
         "user_id",
         "likeable_id",
         "likeable_type",
+        "display_name",
         "created_at",
         "updated_at",
         "deletable"

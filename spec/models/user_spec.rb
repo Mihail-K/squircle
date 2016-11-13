@@ -62,6 +62,14 @@ RSpec.describe User, type: :model do
     expect(user.email_token).not_to eq old_token
   end
 
+  it 'queues a job when its display name changes' do
+    user.save
+
+    expect do
+      user.update(display_name: 'A different name')
+    end.to have_enqueued_job(UserDisplayNameJob).with(user.id)
+  end
+
   describe 'with bans' do
     let :user do
       create :user, :with_bans

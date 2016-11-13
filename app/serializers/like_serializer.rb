@@ -5,6 +5,7 @@ class LikeSerializer < ApplicationSerializer
   attribute :likeable_id
   attribute :likeable_type
 
+  attribute :display_name
   attribute :created_at
   attribute :updated_at
 

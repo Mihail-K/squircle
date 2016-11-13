@@ -25,6 +25,12 @@ RSpec.describe Like, type: :model do
     expect(like.dup).to be_invalid
   end
 
+  it "copies the user's display name" do
+    expect do
+      like.save
+    end.to change { like.display_name }.to(like.user.display_name)
+  end
+
   it 'creates a notification' do
     expect do
       like.save

@@ -9,6 +9,7 @@
 #  user_id       :integer          not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  display_name  :string           not null
 #
 # Indexes
 #
@@ -32,6 +33,7 @@ class Like < ApplicationRecord
   validates :user, presence: true, uniqueness: { scope: :likeable }
   validates :likeable, presence: true
 
+  before_create :set_display_name
   after_create :create_notification
 
   scope :preview, -> {
@@ -43,9 +45,13 @@ class Like < ApplicationRecord
 
 private
 
+  def set_display_name
+    self.display_name = user.display_name
+  end
+
   def create_notification
     notifications.find_or_create_by(user: likeable.author, targetable: likeable) do |notification|
-      notification.title = I18n.t('notifications.like', name: user.display_name,
+      notification.title = I18n.t('notifications.like', name: display_name,
                                                         likeable: likeable.class.model_name.singular)
     end
   end

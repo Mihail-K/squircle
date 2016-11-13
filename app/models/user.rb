@@ -92,6 +92,8 @@ class User < ApplicationRecord
   after_commit :send_user_inactive_email, if: %i(bucket_previously_changed? inactive?)
   after_commit :send_user_lost_email, if: %i(bucket_previously_changed? lost?)
 
+  after_commit :update_display_name_caches, on: :update, if: :display_name_previously_changed?
+
   scope :banned, -> {
     where(banned: true)
   }
@@ -134,5 +136,9 @@ private
 
   def send_user_lost_email
     UserMailer.lost(id).deliver_later
+  end
+
+  def update_display_name_caches
+    UserDisplayNameJob.perform_later(id)
   end
 end
