@@ -30,4 +30,14 @@ class PostSerializer < ApplicationSerializer
   belongs_to :character
   belongs_to :conversation
   belongs_to :deleted_by, if: :allowed_to_view_deleted_posts?
+
+  has_many :likes, if: :include_likes?
+
+  def include_likes?
+    true && instance_options[:likes].is_a?(Hash)
+  end
+
+  def likes
+    instance_options[:likes][[object.id, object.class.name]]
+  end
 end

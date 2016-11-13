@@ -16,11 +16,12 @@ class PostsController < ApplicationController
   def index
     render json: @posts,
            each_serializer: PostSerializer,
+           likes: likes,
            meta: meta_for(@posts)
   end
 
   def show
-    render json: @post
+    render json: @post, likes: likes
   end
 
   def create
@@ -37,7 +38,7 @@ class PostsController < ApplicationController
     @post.editor = current_user if @post.body_changed? unless post_params.key?(:editor_id)
     @post.save!
 
-    render json: @post
+    render json: @post, likes: likes
   end
 
   def destroy
@@ -69,5 +70,9 @@ private
 
   def set_post
     @post = @posts.find(params[:id])
+  end
+
+  def likes
+    Like.where(likeable: @post || @posts).preview.group_by { |like| [like.likeable_id, like.likeable_type] }
   end
 end

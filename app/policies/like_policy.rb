@@ -7,7 +7,7 @@ class LikePolicy < ApplicationPolicy
   end
 
   def destroy?
-    (current_user == like.user && allowed_to?(:delete_owned_likes)) || allowed_to?(:delete_likes)
+    (owner? && allowed_to?(:delete_owned_likes)) || allowed_to?(:delete_likes)
   end
 
   def permitted_attributes
@@ -18,5 +18,11 @@ class LikePolicy < ApplicationPolicy
     def resolve
       scope.all
     end
+  end
+
+private
+
+  def owner?
+    current_user&.id == like.user_id
   end
 end

@@ -34,6 +34,13 @@ class Like < ApplicationRecord
 
   after_create :create_notification
 
+  scope :preview, -> {
+    where(Like.arel_table[:row_num].lteq(3)).from(select(<<-SQL.squish), :likes)
+      likes.*,
+      row_number() OVER (PARTITION BY likes.likeable_id, likes.likeable_type ORDER BY likes.created_at ASC) AS row_num
+    SQL
+  }
+
 private
 
   def create_notification

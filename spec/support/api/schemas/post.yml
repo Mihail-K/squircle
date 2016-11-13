@@ -73,6 +73,13 @@ definitions:
         oneOf:
           - type: 'null'
           - $ref: user.json#/definitions/user
+      likes:
+        oneOf:
+          - type: 'null'
+          - type: array
+            items:
+              $ref: like.json#/definitions/like
+            maxItems: 3
     required:
       - id
       - author_id
