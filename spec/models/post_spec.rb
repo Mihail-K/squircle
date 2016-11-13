@@ -33,6 +33,12 @@ RSpec.describe Post, type: :model do
     expect(post).not_to be_valid
   end
 
+  it "copies the author's display name" do
+    expect do
+      post.save
+    end.to change { post.display_name }.to(post.author.display_name)
+  end
+
   describe '.formatted_body' do
     before :each do
       post.save

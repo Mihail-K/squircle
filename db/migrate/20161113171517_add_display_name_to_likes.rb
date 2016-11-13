@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class AddDisplayNameToLikes < ActiveRecord::Migration[5.0]
   def up
     add_column :likes, :display_name, :string

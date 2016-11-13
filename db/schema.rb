@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161113171517) do
+ActiveRecord::Schema.define(version: 20161113175712) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -219,6 +219,7 @@ ActiveRecord::Schema.define(version: 20161113171517) do
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
     t.integer  "likes_count",     default: 0,     null: false
+    t.string   "display_name",                    null: false
     t.index ["author_id"], name: "index_posts_on_author_id", using: :btree
     t.index ["character_id"], name: "index_posts_on_character_id", using: :btree
     t.index ["conversation_id"], name: "index_posts_on_conversation_id", using: :btree

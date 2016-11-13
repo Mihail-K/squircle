@@ -44,6 +44,10 @@
             }
           ]
         },
+        "display_name": {
+          "type": "string",
+          "description": "Contains the author's cached display name."
+        },
         "body": {
           "type": "string",
           "description": "Contains the original post body, in unprocessed form."
@@ -150,6 +154,7 @@
         "editor_id",
         "character_id",
         "conversation_id",
+        "display_name",
         "body",
         "formatted_body",
         "likes_count",

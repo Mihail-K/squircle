@@ -16,6 +16,7 @@
 #  deleted_by_id   :integer
 #  deleted_at      :datetime
 #  likes_count     :integer          default(0), not null
+#  display_name    :string           not null
 #
 # Indexes
 #
@@ -59,6 +60,7 @@ class Post < ApplicationRecord
 
   formattable :body
 
+  before_save :set_display_name
   before_commit :set_posts_counts
 
   with_options unless: -> { conversation.destroyed? } do |o|
@@ -84,6 +86,10 @@ class Post < ApplicationRecord
   }
 
 private
+
+  def set_display_name
+    self.display_name = author.display_name
+  end
 
   def set_posts_counts
     author.set_posts_count
