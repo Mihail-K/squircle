@@ -21,6 +21,8 @@ definitions:
       updated_at:
         type: string
         format: date-time
+      deletable:
+        type: boolean
       user:
         $ref: user.json#/definitions/user
       likeable:
@@ -40,6 +42,7 @@ definitions:
       - likeable_type
       - created_at
       - updated_at
+      - deletable
     additionalProperties: false
 type: object
 properties:

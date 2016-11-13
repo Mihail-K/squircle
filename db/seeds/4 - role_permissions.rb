@@ -14,6 +14,9 @@
     view_conversations:         :allow,
     create_conversations:       :allow,
     update_owned_conversations: :allow,
+    # - Likes - #
+    create_likes:               :allow,
+    delete_owned_likes:         :allow,
     # - Posts - #
     view_posts:                 :allow,
     create_posts:               :allow,
@@ -70,6 +73,8 @@
     create_conversations:       :allow,
     update_conversations:       :allow,
     delete_conversations:       :allow,
+    # - Likes - #
+    delete_likes:               :allow,
     # - Posts - #
     view_deleted_posts:         :allow,
     ignore_flood_limit:         :allow,
@@ -108,6 +113,9 @@
     create_conversations:       :forbid,
     update_conversations:       :forbid,
     delete_conversations:       :forbid,
+    # - Likes - #
+    create_likes:               :forbid,
+    delete_likes:               :forbid,
     # - Posts - #
     create_posts:               :forbid,
     update_posts:               :forbid,

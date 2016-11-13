@@ -150,6 +150,26 @@ Permissible::Permission.find_or_create_by! name: :delete_owned_conversations do 
   TEXT
 end
 
+# - Like Permissions - #
+
+Permissible::Permission.find_or_create_by! name: :create_likes do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to create likes.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :delete_likes do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to delete all likes.
+  TEXT
+end
+
+Permissible::Permission.find_or_create_by! name: :delete_owned_likes do |permission|
+  permission.description = <<-TEXT.squish
+    Permits the user to delete their own likes.
+  TEXT
+end
+
 # - Post Permissions - #
 
 Permissible::Permission.find_or_create_by! name: :view_deleted_posts do |permission|

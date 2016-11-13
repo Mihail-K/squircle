@@ -3,11 +3,11 @@ class LikePolicy < ApplicationPolicy
   alias like record
 
   def create?
-    authenticated?
+    allowed_to?(:create_likes)
   end
 
   def destroy?
-    authenticated? && current_user == like.user
+    (current_user == like.user && allowed_to?(:delete_owned_likes)) || allowed_to?(:delete_likes)
   end
 
   def permitted_attributes

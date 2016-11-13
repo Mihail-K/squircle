@@ -13,6 +13,9 @@
   # - Conversations - #
   view_deleted_conversations: :view_conversations,
 
+  # - Likes - #
+  delete_likes:               :delete_owned_likes,
+
   # - Reports - #
   view_deleted_reports:       :view_reports,
   view_reports:               :view_owned_reports,

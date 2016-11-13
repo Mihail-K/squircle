@@ -48,6 +48,9 @@ definitions:
           - type: string
             format: date-time
         description: Stores a timestamp of when this post was deleted.
+      likeable:
+        type: boolean
+        description: Indicates if the current user can like this post.
       editable:
         type: boolean
         description: Indicates if the current user can edit this post.
@@ -82,6 +85,9 @@ definitions:
       - deleted
       - created_at
       - updated_at
+      - likeable
+      - editable
+      - deletable
     additionalProperties: false
 type: object
 properties:

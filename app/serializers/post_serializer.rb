@@ -15,6 +15,9 @@ class PostSerializer < ApplicationSerializer
   attribute :updated_at
   attribute :deleted_at, if: :allowed_to_view_deleted_posts?
 
+  attribute :likeable do
+    allowed_to?(:create_likes)
+  end
   attribute :editable do
     policy.update? || false
   end
