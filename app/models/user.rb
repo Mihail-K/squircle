@@ -94,6 +94,7 @@ class User < ApplicationRecord
     o.after_commit :send_user_lost_email, if: %i(bucket_previously_changed? lost?)
   end
 
+  after_commit :send_user_unbanned_email, if: -> { banned_previously_changed? && !banned? }
   after_commit :update_display_name_caches, on: :update, if: :display_name_previously_changed?
 
   scope :banned, -> {
@@ -138,6 +139,10 @@ private
 
   def send_user_lost_email
     UserMailer.lost(id).deliver_later
+  end
+
+  def send_user_unbanned_email
+    UserMailer.unbanned(id).deliver_later
   end
 
   def update_display_name_caches

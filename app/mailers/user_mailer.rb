@@ -20,6 +20,12 @@ class UserMailer < ApplicationMailer
     mail to: @user.email
   end
 
+  def unbanned(user_id)
+    @user = User.find(user_id)
+
+    mail to: @user.email, subject: 'Unbanned!'
+  end
+
 private
 
   def set_last_email_at

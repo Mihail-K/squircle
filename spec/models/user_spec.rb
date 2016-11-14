@@ -98,6 +98,13 @@ RSpec.describe User, type: :model do
       UnbanJob.perform_now
       expect(user.reload.banned?).to be false
     end
+
+    it 'sends an email when the user is unbanned' do
+      expect do
+        user.update(banned: false)
+      end.to have_enqueued_job(ActionMailer::DeliveryJob)
+        .with('UserMailer', 'unbanned', 'deliver_now', user.id)
+    end
   end
 
   describe '.most_active' do
