@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class FriendshipService
+class FriendshipLoader < Loader
   attr_reader :user
 
   def initialize(user)

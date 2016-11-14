@@ -15,12 +15,12 @@ class UsersController < ApplicationController
   def index
     render json: @users,
            each_serializer: UserSerializer,
-           friendships: friendships,
+           friendships: load(:friendship, @users),
            meta: meta_for(@users)
   end
 
   def show
-    render json: @user, friendships: friendships
+    render json: @user, friendships: load(:friendship, @user)
   end
 
   def create
@@ -32,7 +32,7 @@ class UsersController < ApplicationController
   def update
     @user.update!(user_params)
 
-    render json: @user, friendships: friendships
+    render json: @user, friendships: load(:friendship, @user)
   end
 
   def destroy
@@ -54,9 +54,5 @@ private
 
   def set_user
     @user = @users.find(params[:id])
-  end
-
-  def friendships
-    FriendshipService.new(current_user).for(@user || @users)
   end
 end

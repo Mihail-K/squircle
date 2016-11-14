@@ -30,6 +30,10 @@ class ApplicationController < ActionController::API
     head :forbidden
   end
 
+  def load(name, object)
+    Loader.get(name).new(current_user).for(object)
+  end
+
   def not_found(model = 'object')
     render json: { errors: { model => ['not found'] } }, status: :not_found
   end
