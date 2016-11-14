@@ -96,6 +96,15 @@ RSpec.describe UsersController, type: :controller do
 
       expect(response).to have_http_status :not_found
     end
+
+    it "includes the current user's friendship in the serialization" do
+      create :friendship, user: active_user, friend: user
+
+      get :show, params: { id: user.id, access_token: access_token }
+
+      expect(response).to have_http_status :ok
+      expect(json[:user][:friendship]).to be_present
+    end
   end
 
   describe '#POST create' do
