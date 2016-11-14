@@ -89,8 +89,10 @@ class User < ApplicationRecord
     o.after_commit :send_email_confirmation
   end
 
-  after_commit :send_user_inactive_email, if: %i(bucket_previously_changed? inactive?)
-  after_commit :send_user_lost_email, if: %i(bucket_previously_changed? lost?)
+  with_options unless: :banned? do |o|
+    o.after_commit :send_user_inactive_email, if: %i(bucket_previously_changed? inactive?)
+    o.after_commit :send_user_lost_email, if: %i(bucket_previously_changed? lost?)
+  end
 
   after_commit :update_display_name_caches, on: :update, if: :display_name_previously_changed?
 

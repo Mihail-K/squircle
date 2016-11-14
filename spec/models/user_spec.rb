@@ -178,7 +178,7 @@ RSpec.describe User, type: :model do
   end
 
   describe '.bucket' do
-    let :user do
+    let! :user do
       create :user
     end
 
@@ -194,6 +194,12 @@ RSpec.describe User, type: :model do
         user.update(bucket: 'lost')
       end.to have_enqueued_job(ActionMailer::DeliveryJob)
         .with('UserMailer', 'lost', 'deliver_now', user.id)
+    end
+
+    it "doesn't send an email for banned users" do
+      expect do
+        user.update(banned: true, bucket: 'inactive')
+      end.not_to have_enqueued_job(ActionMailer::DeliveryJob)
     end
   end
 end
