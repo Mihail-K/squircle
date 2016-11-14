@@ -23,7 +23,7 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'GET #index' do
     let! :users do
-      create_list(:user, 4) + [active_user]
+      create_list(:user, 2) + [active_user]
     end
 
     it 'responds with 200' do
@@ -53,7 +53,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'returns a list of recently active users' do
-      recently_active = users.sample(3).each do |user|
+      recently_active = users.sample(2).each do |user|
         create :post, author: user
       end
 
@@ -65,8 +65,8 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'returns a list of the most active users' do
-      most_active = users.sample(3).each_with_index do |user, index|
-        create_list :post, 3 - index, author: user
+      most_active = users.sample(2).each_with_index do |user, index|
+        create_list :post, 2 - index, author: user
       end
 
       get :index, params: { most_active: true }
@@ -111,40 +111,39 @@ RSpec.describe UsersController, type: :controller do
     it 'creates a new user' do
       expect do
         post :create, params: { user: attributes_for(:user) }
-      end.to change { User.count }.by(1)
 
-      expect(response).to have_http_status :created
-      expect(response).to match_response_schema :user
+        expect(response).to have_http_status :created
+        expect(response).to match_response_schema :user
+      end.to change { User.count }.by(1)
     end
 
     it "doesn't allow authenticated users to create new users" do
       expect do
-        post :create, params: { user: attributes_for(:user) }.merge(session)
-      end.not_to change { User.count }
+        post :create, params: { user: attributes_for(:user), access_token: access_token }
 
-      expect(response).to have_http_status :forbidden
+        expect(response).to have_http_status :forbidden
+      end.not_to change { User.count }
     end
 
     it 'allows admins to create new users' do
       active_user.roles << Role.find_by!(name: 'admin')
 
       expect do
-        post :create, params: { user: attributes_for(:user) }.merge(session)
-      end.to change { User.count }.by(1)
+        post :create, params: { user: attributes_for(:user), access_token: access_token }
 
-      expect(response).to have_http_status :created
-      expect(response).to match_response_schema :user
+        expect(response).to have_http_status :created
+        expect(response).to match_response_schema :user
+      end.to change { User.count }.by(1)
     end
 
     it 'returns errors when the user is invalid' do
       expect do
         post :create, params: { user: attributes_for(:user, email: nil) }
+
+        expect(response).to have_http_status :unprocessable_entity
+        expect(response).to match_response_schema :errors
+        expect(json[:errors]).to have_key :email
       end.not_to change { User.count }
-
-      expect(response).to have_http_status :unprocessable_entity
-      expect(response).to match_response_schema :errors
-
-      expect(json[:errors]).to have_key :email
     end
   end
 
