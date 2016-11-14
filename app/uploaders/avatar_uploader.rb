@@ -3,7 +3,7 @@
 
 class AvatarUploader < CarrierWave::Uploader::Base
   include CarrierWave::MiniMagick
-  include CarrierWave::Backgrounder::Delay
+  # include CarrierWave::Backgrounder::Delay
 
   # Use basic file storage for development.
   if Rails.env.development? || Rails.env.test?

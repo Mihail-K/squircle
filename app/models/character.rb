@@ -42,7 +42,7 @@ class Character < ApplicationRecord
   has_many :posts, inverse_of: :character
 
   mount_uploader :avatar, AvatarUploader
-  process_in_background :avatar
+  # process_in_background :avatar
 
   serialize :gallery_images, Array
   mount_uploaders :gallery_images, AvatarUploader

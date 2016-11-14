@@ -61,9 +61,9 @@ RSpec.describe SubscriptionsController, type: :controller do
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema :subscription
-      expect(response.body).to include_json(subscription: {
-        id: subscription.id
-      })
+      expect(response.body).to include_json(
+        subscription: { id: subscription.id }
+      )
     end
   end
 
@@ -87,9 +87,9 @@ RSpec.describe SubscriptionsController, type: :controller do
 
         expect(response).to have_http_status :created
         expect(response).to match_response_schema :subscription
-        expect(response.body).to include_json(subscription: {
-          user_id: active_user.id, conversation_id: conversation.id
-        })
+        expect(response.body).to include_json(
+          subscription: { user_id: active_user.id, conversation_id: conversation.id }
+        )
       end.to change { Subscription.count }.by(1)
     end
 
@@ -111,9 +111,9 @@ RSpec.describe SubscriptionsController, type: :controller do
 
         expect(response).to have_http_status :unprocessable_entity
         expect(response).to match_response_schema :errors
-        expect(response.body).to include_json(errors: {
-          conversation: ["can't be blank"]
-        })
+        expect(response.body).to include_json(
+          errors: { conversation: ["can't be blank"] }
+        )
       end.not_to change { Subscription.count }
     end
   end

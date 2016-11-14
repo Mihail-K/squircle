@@ -70,7 +70,7 @@ class User < ApplicationRecord
   has_secure_password
 
   mount_uploader :avatar, AvatarUploader
-  process_in_background :avatar
+  # process_in_background :avatar
 
   validates :email, presence: true, uniqueness: true
   validates :display_name, presence: true, uniqueness: true

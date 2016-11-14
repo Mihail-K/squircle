@@ -118,9 +118,9 @@ RSpec.describe UsersController, type: :controller do
       get :show, params: { id: user.id, access_token: access_token }
 
       expect(response).to have_http_status :ok
-      expect(response.body).to include_json(user: {
-        friendship: { id: friendship.id }
-      })
+      expect(response.body).to include_json(
+        user: { friendship: { id: friendship.id } }
+      )
     end
   end
 
@@ -159,7 +159,7 @@ RSpec.describe UsersController, type: :controller do
 
         expect(response).to have_http_status :unprocessable_entity
         expect(response).to match_response_schema :errors
-        expect(response.body).to include_json(errors: { email: [/.+/] })
+        expect(response.body).to include_json(errors: { email: ["can't be blank"] })
       end.not_to change { User.count }
     end
   end
@@ -190,9 +190,9 @@ RSpec.describe UsersController, type: :controller do
 
         expect(response).to have_http_status :ok
         expect(response).to match_response_schema :user
-        expect(response.body).to include_json(user: {
-          id: active_user.id, email: email
-        })
+        expect(response.body).to include_json(
+          user: { id: active_user.id, email: email }
+        )
       end.to change { active_user.reload.email }
     end
 
@@ -215,9 +215,9 @@ RSpec.describe UsersController, type: :controller do
                                  access_token: access_token }
 
         expect(response).to have_http_status :ok
-        expect(response.body).to include_json(user: {
-          id: user.id, email: email
-        })
+        expect(response.body).to include_json(
+          user: { id: user.id, email: email }
+        )
       end.to change { user.reload.email }.to(email)
     end
 
@@ -229,7 +229,7 @@ RSpec.describe UsersController, type: :controller do
 
         expect(response).to have_http_status :unprocessable_entity
         expect(response).to match_response_schema :errors
-        expect(response.body).to include_json(errors: { email: [/.+/] })
+        expect(response.body).to include_json(errors: { email: ["can't be blank"] })
       end.not_to change { active_user.reload.email }
     end
   end

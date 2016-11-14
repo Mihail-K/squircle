@@ -1,8 +1,8 @@
 GIT
   remote: git://github.com/carrierwaveuploader/carrierwave.git
-  revision: ec850831eeaf0f2f45c002bcec9b90698b78d0d8
+  revision: 237328dbcbd5a18f5c737fb1c7e9197e8c118c31
   specs:
-    carrierwave (1.0.0.beta)
+    carrierwave (1.0.0.rc)
       activemodel (>= 4.0.0)
       activesupport (>= 4.0.0)
       mime-types (>= 1.16)
@@ -74,7 +74,6 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.2)
     byebug (9.0.6)
-    carrierwave_backgrounder (0.4.2)
     concurrent-ruby (1.0.2)
     debug_inspector (0.0.2)
     diff-lcs (1.2.5)
@@ -86,7 +85,7 @@ GEM
       dotenv (= 2.1.1)
       railties (>= 4.0, < 5.1)
     erubis (2.7.0)
-    excon (0.53.0)
+    excon (0.54.0)
     factory_girl (4.7.0)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.7.0)
@@ -114,7 +113,7 @@ GEM
       activesupport (>= 4.1.0)
     i18n (0.7.0)
     ipaddress (0.8.3)
-    json (1.8.3)
+    json (2.0.2)
     json-schema (2.7.0)
       addressable (>= 2.4)
     jsonapi (0.1.1.beta6)
@@ -300,7 +299,6 @@ DEPENDENCIES
   bcrypt (~> 3.1.7)
   byebug
   carrierwave!
-  carrierwave_backgrounder (>= 0.4.2)
   doorkeeper
   dotenv-rails
   factory_girl_rails
