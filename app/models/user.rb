@@ -111,12 +111,13 @@ class User < ApplicationRecord
 
   scope :most_active, -> {
     not_banned.where(User.arel_table[:posts_count].gt(0))
-              .order(posts_count: :desc)
+              .reorder(posts_count: :desc)
   }
 
   scope :recently_active, -> {
     not_banned.where(User.arel_table[:last_active_at].gteq(5.minutes.ago))
               .where(User.arel_table[:posts_count].gt(0))
+              .reorder(last_active_at: :desc)
   }
 
 private

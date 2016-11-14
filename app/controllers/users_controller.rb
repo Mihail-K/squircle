@@ -46,7 +46,7 @@ class UsersController < ApplicationController
 private
 
   def set_users
-    @users = policy_scope(User)
+    @users = policy_scope(User).order(:created_at)
     @users = @users.recently_active if params.key?(:recently_active)
     @users = @users.most_active if params.key?(:most_active)
     @users = @users.includes(:deleted_by) if allowed_to?(:view_deleted_users)

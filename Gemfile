@@ -45,6 +45,7 @@ group :development, :test do
   gem 'faker'
   gem 'parallel_tests'
   gem 'rspec'
+  gem 'rspec-json_expectations'
   gem 'rspec-rails'
   gem 'rubocop'
 end

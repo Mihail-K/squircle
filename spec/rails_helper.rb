@@ -17,6 +17,7 @@ if Rails.env.test?
 end
 
 require 'spec_helper'
+require 'rspec/json_expectations'
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
