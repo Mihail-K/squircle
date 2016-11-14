@@ -1,14 +1,8 @@
 # frozen_string_literal: true
 class FriendshipLoader < Loader
-  attr_reader :user
-
-  def initialize(user)
-    @user = user
-  end
-
   def for(friends)
-    Friendship.where(user: user, friend: friends)
+    Friendship.where(user: current_user, friend: friends)
               .map { |friendship| [friendship.friend_id, friendship] }
-              .to_h if user.present?
+              .to_h if current_user.present?
   end
 end

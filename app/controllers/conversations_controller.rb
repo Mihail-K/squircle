@@ -17,15 +17,15 @@ class ConversationsController < ApplicationController
   def index
     render json: @conversations,
            each_serializer: ConversationSerializer,
-           participation: participation,
-           subscriptions: subscriptions,
+           participation: load(:participation, @conversations),
+           subscriptions: load(:subscription, @conversations),
            meta: meta_for(@conversations)
   end
 
   def show
     render json: @conversation,
-           participation: participation,
-           subscriptions: subscriptions
+           participation: load(:participation, @conversation),
+           subscriptions: load(:subscription, @conversation)
   end
 
   def create
@@ -42,7 +42,9 @@ class ConversationsController < ApplicationController
     @conversation.locked_by  = current_user if @conversation.locked_changed?(to: true)
     @conversation.save!
 
-    render json: @conversation
+    render json: @conversation,
+           participation: load(:participation, @conversation),
+           subscriptions: load(:subscription, @conversation)
   end
 
   def destroy
@@ -84,21 +86,5 @@ private
 
   def increment_views_count
     @conversation.increment!(:views_count)
-  end
-
-  def participation
-    return if current_user.nil?
-    # A Hash of the current user's participation in conversations.
-    policy_scope(Post).group(Post.arel_table[:conversation_id])
-                      .where(posts: { author_id: current_user })
-                      .where(conversation_id: @conversation || @conversations)
-                      .count
-  end
-
-  def subscriptions
-    return if current_user.nil?
-    # A Hash of the current user's subscriptions to conversations.
-    Subscription.where(user: current_user, conversation: @conversation || @conversations)
-                .map { |subscription| [subscription.conversation_id, subscription] }.to_h
   end
 end

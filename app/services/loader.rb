@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 class Loader
-  attr_reader :user
+  attr_reader :current_user
 
-  def initialize(user)
-    @user = user
+  def initialize(current_user)
+    @current_user = current_user
   end
 
   def self.get(name)
