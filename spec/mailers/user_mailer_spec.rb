@@ -6,6 +6,15 @@ RSpec.describe UserMailer, type: :mailer do
     create :user
   end
 
+  shared_examples_for :last_email_at do
+    it "sets the user's last email timestamp" do
+      expect do
+        mail.body
+      end.to change { user.reload.last_email_at }
+        .from(nil).to be_within(1.minute).of(Time.current)
+    end
+  end
+
   describe '.confirmation' do
     let :mail do
       UserMailer.confirmation(user.id)
@@ -16,13 +25,7 @@ RSpec.describe UserMailer, type: :mailer do
       expect(mail.subject).to eq 'Welcome!'
     end
 
-    it "sets the user's last email timestamp" do
-      expect do
-        mail.body
-      end.to change { user.reload.last_email_at }
-        .from(nil)
-        .to be_within(1.minute).of(Time.current)
-    end
+    it_behaves_like :last_email_at
   end
 
   describe '.inactive' do
@@ -30,17 +33,36 @@ RSpec.describe UserMailer, type: :mailer do
       UserMailer.inactive(user.id)
     end
 
-    it 'sends a user inactive user to the user' do
+    it 'sends a user inactive email to the user' do
       expect(mail.to).to eq [user.email]
       expect(mail.subject).to eq 'We miss you!'
     end
 
-    it "sets the user's last email timestamp" do
-      expect do
-        mail.body
-      end.to change { user.reload.last_email_at }
-        .from(nil)
-        .to be_within(1.minute).of(Time.current)
+    it_behaves_like :last_email_at
+  end
+
+  describe '.lost' do
+    let :mail do
+      UserMailer.lost(user.id)
     end
+
+    it 'sends a user lost email to the user' do
+      expect(mail.to).to eq [user.email]
+    end
+
+    it_behaves_like :last_email_at
+  end
+
+  describe '.unbanned' do
+    let :mail do
+      UserMailer.unbanned(user.id)
+    end
+
+    it 'sends a user unbanned email to the user' do
+      expect(mail.to).to eq [user.email]
+      expect(mail.subject).to eq 'Unbanned!'
+    end
+
+    it_behaves_like :last_email_at
   end
 end
