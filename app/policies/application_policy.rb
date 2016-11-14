@@ -1,5 +1,25 @@
 # frozen_string_literal: true
 class ApplicationPolicy
+  module Common
+    extend ActiveSupport::Concern
+
+  protected
+
+    def authenticated?
+      current_user.present?
+    end
+
+    def guest?
+      current_user.nil?
+    end
+
+    def allowed_to?(permission)
+      current_user&.allowed_to?(permission)
+    end
+  end
+
+  include ApplicationPolicy::Common
+
   attr_reader :current_user
   attr_reader :record
 
@@ -37,6 +57,8 @@ class ApplicationPolicy
   end
 
   class Scope
+    include ApplicationPolicy::Common
+
     attr_reader :current_user
     attr_reader :scope
 
@@ -48,41 +70,5 @@ class ApplicationPolicy
     def resolve
       scope
     end
-
-  protected
-
-    def authenticated?
-      current_user.present?
-    end
-
-    def guest?
-      current_user.nil?
-    end
-
-    def allowed_to?(permission)
-      authenticated? && current_user.allowed_to?(permission)
-    end
-
-    def forbidden_to?(permission)
-      authenticated? && current_user.forbidden_to?(permission)
-    end
-  end
-
-protected
-
-  def authenticated?
-    current_user.present?
-  end
-
-  def guest?
-    current_user.nil?
-  end
-
-  def allowed_to?(permission)
-    authenticated? && current_user.allowed_to?(permission)
-  end
-
-  def forbidden_to?(permission)
-    authenticated? && current_user.forbidden_to?(permission)
   end
 end
