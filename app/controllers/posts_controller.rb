@@ -7,7 +7,7 @@ class PostsController < ApplicationController
   before_action :set_conversation, only: :create
   before_action :set_character, only: %i(create update)
 
-  before_action :set_posts
+  before_action :set_posts, except: :create
   before_action :set_post, except: %i(index create)
   before_action :apply_pagination, only: :index
 
@@ -16,12 +16,12 @@ class PostsController < ApplicationController
   def index
     render json: @posts,
            each_serializer: PostSerializer,
-           likes: likes,
+           likes: preview_likes,
            meta: meta_for(@posts)
   end
 
   def show
-    render json: @post, likes: likes
+    render json: @post, likes: preview_likes
   end
 
   def create
@@ -38,7 +38,7 @@ class PostsController < ApplicationController
     @post.editor = current_user if @post.body_changed? unless post_params.key?(:editor_id)
     @post.save!
 
-    render json: @post, likes: likes
+    render json: @post, likes: preview_likes
   end
 
   def destroy
@@ -72,7 +72,8 @@ private
     @post = @posts.find(params[:id])
   end
 
-  def likes
-    Like.where(likeable: @post || @posts).preview.group_by { |like| [like.likeable_id, like.likeable_type] }
+  def preview_likes
+    policy_scope(Like).where(likeable: @post || @posts).preview
+                      .group_by { |like| [like.likeable_id, like.likeable_type] }
   end
 end

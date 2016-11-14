@@ -45,7 +45,17 @@ class UserSerializer < ApplicationSerializer
 
   belongs_to :deleted_by, if: :allowed_to_view_deleted_users?
 
+  has_one :friendship, if: :include_friendships?
+
   def allowed_to_view_users_personal_fields?
     object.id == current_user&.id || allowed_to?(:view_users_personal_fields)
+  end
+
+  def include_friendships?
+    instance_options[:friendships].is_a?(Hash)
+  end
+
+  def friendship
+    instance_options[:friendships][object.id]
   end
 end

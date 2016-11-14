@@ -2,7 +2,7 @@
 class BansController < ApplicationController
   before_action :doorkeeper_authorize!
 
-  before_action :set_bans
+  before_action :set_bans, except: :create
   before_action :set_user, only: :create
   before_action :set_ban, except: %i(index create)
   before_action :apply_pagination, only: :index
@@ -12,11 +12,11 @@ class BansController < ApplicationController
   def index
     render json: @bans,
            each_serializer: BanSerializer,
-           meta: meta_for(@bans) if stale?(@bans)
+           meta: meta_for(@bans)
   end
 
   def show
-    render json: @ban if stale?(@ban)
+    render json: @ban
   end
 
   def create
@@ -44,8 +44,7 @@ class BansController < ApplicationController
 private
 
   def set_user
-    return unless ban_params[:user_id].present?
-    policy_scope(User).find(ban_params[:user_id])
+    policy_scope(User).find(ban_params[:user_id]) if ban_params[:user_id].present?
   end
 
   def set_bans

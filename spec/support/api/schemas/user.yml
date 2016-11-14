@@ -80,6 +80,10 @@ definitions:
         oneOf:
           - type: 'null'
           - $ref: user.json#/definitions/user
+      friendship:
+        oneOf:
+          - type: 'null'
+          - $ref: friendship.json#/definitions/friendship
     required:
       - id
       - display_name

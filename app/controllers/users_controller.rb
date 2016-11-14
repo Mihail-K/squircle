@@ -9,17 +9,18 @@ class UsersController < ApplicationController
   before_action :enforce_policy!
 
   def me
-    render json: current_user if stale?(current_user)
+    render json: current_user
   end
 
   def index
     render json: @users,
            each_serializer: UserSerializer,
-           meta: meta_for(@users) if stale?(@users)
+           friendships: friendships,
+           meta: meta_for(@users)
   end
 
   def show
-    render json: @user if stale?(@user)
+    render json: @user, friendships: friendships
   end
 
   def create
@@ -31,7 +32,7 @@ class UsersController < ApplicationController
   def update
     @user.update!(user_params)
 
-    render json: @user
+    render json: @user, friendships: friendships
   end
 
   def destroy
@@ -53,5 +54,9 @@ private
 
   def set_user
     @user = @users.find(params[:id])
+  end
+
+  def friendships
+    FriendshipService.new(current_user).for(@user || @users)
   end
 end

@@ -148,6 +148,16 @@
               "$ref": "user.json#/definitions/user"
             }
           ]
+        },
+        "friendship": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "friendship.json#/definitions/friendship"
+            }
+          ]
         }
       },
       "required": [
