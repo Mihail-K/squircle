@@ -48,7 +48,7 @@ private
   end
 
   def set_bans
-    @bans = policy_scope(Ban).includes(:user)
+    @bans = policy_scope(Ban).order(:created_at).includes(:user)
     @bans = @bans.where(user_id: params[:user_id]) if allowed_to?(:view_bans) && params.key?(:user_id)
     @bans = @bans.includes(:creator) if allowed_to?(:view_ban_creator)
     @bans = @bans.includes(:deleted_by) if allowed_to?(:view_deleted_bans)
