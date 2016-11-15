@@ -15,7 +15,7 @@ RSpec.describe CharactersController, type: :controller do
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema :characters
       expect(response.body).to include_json(
-        characters: characters.map { |character| { id: character.id} },
+        characters: characters.map { |character| { id: character.id } },
         meta:       { total: characters.count }
       )
     end
@@ -27,7 +27,7 @@ RSpec.describe CharactersController, type: :controller do
 
       expect(response).to have_http_status :ok
       expect(response.body).to include_json(
-        characters: characters[1..-1].map { |character| { id: character.id} },
+        characters: characters[1..-1].map { |character| { id: character.id } },
         meta:       { total: characters.count - 1 }
       )
     end
@@ -40,7 +40,7 @@ RSpec.describe CharactersController, type: :controller do
 
       expect(response).to have_http_status :ok
       expect(response.body).to include_json(
-        characters: characters.map { |character| { id: character.id} },
+        characters: characters.map { |character| { id: character.id } },
         meta:       { total: characters.count }
       )
     end
