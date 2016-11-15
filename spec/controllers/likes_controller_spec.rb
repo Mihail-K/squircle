@@ -14,6 +14,10 @@ RSpec.describe LikesController, type: :controller do
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema :likes
+      expect(response.body).to include_json(
+        likes: likes.map { |like| { id: like.id } },
+        meta:  { total: likes.count }
+      )
     end
   end
 
@@ -27,6 +31,7 @@ RSpec.describe LikesController, type: :controller do
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema :like
+      expect(response.body).to include_json(like: { id: like.id })
     end
   end
 
@@ -50,6 +55,9 @@ RSpec.describe LikesController, type: :controller do
 
         expect(response).to have_http_status :created
         expect(response).to match_response_schema :like
+        expect(response.body).to include_json(
+          like: { user_id: active_user.id, likeable_id: likeable.id, likeable_type: 'Post' }
+        )
       end.to change { Like.count }.by(1)
     end
 

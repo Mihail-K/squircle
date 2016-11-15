@@ -41,7 +41,7 @@ private
   end
 
   def set_likes
-    @likes = policy_scope(Like).includes(:likeable, :user)
+    @likes = policy_scope(Like).order(:created_at).includes(:likeable, :user)
     @likes = @likes.where(params.permit(:likeable_id, :likeable_type, :user_id))
   end
 
