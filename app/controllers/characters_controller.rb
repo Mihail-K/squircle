@@ -44,7 +44,7 @@ class CharactersController < ApplicationController
 private
 
   def set_characters
-    @characters = policy_scope(Character).includes(:user, :creator)
+    @characters = policy_scope(Character).order(:created_at).includes(:user, :creator)
     @characters = @characters.includes(:deleted_by) if allowed_to?(:view_deleted_characters)
     @characters = @characters.where(params.permit(:user_id, :creator_id))
   end

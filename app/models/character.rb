@@ -36,7 +36,7 @@ class Character < ApplicationRecord
   include PostCountable
   include SoftDeletable
 
-  belongs_to :user, counter_cache: :characters_count, inverse_of: :characters, touch: true
+  belongs_to :user, inverse_of: :characters, touch: true
   belongs_to :creator, counter_cache: :created_characters_count, class_name: 'User', touch: true
 
   has_many :posts, inverse_of: :character
@@ -54,4 +54,12 @@ class Character < ApplicationRecord
   validates :user, presence: true, on: :create
   validates :creator, presence: true
   validates :gallery_images, length: { maximum: 5 }
+
+  before_commit :set_characters_count, unless: -> { user.destroyed? }
+
+private
+
+  def set_characters_count
+    user.update_columns(characters_count: user.characters.not_deleted.count)
+  end
 end
