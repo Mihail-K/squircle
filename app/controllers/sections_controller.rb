@@ -46,6 +46,7 @@ private
     @sections = policy_scope(Section)
     @sections = @sections.includes(:creator) if allowed_to?(:create_sections)
     @sections = @sections.includes(:deleted_by) if allowed_to?(:view_deleted_sections)
+    @sections = @sections.where(parent_id: params[:parent_id]) if params.key?(:parent_id)
   end
 
   def set_section

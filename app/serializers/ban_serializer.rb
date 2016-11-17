@@ -22,6 +22,6 @@ class BanSerializer < ApplicationSerializer
   end
 
   belongs_to :user
-  belongs_to :creator, serializer: UserSerializer, if: :allowed_to_create_bans?
-  belongs_to :deleted_by, serializer: UserSerializer, if: :allowed_to_view_deleted_bans?
+  belongs_to :creator, if: :allowed_to_create_bans?
+  belongs_to :deleted_by, if: :allowed_to_view_deleted_bans?
 end

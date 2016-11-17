@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161113175712) do
+ActiveRecord::Schema.define(version: 20161116141847) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -299,8 +299,10 @@ ActiveRecord::Schema.define(version: 20161113175712) do
     t.integer  "posts_count",         default: 0,     null: false
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
+    t.integer  "parent_id"
     t.index ["creator_id"], name: "index_sections_on_creator_id", using: :btree
     t.index ["deleted_by_id"], name: "index_sections_on_deleted_by_id", using: :btree
+    t.index ["parent_id"], name: "index_sections_on_parent_id", using: :btree
     t.index ["title"], name: "index_sections_on_title", using: :btree
   end
 
@@ -379,6 +381,7 @@ ActiveRecord::Schema.define(version: 20161113175712) do
   add_foreign_key "roles", "users", column: "deleted_by_id"
   add_foreign_key "roles_users", "roles"
   add_foreign_key "roles_users", "users"
+  add_foreign_key "sections", "sections", column: "parent_id"
   add_foreign_key "sections", "users", column: "creator_id"
   add_foreign_key "sections", "users", column: "deleted_by_id"
   add_foreign_key "subscriptions", "conversations"

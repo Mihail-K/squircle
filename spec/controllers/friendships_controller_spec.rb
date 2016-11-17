@@ -37,6 +37,7 @@ RSpec.describe FriendshipsController, type: :controller do
 
       expect(response).to have_http_status :ok
       expect(response).to match_response_schema :friendship
+      expect(response.body).to include_json(friendship: { id: friendship.id })
     end
 
     it "returns 404 if the friendship doesn't exist" do
@@ -66,6 +67,7 @@ RSpec.describe FriendshipsController, type: :controller do
 
         expect(response).to have_http_status :created
         expect(response).to match_response_schema :friendship
+        expect(response.body).to include_json(friendship: { friend_id: friend.id })
       end.to change { Friendship.count }.by(1)
     end
 
@@ -76,7 +78,7 @@ RSpec.describe FriendshipsController, type: :controller do
 
         expect(response).to have_http_status :unprocessable_entity
         expect(response).to match_response_schema :errors
-        expect(json[:errors]).to have_key :friend
+        expect(response.body).to include_json(errors: { friend: ["can't be blank"] })
       end.not_to change { Friendship.count }
     end
 
