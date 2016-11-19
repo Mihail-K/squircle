@@ -35,7 +35,7 @@ class PostSerializer < ApplicationSerializer
   has_many :likes, if: :include_likes?
 
   def include_likes?
-    true && instance_options[:likes].is_a?(Hash)
+    instance_options[:likes].is_a?(Hash)
   end
 
   def likes
