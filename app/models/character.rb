@@ -33,6 +33,7 @@
 #
 
 class Character < ApplicationRecord
+  include Indexable
   include PostCountable
   include SoftDeletable
 
@@ -46,6 +47,8 @@ class Character < ApplicationRecord
 
   serialize :gallery_images, Array
   mount_uploaders :gallery_images, AvatarUploader
+
+  indexable primary: :name, secondary: %i(title description)
 
   validates :name, presence: true, length: { maximum: 30 }
   validates :title, length: { in: 5..100 }

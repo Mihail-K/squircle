@@ -40,6 +40,7 @@
 
 class User < ApplicationRecord
   include Permissible::Model
+  include Indexable
   include PostCountable
   include SoftDeletable
 
@@ -72,6 +73,8 @@ class User < ApplicationRecord
   mount_uploader :avatar, AvatarUploader
   # process_in_background :avatar
 
+  indexable primary: :display_name
+
   validates :email, presence: true, uniqueness: true
   validates :display_name, presence: true, uniqueness: true
   validates :date_of_birth, presence: true
@@ -84,10 +87,9 @@ class User < ApplicationRecord
   before_create :assign_default_user_roles
   before_create :set_last_active_at_timestamp
 
-  with_options if: :email_previously_changed? do |o|
-    o.after_commit :regenerate_email_token
-    o.after_commit :send_email_confirmation
-  end
+  before_save :generate_email_token, if: :email_changed?
+
+  after_commit :send_email_confirmation, if: :email_previously_changed?
 
   with_options unless: :banned? do |o|
     o.after_commit :send_user_inactive_email, if: %i(bucket_previously_changed? inactive?)
@@ -128,6 +130,10 @@ private
 
   def set_last_active_at_timestamp
     self.last_active_at = Time.current
+  end
+
+  def generate_email_token
+    self.email_token = self.class.generate_unique_secure_token
   end
 
   def send_email_confirmation

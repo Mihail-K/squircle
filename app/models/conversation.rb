@@ -41,6 +41,7 @@
 #
 
 class Conversation < ApplicationRecord
+  include Indexable
   include PostCountable
   include SoftDeletable
 
@@ -58,6 +59,8 @@ class Conversation < ApplicationRecord
   has_one :last_post, foreign_key: :id, primary_key: :last_post_id, class_name: 'Post', inverse_of: :conversation
 
   accepts_nested_attributes_for :posts, limit: 1
+
+  indexable primary: :title
 
   validates :title, presence: true
   validates :author, presence: true
