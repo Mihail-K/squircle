@@ -6,27 +6,51 @@ RSpec.describe UserDisplayNameJob, type: :job do
     create :user
   end
 
-  let! :like do
-    create :like, user: user
+  context 'for characters' do
+    let! :character do
+      create :character, user: user
+    end
+
+    before :each do
+      user.update_columns(display_name: 'A different name')
+    end
+
+    it 'updates cached display names on likes' do
+      expect do
+        UserDisplayNameJob.perform_now(user.id)
+      end.to change { character.reload.display_name }.to(user.display_name)
+    end
   end
 
-  let! :post do
-    create :post, author: user
+  context 'for likes' do
+    let! :like do
+      create :like, user: user
+    end
+
+    before :each do
+      user.update_columns(display_name: 'A different name')
+    end
+
+    it 'updates cached display names on likes' do
+      expect do
+        UserDisplayNameJob.perform_now(user.id)
+      end.to change { like.reload.display_name }.to(user.display_name)
+    end
   end
 
-  before :each do
-    user.update_columns(display_name: 'A different name')
-  end
+  context 'for posts' do
+    let! :post do
+      create :post, author: user
+    end
 
-  it 'updates cached display names on likes' do
-    expect do
-      UserDisplayNameJob.perform_now(user.id)
-    end.to change { like.reload.display_name }.to(user.display_name)
-  end
+    before :each do
+      user.update_columns(display_name: 'A different name')
+    end
 
-  it 'updates cached display names on posts' do
-    expect do
-      UserDisplayNameJob.perform_now(user.id)
-    end.to change { post.reload.display_name }.to(user.display_name)
+    it 'updates cached display names on posts' do
+      expect do
+        UserDisplayNameJob.perform_now(user.id)
+      end.to change { post.reload.display_name }.to(user.display_name)
+    end
   end
 end

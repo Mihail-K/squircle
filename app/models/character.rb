@@ -17,6 +17,7 @@
 #  gallery_images :string
 #  deleted_by_id  :integer
 #  deleted_at     :datetime
+#  display_name   :string
 #
 # Indexes
 #
@@ -48,7 +49,7 @@ class Character < ApplicationRecord
   serialize :gallery_images, Array
   mount_uploaders :gallery_images, AvatarUploader
 
-  indexable primary: :name, secondary: %i(title description)
+  indexable primary: :name, secondary: %i(title display_name), tertiary: :description
 
   validates :name, presence: true, length: { maximum: 30 }
   validates :title, length: { in: 5..100 }
@@ -58,9 +59,15 @@ class Character < ApplicationRecord
   validates :creator, presence: true
   validates :gallery_images, length: { maximum: 5 }
 
+  before_save :set_display_name, if: -> { new_record? || user_id_changed? }
+
   before_commit :set_characters_count, unless: -> { user.destroyed? }
 
 private
+
+  def set_display_name
+    self.display_name = user&.display_name
+  end
 
   def set_characters_count
     user.update_columns(characters_count: user.characters.not_deleted.count)

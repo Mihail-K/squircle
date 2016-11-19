@@ -4,12 +4,16 @@ class UserDisplayNameJob < ApplicationJob
 
   def perform(user_id)
     @user = User.find(user_id)
-    [likes, posts].each do |objects|
+    [characters, likes, posts].each do |objects|
       objects.update_all(display_name: @user.display_name, updated_at: Time.current)
     end
   end
 
 private
+
+  def characters
+    Character.where(user: @user)
+  end
 
   def likes
     Like.where(user: @user)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161119184224) do
+ActiveRecord::Schema.define(version: 20161119211638) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 20161119184224) do
     t.string   "gallery_images"
     t.integer  "deleted_by_id"
     t.datetime "deleted_at"
+    t.string   "display_name"
     t.index ["creator_id"], name: "index_characters_on_creator_id", using: :btree
     t.index ["deleted_by_id"], name: "index_characters_on_deleted_by_id", using: :btree
     t.index ["name"], name: "index_characters_on_name", using: :btree

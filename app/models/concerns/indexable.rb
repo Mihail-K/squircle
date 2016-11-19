@@ -5,6 +5,7 @@ module Indexable
   included do
     has_one :index, as: :indexable, inverse_of: :indexable, dependent: :destroy
 
+    after_save :remove_index, if: -> { has_attribute?(:deleted) && deleted_changed?(to: true) }
     after_commit :queue_index_update, on: %i(create update), if: -> { index.nil? || index_stale? }
 
     def self.indexable(**options)
@@ -26,8 +27,12 @@ module Indexable
     index_attributes(rank).map { |attribute| send(attribute) }.flatten
   end
 
+  def remove_index
+    index&.destroy
+  end
+
   def queue_index_update
-    IndexJob.perform_later(id, self.class.name)
+    IndexJob.perform_later(id, self.class.name) unless has_attribute?(:deleted) && deleted?
   end
 
   def index_stale?
