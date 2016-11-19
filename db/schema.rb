@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161116141847) do
+ActiveRecord::Schema.define(version: 20161119184224) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -91,6 +91,21 @@ ActiveRecord::Schema.define(version: 20161116141847) do
     t.index ["friend_id"], name: "index_friendships_on_friend_id", using: :btree
     t.index ["user_id", "friend_id"], name: "index_friendships_on_user_id_and_friend_id", unique: true, using: :btree
     t.index ["user_id"], name: "index_friendships_on_user_id", using: :btree
+  end
+
+  create_table "indices", force: :cascade do |t|
+    t.string   "indexable_type",             null: false
+    t.integer  "indexable_id",               null: false
+    t.string   "primary",                    null: false, array: true
+    t.text     "secondary",                               array: true
+    t.text     "tertiary",                                array: true
+    t.integer  "version",        default: 0, null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.index ["indexable_type", "indexable_id"], name: "index_indices_on_indexable_type_and_indexable_id", unique: true, using: :btree
+    t.index ["primary"], name: "index_indices_on_primary", using: :btree
+    t.index ["secondary"], name: "index_indices_on_secondary", using: :btree
+    t.index ["tertiary"], name: "index_indices_on_tertiary", using: :btree
   end
 
   create_table "likes", force: :cascade do |t|

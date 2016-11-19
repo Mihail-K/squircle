@@ -37,6 +37,7 @@
 
 class Post < ApplicationRecord
   include Formattable
+  include Indexable
   include Likeable
   include SoftDeletable
 
@@ -59,6 +60,8 @@ class Post < ApplicationRecord
   validates :body, presence: true, length: { in: 10..10_000, if: :body? }
 
   formattable :body
+
+  indexable primary: :body, secondary: :display_name
 
   before_save :set_display_name
   before_commit :set_posts_counts

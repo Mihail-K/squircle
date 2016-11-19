@@ -75,20 +75,30 @@ class ApplicationController < ActionController::API
     end
   end
 
-  def allowed_to?(permission)
-    current_user.try(:allowed_to?, permission)
-  end
+  delegate :allowed_to?, to: :current_user, allow_nil: true
 
-  def forbidden_to?(permission)
-    current_user.try(:forbidden_to?, permission)
-  end
+  delegate :forbidden_to?, to: :current_user, allow_nil: true
 
-private
+protected
 
   def current_object
-    instance_variable_get("@#{current_object_singular_name}") ||
-      instance_variable_get("@#{current_object_plural_name}") ||
-      current_model
+    current_object_singular || current_object_plural || current_model
+  end
+
+  def current_object_singular
+    instance_variable_get("@#{current_object_singular_name}")
+  end
+
+  def current_object_singular=(value)
+    instance_variable_set("@#{current_object_singular_name}", value)
+  end
+
+  def current_object_plural
+    instance_variable_get("@#{current_object_plural_name}")
+  end
+
+  def current_object_plural=(value)
+    instance_variable_set("@#{current_object_plural_name}", value)
   end
 
   def current_object_singular_name

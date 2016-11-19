@@ -10,6 +10,7 @@ RSpec.describe Post, type: :model do
     expect(post).to be_valid
   end
 
+  it_behaves_like Indexable
   it_behaves_like Likeable
   it_behaves_like SoftDeletable
 

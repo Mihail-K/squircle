@@ -31,6 +31,7 @@ require 'factory_girl_rails'
 require 'support/api_schema_matcher'
 require 'support/factory_girl'
 require 'support/authentication'
+require 'support/job'
 require 'support/json'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -67,6 +68,9 @@ ActiveJob::Base.queue_adapter = :test
 RSpec.configure do |config|
   config.include JsonHelper, type: :request
   config.include JsonHelper, type: :controller
+
+  config.include JobHelper, type: :controller
+  config.include JobHelper, type: :model
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
