@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161119211638) do
+ActiveRecord::Schema.define(version: 20161119212901) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -97,7 +97,7 @@ ActiveRecord::Schema.define(version: 20161119211638) do
   create_table "indices", force: :cascade do |t|
     t.string   "indexable_type",             null: false
     t.integer  "indexable_id",               null: false
-    t.string   "primary",                    null: false, array: true
+    t.text     "primary",                    null: false, array: true
     t.text     "secondary",                               array: true
     t.text     "tertiary",                                array: true
     t.integer  "version",        default: 0, null: false

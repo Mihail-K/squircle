@@ -6,7 +6,7 @@
 #  id             :integer          not null, primary key
 #  indexable_type :string           not null
 #  indexable_id   :integer          not null
-#  primary        :string           not null, is an Array
+#  primary        :text             not null, is an Array
 #  secondary      :text             is an Array
 #  tertiary       :text             is an Array
 #  version        :integer          default(0), not null
