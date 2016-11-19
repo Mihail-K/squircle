@@ -42,5 +42,13 @@ RSpec.shared_examples_for Indexable do
         indexable.save
       end.not_to have_enqueued_job(IndexJob).on_queue('medium')
     end
+
+    if described_class.include?(SoftDeletable)
+      it 'removes the index when the record is soft deleted' do
+        expect do
+          indexable.soft_delete
+        end.to change { Index.count }.by(-1)
+      end
+    end
   end
 end
