@@ -15,7 +15,6 @@ module Squircle
     ActiveModelSerializers.config.adapter = :json
 
     # Redis and Redis-Rails configurations.
-    config.cache_store = :redis_store, ENV['REDIS_URL']
     Resque.redis = ENV['REDIS_URL']
     Resque.redis.namespace = 'squircle:resque'
 

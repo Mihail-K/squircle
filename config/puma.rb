@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 workers Integer(ENV['WEB_CONCURRENCY'] || 2) unless Gem.win_platform?
-threads_count = Integer(ENV['RAILS_MAX_THREADS'] || 5)
-threads threads_count, threads_count
+threads 1, Integer(ENV['RAILS_MAX_THREADS'] || 5)
 
 preload_app!
 

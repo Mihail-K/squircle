@@ -51,5 +51,7 @@ group :development, :test do
 end
 
 group :production do
+  gem 'connection_pool'
+  gem 'dalli'
   gem 'fog-aws'
 end

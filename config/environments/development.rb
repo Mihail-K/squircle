@@ -46,6 +46,9 @@ Rails.application.configure do
   # Raises error for missing translations
   config.action_view.raise_on_missing_translations = true
 
+  # Use redis for Rails cache in development.
+  config.cache_store = :redis_store, ENV['REDIS_URL']
+
   ActiveSupport::Notifications.subscribe 'cache_write.active_support' do |*args|
     event = ActiveSupport::Notifications::Event.new(*args)
     Rails.logger.debug(<<-TEXT.squish.red)

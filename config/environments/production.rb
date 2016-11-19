@@ -66,4 +66,17 @@ Rails.application.configure do
       'Cache-Control' => "max-age=#{365.days.to_i}"
     }
   end
+
+  if ENV['MEMCACHIER_SERVERS'].present?
+    # Use memcached for Rails cache if configuration present.
+    config.cache_store = :dalli_store, ENV['MEMCACHIER_SERVERS'].split(','), {
+      username:             ENV['MEMCACHIER_USERNAME'],
+      password:             ENV['MEMCACHIER_PASSWORD'],
+      failover:             true,
+      socket_timeout:       1.5,
+      socket_failure_delay: 0.2,
+      down_retry_delay:     60,
+      pool_size:            Integer(ENV['RAILS_MAX_THREADS'] || 5)
+    }
+  end
 end
