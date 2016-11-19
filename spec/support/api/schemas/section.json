@@ -21,6 +21,16 @@
             }
           ]
         },
+        "parent_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
         "title": {
           "type": "string"
         },
@@ -93,10 +103,21 @@
               "$ref": "user.json#/definitions/user"
             }
           ]
+        },
+        "parent": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/section"
+            }
+          ]
         }
       },
       "required": [
         "id",
+        "parent_id",
         "title",
         "description",
         "posts_count",

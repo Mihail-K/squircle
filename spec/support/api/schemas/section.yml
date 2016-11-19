@@ -11,18 +11,22 @@ definitions:
         type: integer
       deleted_by_id:
         oneOf:
-        - type: 'null'
-        - type: integer
+          - type: 'null'
+          - type: integer
+      parent_id:
+        oneOf:
+          - type: 'null'
+          - type: integer
       title:
         type: string
       description:
         oneOf:
-        - type: 'null'
-        - type: string
+          - type: 'null'
+          - type: string
       logo_url:
         oneOf:
-        - type: 'null'
-        - type: string
+          - type: 'null'
+          - type: string
       posts_count:
         type: integer
       conversations_count:
@@ -37,9 +41,9 @@ definitions:
         format: date-time
       deleted_at:
         oneOf:
-        - type: 'null'
-        - type: string
-          format: date-time
+          - type: 'null'
+          - type: string
+            format: date-time
       postable:
         type: boolean
       editable:
@@ -50,21 +54,26 @@ definitions:
         $ref: user.json#/definitions/user
       deleted_by:
         oneOf:
-        - type: 'null'
-        - $ref: user.json#/definitions/user
+          - type: 'null'
+          - $ref: user.json#/definitions/user
+      parent:
+        oneOf:
+          - type: 'null'
+          - $ref: '#/definitions/section'
     required:
-    - id
-    - title
-    - description
-    - posts_count
-    - deleted
-    - created_at
-    - updated_at
+      - id
+      - parent_id
+      - title
+      - description
+      - posts_count
+      - deleted
+      - created_at
+      - updated_at
     additionalProperties: false
 type: object
 properties:
   section:
     $ref: "#/definitions/section"
 required:
-- section
+  - section
 additionalProperties: false
