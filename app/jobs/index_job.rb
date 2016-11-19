@@ -3,8 +3,8 @@ class IndexJob < ApplicationJob
   queue_as :medium
 
   def perform(indexable_id, indexable_type)
-    index = Index.find_or_initialize_by(indexable_id: indexable_id, indexable_type: indexable_type)
-    index.populate if index.persisted?
-    index.save
+    Index.where(indexable_id: indexable_id, indexable_type: indexable_type)
+         .first_or_initialize
+         .save
   end
 end
