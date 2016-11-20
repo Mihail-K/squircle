@@ -20,6 +20,6 @@ private
       }
     })
     @indices = @indices.page(params[:page]).per(params[:count])
-    @indices = @indices.records.includes(:indexable)
+    @indices = @indices.records.includes(:indexable).to_a
   end
 end
