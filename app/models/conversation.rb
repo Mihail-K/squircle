@@ -72,8 +72,8 @@ class Conversation < ApplicationRecord
 
   before_save :set_locked_at, if: -> { locked_changed?(to: true) }
 
-  before_commit :set_posts_counts
-  before_commit :set_conversations_count
+  before_commit(on: %i(create destroy)) { set_counters }
+  before_commit(on: :update, if: :deleted_previously_changed?) { set_counters }
 
   scope :visible, -> {
     not_deleted.where(section: Section.visible)
@@ -98,6 +98,11 @@ private
 
   def set_first_post_author
     posts.first&.author = author
+  end
+
+  def set_counters
+    set_posts_counts
+    set_conversations_count
   end
 
   def set_posts_counts
