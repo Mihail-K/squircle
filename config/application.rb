@@ -22,6 +22,10 @@ module Squircle
     config.middleware.use Rack::Deflater
     config.middleware.delete Rack::Lock
 
+    # Add Kaminari support for Elasticsearch.
+    Kaminari::Hooks.init
+    Elasticsearch::Model::Response::Response.__send__ :include, Elasticsearch::Model::Response::Pagination::Kaminari
+
     # CORS configurations.
     config.middleware.insert_before 0, Rack::Cors do
       allow do
