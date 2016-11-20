@@ -20,5 +20,6 @@ private
                    tertiary  tertiary.english^2  tertiary.raw^3)
       }
     })
+    @indices = @indices.records.includes(:indexable)
   end
 end
