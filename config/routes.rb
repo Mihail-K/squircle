@@ -10,6 +10,8 @@ Rails.application.routes.draw do
 
     resources :friendships, only: %i(index show create destroy)
 
+    resources :indices, only: :index
+
     resources :likes, only: %i(index show create destroy)
 
     resources :notifications, only: %i(index show update destroy)

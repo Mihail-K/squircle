@@ -12,7 +12,13 @@ class IndicesController < ApplicationController
 private
 
   def set_indices
-    @indices = policy_scope(Index).includes(:indexable)
-    @indices = @indices.where(params.permit(:indexable_type))
+    @indices = Index.search(query: {
+      multi_match: {
+        query:  params[:query],
+        fields: %w(primary   primary.english^2   primary.raw^3
+                   secondary secondary.english^2 secondary.raw^3
+                   tertiary  tertiary.english^2  tertiary.raw^3)
+      }
+    })
   end
 end
