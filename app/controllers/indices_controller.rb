@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 class IndicesController < ApplicationController
   before_action :set_indices
-  before_action :apply_pagination
 
   def index
     render json: @indices,
@@ -20,6 +19,7 @@ private
                    tertiary  tertiary.english^2  tertiary.raw^3)
       }
     })
+    @indices = @indices.page(params[:page]).per(params[:count])
     @indices = @indices.records.includes(:indexable)
   end
 end
