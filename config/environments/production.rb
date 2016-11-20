@@ -81,5 +81,5 @@ Rails.application.configure do
   end
 
   # Use Elasticsearch as the application search index.
-  Elasticsearch::Model.client = Elasticsearch::Client.new(host: ENV['BONSAI_URL'], log: true)
+  Elasticsearch::Model.client = Elasticsearch::Client.new(host: ENV['BONSAI_URL'])
 end

@@ -19,6 +19,7 @@ end
 require 'spec_helper'
 require 'rspec/json_expectations'
 require 'rspec/rails'
+
 # Add additional requires below this line. Rails is not loaded until this point!
 
 Dir[Rails.root.join('spec/support/concerns/**/*.rb')].uniq.sort.each do |file_name|

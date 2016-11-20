@@ -43,4 +43,7 @@ Rails.application.configure do
 
   # Raises error for missing translations
   config.action_view.raise_on_missing_translations = true
+
+  # Use the Elasticsearch test cluster for testing and RSpecs.
+  Elasticsearch::Model.client = Elasticsearch::Client.new(host: 'localhost:9200')
 end

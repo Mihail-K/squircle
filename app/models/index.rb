@@ -35,6 +35,8 @@ class Index < ApplicationRecord
 
   before_save :increment_version, if: :changed?
 
+  index_name 'test_indices' if Rails.env.test?
+
   mapping dynamic: false do
     indexes :id, type: 'long'
     indexes :indexable_id, type: 'long'
