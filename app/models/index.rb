@@ -42,15 +42,15 @@ class Index < ApplicationRecord
 
     indexes :primary, type: 'string', fields: {
       english: { type: 'string', analyzer: 'english' },
-      raw:     { index: 'not_analyzed' }
+      raw:     { type: 'string', index: 'not_analyzed' }
     }
     indexes :secondary, type: 'string', boost: 0.5, fields: {
       english: { type: 'string', analyzer: 'english' },
-      raw:     { index: 'not_analyzed' }
+      raw:     { type: 'string', index: 'not_analyzed' }
     }
     indexes :tertiary, type: 'string', boost: 0.25, fields: {
       english: { type: 'string', analyzer: 'english' },
-      raw:     { index: 'not_analyzed' }
+      raw:     { type: 'string', index: 'not_analyzed' }
     }
   end
 
