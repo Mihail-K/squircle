@@ -79,4 +79,7 @@ Rails.application.configure do
       pool_size:            Integer(ENV['RAILS_MAX_THREADS'] || 5)
     }
   end
+
+  # Use Elasticsearch as the application search index.
+  Elasticsearch::Model.client = Elasticsearch::Client.new(host: ENV['BONSAI_URL'], log: true)
 end

@@ -22,6 +22,9 @@
 #
 
 class Index < ApplicationRecord
+  include Elasticsearch::Model
+  include Elasticsearch::Model::Callbacks
+
   belongs_to :indexable, polymorphic: true, inverse_of: :index
 
   validates :indexable, presence: true
@@ -31,6 +34,25 @@ class Index < ApplicationRecord
   before_validation :populate, if: -> { indexable.present? }
 
   before_save :increment_version, if: :changed?
+
+  mapping dynamic: false do
+    indexes :id, type: 'long'
+    indexes :indexable_id, type: 'long'
+    indexes :indexable_type, type: 'keyword'
+
+    indexes :primary, type: 'text', fields: {
+      english: { type: 'text', analyzer: 'english' },
+      raw:     { type: 'keyword' }
+    }
+    indexes :secondary, type: 'text', boost: 0.5, fields: {
+      english: { type: 'text', analyzer: 'english' },
+      raw:     { type: 'keyword' }
+    }
+    indexes :tertiary, type: 'text', boost: 0.25, fields: {
+      english: { type: 'text', analyzer: 'english' },
+      raw:     { type: 'keyword' }
+    }
+  end
 
   def populate
     %i(primary secondary tertiary).each do |rank|

@@ -86,6 +86,19 @@ GEM
     dotenv-rails (2.1.1)
       dotenv (= 2.1.1)
       railties (>= 4.0, < 5.1)
+    elasticsearch (5.0.0)
+      elasticsearch-api (= 5.0.0)
+      elasticsearch-transport (= 5.0.0)
+    elasticsearch-api (5.0.0)
+      multi_json
+    elasticsearch-model (0.1.9)
+      activesupport (> 3)
+      elasticsearch (> 0.4)
+      hashie
+    elasticsearch-rails (0.1.9)
+    elasticsearch-transport (5.0.0)
+      faraday
+      multi_json
     erubis (2.7.0)
     excon (0.54.0)
     factory_girl (4.7.0)
@@ -95,6 +108,8 @@ GEM
       railties (>= 3.0.0)
     faker (1.6.6)
       i18n (~> 0.5)
+    faraday (0.10.0)
+      multipart-post (>= 1.2, < 3)
     fog-aws (0.12.0)
       fog-core (~> 1.38)
       fog-json (~> 1.0)
@@ -113,6 +128,7 @@ GEM
     formatador (0.2.5)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
+    hashie (3.4.6)
     i18n (0.7.0)
     ipaddress (0.8.3)
     json (2.0.2)
@@ -139,6 +155,7 @@ GEM
     minitest (5.9.1)
     mono_logger (1.1.0)
     multi_json (1.12.1)
+    multipart-post (2.0.0)
     nio4r (1.2.1)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
@@ -305,6 +322,8 @@ DEPENDENCIES
   dalli
   doorkeeper
   dotenv-rails
+  elasticsearch-model
+  elasticsearch-rails
   factory_girl_rails
   faker
   fog-aws
