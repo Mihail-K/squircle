@@ -38,19 +38,19 @@ class Index < ApplicationRecord
   mapping dynamic: false do
     indexes :id, type: 'long'
     indexes :indexable_id, type: 'long'
-    indexes :indexable_type, type: 'keyword'
+    indexes :indexable_type, index: 'not_analyzed'
 
-    indexes :primary, type: 'text', fields: {
-      english: { type: 'text', analyzer: 'english' },
-      raw:     { type: 'keyword' }
+    indexes :primary, type: 'string', fields: {
+      english: { type: 'string', analyzer: 'english' },
+      raw:     { index: 'not_analyzed' }
     }
-    indexes :secondary, type: 'text', boost: 0.5, fields: {
-      english: { type: 'text', analyzer: 'english' },
-      raw:     { type: 'keyword' }
+    indexes :secondary, type: 'string', boost: 0.5, fields: {
+      english: { type: 'string', analyzer: 'english' },
+      raw:     { index: 'not_analyzed' }
     }
-    indexes :tertiary, type: 'text', boost: 0.25, fields: {
-      english: { type: 'text', analyzer: 'english' },
-      raw:     { type: 'keyword' }
+    indexes :tertiary, type: 'string', boost: 0.25, fields: {
+      english: { type: 'string', analyzer: 'english' },
+      raw:     { index: 'not_analyzed' }
     }
   end
 
