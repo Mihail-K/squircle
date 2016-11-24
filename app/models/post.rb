@@ -17,6 +17,7 @@
 #  deleted_at      :datetime
 #  likes_count     :integer          default(0), not null
 #  display_name    :string           not null
+#  character_name  :string
 #
 # Indexes
 #
@@ -64,6 +65,8 @@ class Post < ApplicationRecord
   indexable primary: :body, secondary: :display_name
 
   before_save :set_display_name
+  before_save :set_character_name, if: -> { new_record? || character_id_changed? }
+
   before_commit :set_posts_counts
 
   with_options unless: -> { conversation.destroyed? } do |o|
@@ -89,6 +92,10 @@ class Post < ApplicationRecord
   }
 
 private
+
+  def set_character_name
+    self.character_name = character&.name
+  end
 
   def set_display_name
     self.display_name = author.display_name

@@ -8,6 +8,7 @@ class PostSerializer < ApplicationSerializer
   attribute :deleted_by_id, if: :allowed_to_view_deleted_posts?
 
   attribute :display_name
+  attribute :character_name
   attribute :body
   attribute :formatted_body
   attribute :likes_count

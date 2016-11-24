@@ -25,7 +25,12 @@ definitions:
           - type: integer
       display_name:
         type: string
-        description: "Contains the author's cached display name." 
+        description: "A cached copy of the author's display name."
+      character_name:
+        oneOf:
+          - type: 'null'
+          - type: string
+        description: "A cached copy of the character's name."
       body:
         type: string
         description: Contains the original post body, in unprocessed form.
@@ -90,6 +95,7 @@ definitions:
       - character_id
       - conversation_id
       - display_name
+      - character_name
       - body
       - formatted_body
       - likes_count

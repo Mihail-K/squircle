@@ -40,6 +40,24 @@ RSpec.describe Post, type: :model do
     end.to change { post.display_name }.to(post.author.display_name)
   end
 
+  it "copies the character's name" do
+    character = build :character, user: post.author
+
+    expect do
+      post.character = character
+      post.save
+    end.to change { post.character_name }.to(character.name)
+  end
+
+  it "updates the character's name when the character changes" do
+    character = build :character, user: post.author
+    post.save
+
+    expect do
+      post.update(character: character)
+    end.to change { post.character_name }.to(character.name)
+  end
+
   describe '.formatted_body' do
     before :each do
       post.save
