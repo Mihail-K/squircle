@@ -63,6 +63,8 @@ class Character < ApplicationRecord
 
   before_commit :set_characters_count, unless: -> { user.destroyed? }
 
+  after_commit :update_character_name_caches, on: :update, if: :name_previously_changed?
+
 private
 
   def set_display_name
@@ -71,5 +73,9 @@ private
 
   def set_characters_count
     user.update_columns(characters_count: user.characters.not_deleted.count)
+  end
+
+  def update_character_name_caches
+    CharacterNameJob.perform_later(id)
   end
 end

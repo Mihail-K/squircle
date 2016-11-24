@@ -47,4 +47,12 @@ RSpec.describe Character, type: :model do
     character.save
     expect(character.creator).to eq character.user
   end
+
+  it 'queues a job when the name changes' do
+    character.save
+
+    expect do
+      character.update(name: Faker::Internet.user_name)
+    end.to have_enqueued_job(CharacterNameJob).with(character.id)
+  end
 end
