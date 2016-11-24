@@ -12,6 +12,7 @@ private
 
   def set_indices
     @indices = Index.search(QueryBuilder.new(params).build)
+    @indices.search.definition[:preference] = request.remote_ip
     @indices = @indices.page(params[:page]).per(params[:count])
     @indices = @indices.records
   end
