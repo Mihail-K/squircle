@@ -91,6 +91,7 @@ GEM
       elasticsearch-transport (= 5.0.0)
     elasticsearch-api (5.0.0)
       multi_json
+    elasticsearch-dsl (0.1.4)
     elasticsearch-model (0.1.9)
       activesupport (> 3)
       elasticsearch (> 0.4)
@@ -322,6 +323,7 @@ DEPENDENCIES
   dalli
   doorkeeper
   dotenv-rails
+  elasticsearch-dsl
   elasticsearch-model
   elasticsearch-rails
   factory_girl_rails

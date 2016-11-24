@@ -6,6 +6,9 @@ AllCops:
   - db/schema.rb
   TargetRubyVersion: 2.3
 
+Lint/ShadowingOuterLocalVariable:
+  Enabled: false
+
 Metrics/AbcSize:
   Exclude:
   - db/migrate/*

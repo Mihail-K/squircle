@@ -11,14 +11,7 @@ class IndicesController < ApplicationController
 private
 
   def set_indices
-    @indices = Index.search(query: {
-                              multi_match: {
-                                query:  params[:query] || '',
-                                fields: %w(primary primary.english^1.5
-                                           secondary secondary.english^1.5
-                                           tertiary tertiary.english^1.5)
-                              }
-                            })
+    @indices = Index.search(QueryBuilder.new(params).build)
     @indices = @indices.page(params[:page]).per(params[:count])
     @indices = @indices.records
   end
