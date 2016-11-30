@@ -56,6 +56,8 @@ class User < ApplicationRecord
   has_many :characters, inverse_of: :user
   has_many :created_characters, foreign_key: :creator_id, class_name: 'Character'
 
+  has_many :email_confirmations, inverse_of: :user, dependent: :destroy
+
   has_many :posts, foreign_key: :author_id, inverse_of: :author
 
   has_many :notifications, inverse_of: :user, dependent: :delete_all
@@ -67,7 +69,6 @@ class User < ApplicationRecord
     lost:     'lost'
   }
 
-  has_secure_token :email_token
   has_secure_password
 
   mount_uploader :avatar, AvatarUploader
@@ -87,9 +88,7 @@ class User < ApplicationRecord
   before_create :assign_default_user_roles
   before_create :set_last_active_at_timestamp
 
-  before_save :generate_email_token, if: :email_changed?
-
-  after_commit :send_email_confirmation, if: :email_previously_changed?
+  before_save :build_email_confirmation, if: -> { new_record? || email_changed? }
 
   with_options unless: :banned? do |o|
     o.after_commit :send_user_inactive_email, if: %i(bucket_previously_changed? inactive?)
@@ -132,12 +131,8 @@ private
     self.last_active_at = Time.current
   end
 
-  def generate_email_token
-    self.email_token = self.class.generate_unique_secure_token
-  end
-
-  def send_email_confirmation
-    UserMailer.confirmation(id).deliver_later
+  def build_email_confirmation
+    email_confirmations.build(old_email: email_was, new_email: email)
   end
 
   def send_user_inactive_email

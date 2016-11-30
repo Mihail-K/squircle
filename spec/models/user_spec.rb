@@ -50,17 +50,18 @@ RSpec.describe User, type: :model do
     expect(user).not_to be_valid
   end
 
-  it 'generates an email token on creation' do
-    user.save
-    expect(user.email_token).to be_present
+  it 'creates an email confirmation when a new user is created' do
+    expect do
+      user.save
+    end.to change { user.email_confirmations.count }.by(1)
   end
 
-  it 'generates a new email token whenever the email is changed' do
+  it 'creates an email confirmation when a user changes their email address' do
     user.save
-    old_token = user.email_token
 
-    user.update email: Faker::Internet.email
-    expect(user.email_token).not_to eq old_token
+    expect do
+      user.update(email: Faker::Internet.email)
+    end.to change { user.email_confirmations.count }.by(1)
   end
 
   it 'queues a job when its display name changes' do

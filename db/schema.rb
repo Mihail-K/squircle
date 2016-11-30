@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161124141911) do
+ActiveRecord::Schema.define(version: 20161129165308) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -82,6 +82,19 @@ ActiveRecord::Schema.define(version: 20161124141911) do
     t.index ["last_post_id"], name: "index_conversations_on_last_post_id", using: :btree
     t.index ["locked_by_id"], name: "index_conversations_on_locked_by_id", using: :btree
     t.index ["section_id"], name: "index_conversations_on_section_id", using: :btree
+  end
+
+  create_table "email_confirmations", id: false, force: :cascade do |t|
+    t.uuid     "token",                       null: false
+    t.integer  "user_id",                     null: false
+    t.string   "status",     default: "open", null: false
+    t.string   "old_email"
+    t.string   "new_email",                   null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.index ["status"], name: "index_email_confirmations_on_status", using: :btree
+    t.index ["token"], name: "index_email_confirmations_on_token", unique: true, using: :btree
+    t.index ["user_id"], name: "index_email_confirmations_on_user_id", using: :btree
   end
 
   create_table "friendships", force: :cascade do |t|
@@ -373,6 +386,7 @@ ActiveRecord::Schema.define(version: 20161124141911) do
   add_foreign_key "conversations", "users", column: "author_id"
   add_foreign_key "conversations", "users", column: "deleted_by_id"
   add_foreign_key "conversations", "users", column: "locked_by_id"
+  add_foreign_key "email_confirmations", "users"
   add_foreign_key "friendships", "users"
   add_foreign_key "friendships", "users", column: "friend_id"
   add_foreign_key "likes", "users"
