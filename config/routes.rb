@@ -8,6 +8,8 @@ Rails.application.routes.draw do
     resources :characters
     resources :conversations
 
+    resources :email_confirmations, only: %i(show update), param: :token
+
     resources :friendships, only: %i(index show create destroy)
 
     resources :indices, only: :index

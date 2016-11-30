@@ -1,0 +1,18 @@
+---
+$schema: http://json-schema.org/draft-04/schema#
+title: EmailConfirmations
+definitions:
+  email_confirmations:
+    type: array
+    items:
+      $ref: email_confirmation.json#/definitions/email_confirmation
+type: object
+properties:
+  email_confirmations:
+    $ref: '#/definitions/email_confirmations'
+  meta:
+    $ref: meta.json#/definitions/meta
+required:
+  - email_confirmations
+  - meta
+additionalProperties: false

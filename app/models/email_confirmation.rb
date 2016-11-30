@@ -36,7 +36,7 @@ class EmailConfirmation < ApplicationRecord
   validates :token, presence: true, uniqueness: true
   validates :user, :status, presence: true
 
-  validate :confirmation_is_open, if: -> { status_changed?(to: 'confirmed') }
+  validate :status_can_be_changed, on: :update
 
   before_validation :generate_token, on: :create
 
@@ -47,8 +47,8 @@ class EmailConfirmation < ApplicationRecord
 
 private
 
-  def confirmation_is_open
-    errors.add(:base, 'confirmation has expired') unless status_was == 'open'
+  def status_can_be_changed
+    errors.add(:status, "can't be changed") unless status_was == 'open'
   end
 
   def generate_token

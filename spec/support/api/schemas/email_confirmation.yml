@@ -1,0 +1,39 @@
+---
+$schema: http://json-schema.org/draft-04/schema#
+title: EmailConfirmation
+definitions:
+  email_confirmation:
+    type: object
+    properties:
+      token:
+        type: string
+      user_id:
+        type: integer
+      status:
+        type: string
+        enum:
+          - open
+          - confirmed
+          - expired
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      user:
+        $ref: user.json#/definitions/user
+    required:
+      - token
+      - user_id
+      - status
+      - created_at
+      - updated_at
+    additionalProperties: false
+type: object
+properties:
+  email_confirmation:
+    $ref: '#/definitions/email_confirmation'
+required:
+  - email_confirmation
+additionalProperties: false
