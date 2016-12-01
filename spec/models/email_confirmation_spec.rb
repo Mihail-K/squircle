@@ -35,4 +35,11 @@ RSpec.describe EmailConfirmation, type: :model do
       email_confirmation.save
     end.to change { other.reload.status }.from('open').to('expired')
   end
+
+  it 'touches the user email confirmed timestamp when it becomes confirmed' do
+    expect do
+      email_confirmation.confirmed!
+    end.to change { email_confirmation.user.email_confirmed_at }
+      .to be_within(1.minute).of(Time.current)
+  end
 end

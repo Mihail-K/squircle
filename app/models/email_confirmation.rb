@@ -41,7 +41,7 @@ class EmailConfirmation < ApplicationRecord
   before_validation :generate_token, on: :create
 
   after_create :expire_other_confirmations
-  after_update :confirm_user_email, if: -> { status_changed?(to: 'confirmed') }
+  after_save :confirm_user_email, if: -> { status_changed?(to: 'confirmed') }
 
   after_commit :send_email_confirmation, on: :create
 
