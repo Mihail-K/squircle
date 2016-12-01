@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 class IndicesController < ApplicationController
   before_action :set_indices
+  before_action :set_records
 
   def index
-    render json: @indices.includes(:indexable).to_a,
+    render json: @records.includes(:indexable).to_a,
            each_serializer: IndexSerializer,
-           meta: meta_for(@indices)
+           meta: meta_for(@records)
   end
 
 private
@@ -14,6 +15,9 @@ private
     @indices = Index.search(QueryBuilder.new(params).build)
     @indices.search.definition[:preference] = request.remote_ip
     @indices = @indices.page(params[:page]).per(params[:count])
-    @indices = @indices.records
+  end
+
+  def set_records
+    @records = @indices.records
   end
 end
