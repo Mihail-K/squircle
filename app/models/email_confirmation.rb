@@ -41,6 +41,8 @@ class EmailConfirmation < ApplicationRecord
   before_validation :generate_token, on: :create
 
   after_create :expire_other_confirmations
+  after_create :unconfirm_existing_email
+
   after_save :confirm_user_email, if: -> { status_changed?(to: 'confirmed') }
 
   after_commit :send_email_confirmation, on: :create
@@ -59,6 +61,10 @@ private
     EmailConfirmation.where(status: 'open', user: user)
                      .where.not(token: token)
                      .update_all(status: 'expired')
+  end
+
+  def unconfirm_existing_email
+    user.update_columns(email_confirmed_at: nil)
   end
 
   def confirm_user_email
