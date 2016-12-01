@@ -21,9 +21,11 @@
 #
 
 class PasswordReset < ApplicationRecord
+  self.primary_key = :token
+
   attr_accessor :password
 
-  belongs_to :user
+  belongs_to :user, inverse_of: :password_resets
 
   enum status: {
     open:   'open',

@@ -33,7 +33,7 @@ class ApplicationPolicy
   end
 
   def show?
-    scope.exists?(id: record.id)
+    scope.exists?(id: record)
   end
 
   def create?

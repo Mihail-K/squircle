@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
     resources :notifications, only: %i(index show update destroy)
 
+    resources :password_resets, only: %i(show create update), param: :token
     resources :permissions, only: %i(index show)
     resources :posts
 

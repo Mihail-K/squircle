@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :password_reset do
     association :user, strategy: :build
-    email { user.email }
+    email { user&.email || Faker::Internet.email }
 
     trait :without_user do
       user nil
