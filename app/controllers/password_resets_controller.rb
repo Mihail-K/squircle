@@ -7,7 +7,9 @@ class PasswordResetsController < ApplicationController
   end
 
   def create
-    PasswordReset.create!(password_reset_params)
+    PasswordReset.create!(password_reset_params) do |password_reset|
+      password_reset.request_ip = request.remote_ip
+    end
 
     head :created
   end

@@ -3,12 +3,13 @@
 #
 # Table name: password_resets
 #
-#  token      :uuid             not null
+#  token      :uuid             not null, primary key
 #  user_id    :integer
 #  status     :string           default("open"), not null
 #  email      :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  request_ip :inet
 #
 # Indexes
 #
