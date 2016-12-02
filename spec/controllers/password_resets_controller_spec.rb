@@ -54,9 +54,9 @@ RSpec.describe PasswordResetsController, type: :controller do
         expect(response).to have_http_status :ok
         expect(response).to match_response_schema :password_reset
 
-        expect(response.body).to include_json(password_reset: {
-          token: password_reset.token, status: 'closed'
-        })
+        expect(response.body).to include_json(
+          password_reset: { token: password_reset.token, status: 'closed' }
+        )
       end.to change { password_reset.reload.status }.from('open').to('closed')
     end
 
