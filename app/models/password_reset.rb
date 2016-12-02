@@ -43,12 +43,13 @@ class PasswordReset < ApplicationRecord
 
   validate :status_can_be_changed, if: :status_changed?
 
-  before_validation :generate_token, on: :create
+  before_validation :generate_token, on: :create, unless: :token?
   before_validation :set_user, on: :create, if: -> { user.blank? }
 
   after_save :update_user_password, if: -> { user.present? && status_changed?(to: 'closed') }
 
-  after_commit :send_password_reset, on: :create, if: -> { user.present? }
+  after_commit :send_password_reset_opened, on: :create, if: -> { user.present? }
+  after_commit :send_password_reset_closed, if: -> { user.present? && closed? && status_previously_changed? }
 
 private
 
@@ -68,7 +69,11 @@ private
     user.update!(password: password, password_confirmation: password_confirmation)
   end
 
-  def send_password_reset
-    # TODO : Mailer
+  def send_password_reset_opened
+    PasswordResetMailer.opened(self).deliver_later
+  end
+
+  def send_password_reset_closed
+    PasswordResetMailer.closed(self).deliver_later
   end
 end
