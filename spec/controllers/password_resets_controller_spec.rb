@@ -8,7 +8,7 @@ RSpec.describe PasswordResetsController, type: :controller do
 
   describe '#GET show' do
     let :password_reset do
-      create :password_reset, email: user.email
+      create :password_reset, user: user
     end
 
     it 'returns the specified password reset' do
@@ -43,7 +43,7 @@ RSpec.describe PasswordResetsController, type: :controller do
 
   describe '#PATCH update' do
     let :password_reset do
-      create :password_reset, email: user.email
+      create :password_reset, user: user
     end
 
     it 'completes the password reset' do
