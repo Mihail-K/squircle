@@ -40,7 +40,7 @@ RSpec.describe PasswordResetsController, type: :controller do
 
   describe '#PATCH update' do
     let :password_reset do
-      create :password_reset
+      create :password_reset, user: user
     end
 
     it 'completes the password reset' do
@@ -50,6 +50,31 @@ RSpec.describe PasswordResetsController, type: :controller do
 
         expect(response).to have_http_status :ok
       end.to change { password_reset.reload.status }.from('open').to('closed')
+    end
+
+    it 'prevents the user from using a closed password reset' do
+      password_reset.update_columns(status: 'closed')
+
+      expect do
+        patch :update, params: { token: password_reset.token,
+                                 password_reset: attributes_for(:password_reset, :closed) }
+
+        expect(response).to have_http_status :ok
+      end.not_to change { user.reload.password_digest }
+    end
+
+    it 'prevents the user from reopening a password reset' do
+      password_reset.update_columns(status: 'closed')
+
+      expect do
+        patch :update, params: { token: password_reset.token,
+                                 password_reset: attributes_for(:password_reset, :open) }
+
+        expect(response).to have_http_status :unprocessable_entity
+        expect(response).to match_response_schema :errors
+
+        expect(response.body).to include_json(errors: { status: ["can't be changed"] })
+      end.not_to change { password_reset.reload.status }
     end
   end
 end

@@ -58,5 +58,9 @@ RSpec.describe PasswordReset, type: :model do
         password_reset.save
       end.to change { password_reset.user.password_digest }
     end
+
+    it 'has no affect when not attached to a user' do
+      expect { password_reset.save }.not_to raise_error
+    end
   end
 end

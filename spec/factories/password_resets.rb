@@ -9,6 +9,10 @@ FactoryGirl.define do
       email { Faker::Internet.email }
     end
 
+    trait :open do
+      status 'open'
+    end
+
     trait :closed do
       status 'closed'
       password { Faker::Internet.password }
