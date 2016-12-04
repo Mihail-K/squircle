@@ -31,13 +31,14 @@ RSpec.describe PasswordResetsController, type: :controller do
       end.to change { user.password_resets.count }.by(1)
     end
 
-    it 'creates a password reset unattached from a user' do
+    it 'creates a password reset without an attached user' do
       expect do
         post :create, params: { password_reset: { email: Faker::Internet.email } }
 
         expect(response).to have_http_status :created
         expect(response.body).to be_empty
-      end.not_to change { user.password_resets.count }
+      end.to change { PasswordReset.count }.by(1)
+        .and change { user.password_resets.count }.by(0)
     end
   end
 
