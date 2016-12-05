@@ -25,7 +25,7 @@ RSpec.describe PasswordReset, type: :model do
     user = create :user, email: password_reset.email
 
     expect do
-      password_reset.validate
+      password_reset.save
     end.to change { password_reset.user }.from(nil).to(user)
   end
 

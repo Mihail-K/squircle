@@ -33,7 +33,6 @@ class PasswordReset < ApplicationRecord
     closed: 'closed'
   }
 
-  validates :token, presence: true, uniqueness: true
   validates :status, :email, presence: true
 
   with_options if: -> { status_changed?(to: 'closed') } do |o|
@@ -43,8 +42,7 @@ class PasswordReset < ApplicationRecord
 
   validate :status_can_be_changed, if: :status_changed?
 
-  before_validation :generate_token, on: :create, unless: :token?
-  before_validation :set_user, on: :create, if: -> { user.blank? }
+  before_create :set_user, if: -> { user.blank? }
 
   after_save :update_user_password, if: -> { user.present? && status_changed?(to: 'closed') }
 
@@ -52,10 +50,6 @@ class PasswordReset < ApplicationRecord
   after_commit :send_password_reset_closed, if: -> { user.present? && closed? && status_previously_changed? }
 
 private
-
-  def generate_token
-    self.token = SecureRandom.uuid
-  end
 
   def set_user
     self.user = User.find_by(email: email)
