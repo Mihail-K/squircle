@@ -18,7 +18,7 @@
 # Foreign Keys
 #
 #  fk_rails_62f01c28cf  (conversation_id => conversations.id)
-#  fk_rails_933bdff476  (user_id => users.id)
+#  fk_rails_933bdff476  (user_id => users.id) ON DELETE => cascade
 #
 
 class Subscription < ApplicationRecord

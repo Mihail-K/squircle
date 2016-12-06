@@ -61,8 +61,8 @@ class User < ApplicationRecord
 
   has_many :posts, foreign_key: :author_id, inverse_of: :author
 
-  has_many :notifications, inverse_of: :user, dependent: :delete_all
-  has_many :subscriptions, inverse_of: :user, dependent: :delete_all
+  has_many :notifications, inverse_of: :user
+  has_many :subscriptions, inverse_of: :user
 
   enum bucket: {
     active:   'active',

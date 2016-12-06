@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161205144624) do
+ActiveRecord::Schema.define(version: 20161205145559) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -403,7 +403,7 @@ ActiveRecord::Schema.define(version: 20161205144624) do
   add_foreign_key "friendships", "users"
   add_foreign_key "friendships", "users", column: "friend_id"
   add_foreign_key "likes", "users"
-  add_foreign_key "notifications", "users"
+  add_foreign_key "notifications", "users", on_delete: :cascade
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "password_resets", "users"
@@ -430,6 +430,6 @@ ActiveRecord::Schema.define(version: 20161205144624) do
   add_foreign_key "sections", "users", column: "creator_id"
   add_foreign_key "sections", "users", column: "deleted_by_id"
   add_foreign_key "subscriptions", "conversations"
-  add_foreign_key "subscriptions", "users"
+  add_foreign_key "subscriptions", "users", on_delete: :cascade
   add_foreign_key "users", "users", column: "deleted_by_id"
 end

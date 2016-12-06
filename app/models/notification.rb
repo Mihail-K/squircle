@@ -26,7 +26,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_b080fb4855  (user_id => users.id)
+#  fk_rails_b080fb4855  (user_id => users.id) ON DELETE => cascade
 #
 
 class Notification < ApplicationRecord
