@@ -15,8 +15,7 @@ class PostsController < ApplicationController
 
   def index
     render json: @posts,
-           each_serializer: PostSerializer,
-           likes: preview_likes,
+           likes: load(:like, @posts),
            meta: meta_for(@posts)
   end
 
