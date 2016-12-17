@@ -20,3 +20,7 @@
 
 # Ignore uploaded files
 /public/uploads
+
+# Ignore tags
+.tags
+
