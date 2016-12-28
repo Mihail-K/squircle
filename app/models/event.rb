@@ -6,6 +6,7 @@
 #  id         :uuid             not null, primary key
 #  user_id    :integer
 #  visit_id   :uuid
+#  url        :string           not null
 #  controller :string           not null
 #  method     :string           not null
 #  action     :string           not null
@@ -29,5 +30,5 @@ class Event < ApplicationRecord
   belongs_to :user
   belongs_to :visit, touch: true
 
-  validates :controller, :method, :action, :status, presence: true
+  validates :url, :controller, :method, :action, :status, presence: true
 end

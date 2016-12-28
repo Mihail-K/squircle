@@ -5,6 +5,7 @@ class CreateEvents < ActiveRecord::Migration[5.0]
       t.uuid       :id, null: false, index: { unique: true }, primary_key: true, default: 'uuid_generate_v4()'
       t.belongs_to :user, foreign_key: true
       t.uuid       :visit_id
+      t.string     :url, null: false
       t.string     :controller, null: false
       t.string     :method, null: false
       t.string     :action, null: false

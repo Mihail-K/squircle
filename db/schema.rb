@@ -101,6 +101,7 @@ ActiveRecord::Schema.define(version: 20161228193646) do
   create_table "events", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.integer  "user_id"
     t.uuid     "visit_id"
+    t.string   "url",        null: false
     t.string   "controller", null: false
     t.string   "method",     null: false
     t.string   "action",     null: false

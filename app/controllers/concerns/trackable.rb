@@ -11,6 +11,7 @@ private
   def track_action
     TrackJob.perform_later(user_id:    current_user&.id,
                            visit_id:   current_visit&.id,
+                           url:        request.url,
                            controller: controller_name,
                            method:     request.method,
                            action:     action_name,

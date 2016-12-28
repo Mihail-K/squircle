@@ -10,6 +10,11 @@ RSpec.describe Event, type: :model do
     expect(event).to be_valid
   end
 
+  it 'is invalid without a URL' do
+    event.url = nil
+    expect(event).to be_invalid
+  end
+
   it 'is invalid without a controller' do
     event.controller = nil
     expect(event).to be_invalid
