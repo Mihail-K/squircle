@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 class ApplicationController < ActionController::API
   include Pundit
+  include Trackable
+  include Visitable
 
   rescue_from Pundit::NotAuthorizedError do
     forbid
@@ -20,18 +22,11 @@ class ApplicationController < ActionController::API
     current_user.touch :last_active_at
   end
 
-  after_action :track_visit, if: -> { request.headers.key?('X-Visit-ID') }
-
   def current_resource_owner
     @current_resource_owner ||= User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
   end
 
   alias current_user current_resource_owner
-
-  def current_visit
-    visit_id = request.headers['X-Visit-ID']
-    @current_visit ||= Visit.find_by(id: visit_id) if visit_id.present?
-  end
 
   def forbid
     head :forbidden
@@ -118,15 +113,5 @@ protected
 
   def current_model
     @current_model ||= controller_name.singularize.camelize.constantize
-  end
-
-private
-
-  def track_visit
-    response.headers['X-Visit-ID'] = request.headers['X-Visit-ID'].presence || create_visit.id
-  end
-
-  def create_visit
-    Visit.create(user: current_user, request: request)
   end
 end
