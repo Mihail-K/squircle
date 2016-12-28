@@ -387,14 +387,14 @@ ActiveRecord::Schema.define(version: 20161220132022) do
     t.index ["email_token"], name: "index_users_on_email_token", unique: true, using: :btree
   end
 
-  create_table "visits", force: :cascade do |t|
-    t.uuid     "token",      default: -> { "uuid_generate_v4()" }, null: false
+  create_table "visits", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.integer  "user_id"
     t.inet     "ip"
+    t.inet     "remote_ip"
     t.string   "user_agent"
-    t.datetime "created_at",                                       null: false
-    t.datetime "updated_at",                                       null: false
-    t.index ["token"], name: "index_visits_on_token", unique: true, using: :btree
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["id"], name: "index_visits_on_id", unique: true, using: :btree
     t.index ["user_id"], name: "index_visits_on_user_id", using: :btree
   end
 
